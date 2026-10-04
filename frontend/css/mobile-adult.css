@@ -1,0 +1,900 @@
+/**
+ * Travel Hub — мобильная адаптация под взрослых (40+)
+ * Chrome / Safari iOS / Yandex / Firefox / Samsung Internet
+ * Подключать ПОСЛЕДНИМ после redesign / wizard / hard-funnel.
+ */
+
+:root {
+    --th-safe-top: env(safe-area-inset-top, 0px);
+    --th-safe-right: env(safe-area-inset-right, 0px);
+    --th-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --th-safe-left: env(safe-area-inset-left, 0px);
+    /* visualViewport height — ставит th-mobile.js; fallback 100dvh / 100vh */
+    --th-vvh: 100dvh;
+    --th-sticky-bottom-h: 0px;
+    /* Actual fixed header is ~70–76px with padding; 56 caused sticky underlap.
+       --th-header-clearance: content offset under fixed header (JS overwrites both). */
+    --th-header-h: 72px;
+    --th-header-clearance: calc(var(--th-header-h) + var(--th-safe-top) + 16px);
+    --th-tap: 48px;
+    --th-tap-lg: 52px;
+    --th-mobile-pad: 16px;
+    --th-mobile-radius: 16px;
+    --th-mobile-font: 16px;
+    --th-mobile-line: 1.5;
+}
+
+/* ——— База: читаемость для взрослых ——— */
+@media (max-width: 767.98px) {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+    }
+
+    body {
+        font-size: var(--th-mobile-font);
+        line-height: var(--th-mobile-line);
+        padding-left: var(--th-safe-left);
+        padding-right: var(--th-safe-right);
+        /* место под fixed bottom CTA (JS обновляет --th-sticky-bottom-h) */
+        padding-bottom: calc(var(--th-sticky-bottom-h) + var(--th-safe-bottom));
+        overflow-x: clip;
+        overscroll-behavior-x: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Контейнеры: комфортные поля */
+    .th-container,
+    .container,
+    .home-hero-inner,
+    #tv-results-section .th-container {
+        padding-left: max(var(--th-mobile-pad), var(--th-safe-left)) !important;
+        padding-right: max(var(--th-mobile-pad), var(--th-safe-right)) !important;
+    }
+
+    /* Заголовки: крупнее, без «мелкого UI» */
+    h1, .ds-h1, .home-hero-section h1 {
+        font-size: clamp(1.6rem, 6.2vw, 2rem) !important;
+        line-height: 1.2 !important;
+        letter-spacing: -0.02em;
+    }
+    h2, .ds-h2, .heading-font.text-2xl,
+    .heading-font.text-3xl {
+        font-size: clamp(1.25rem, 5vw, 1.5rem) !important;
+        line-height: 1.25 !important;
+    }
+
+    p, .text-sm, .text-slate-600, .text-slate-500 {
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+
+    /* Tap targets: минимум 48×48 для взрослых пальцев */
+    a.button,
+    button,
+    .button,
+    .th-tour-card__btn,
+    .th-detail__cta-btn,
+    .th-detail__mobile-sticky-btn,
+    .th-detail__promo-apply,
+    .th-lead-capture__submit,
+    .th-wizard__next,
+    .th-wizard__back,
+    .tv-pf-chip,
+    .promo-stars-trigger,
+    .promo-back-btn,
+    .th-promo-pick-tour-btn,
+    .tv-results-lead-bar__btn,
+    .th-results-sticky-lead__btn,
+    #site-header .header__phone,
+    #site-header .header__burger,
+    .tv-sc-trigger,
+    .tv-sc-select {
+        min-height: var(--th-tap) !important;
+        min-width: var(--th-tap);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255, 107, 107, 0.14);
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .th-tour-card__carousel-dot,
+    .th-detail__gallery-dot {
+        min-height: unset !important;
+        min-width: unset !important;
+        width: 7px !important;
+        height: 7px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        touch-action: manipulation;
+    }
+
+    .th-detail__gallery-dot {
+        width: 8px !important;
+        height: 8px !important;
+        min-width: 8px !important;
+        min-height: 8px !important;
+    }
+
+    /* Primary CTA — ещё крупнее */
+    .th-tour-card__btn,
+    .th-detail__cta-btn:not(.th-detail__cta-btn--pay-secondary),
+    .th-detail__mobile-sticky-btn,
+    .th-lead-capture__submit,
+    .th-wizard #tv-search-btn,
+    .th-wizard__next,
+    .th-results-sticky-lead__btn,
+    .th-promo-pick-tour-btn,
+    #promo-sticky-cta-btn {
+        min-height: var(--th-tap-lg) !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        border-radius: 14px !important;
+    }
+
+    /* Инпуты: 16px+ — без zoom в iOS/Safari/Yandex */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="search"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select,
+    .th-lead-capture__input,
+    .promo-lead-inp,
+    .tv-sc-select,
+    #b-manager-name,
+    #b-phone,
+    #qbm-form input,
+    .th-detail__promo-input,
+    #th-td-promo-input {
+        font-size: 16px !important;
+        min-height: var(--th-tap) !important;
+        border-radius: 14px !important;
+        line-height: 1.35;
+    }
+
+    .th-detail__promo-input,
+    #th-td-promo-input {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px 14px !important;
+        border: 2px solid #64748b !important;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Убрать hover-подпрыгивания на тач-устройствах */
+    .th-tour-card:hover,
+    .country-card:hover,
+    .promo-cptile:hover,
+    .th-tour-card__btn:hover,
+    .th-detail__cta-btn:hover {
+        transform: none !important;
+    }
+}
+
+/* Только устройства без hover (телефоны/планшеты) */
+@media (hover: none) and (pointer: coarse) {
+    .th-tour-card:hover,
+    .country-card:hover,
+    .surface-card:hover {
+        transform: none !important;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+}
+
+/* ——— Header: телефон крупный и всегда доступный ——— */
+@media (max-width: 767.98px) {
+    #site-header.header {
+        /* Do not use --th-header-h here — JS sets it from measured height and
+           min-height: header-h + safe would grow the bar every resize. */
+        min-height: calc(56px + var(--th-safe-top));
+        padding-top: max(10px, var(--th-safe-top)) !important;
+        padding-bottom: 10px !important;
+        padding-left: max(12px, var(--th-safe-left)) !important;
+        padding-right: max(12px, var(--th-safe-right)) !important;
+    }
+
+    /* Перебиваем header.php (там phone display:none на ≤768) — звонок = ключевой CTA */
+    #site-header .header__phone {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        border-radius: 999px;
+        background: #FF6B6B !important;
+        border: none !important;
+        color: #fff !important;
+        text-decoration: none !important;
+        max-width: 52vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #site-header .header__phone-num {
+        display: inline !important;
+        color: #fff !important;
+    }
+
+    #site-header .header__phone i {
+        color: #fff !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* На мобилке прячем login/register — телефон важнее */
+    #site-header .header__actions .button {
+        display: none !important;
+    }
+
+    #site-header .header__burger {
+        width: var(--th-tap) !important;
+        height: var(--th-tap) !important;
+    }
+
+    /* Контент не прячется под fixed header */
+    body {
+        scroll-padding-top: var(--th-header-clearance);
+    }
+
+    /* Моб. меню: крупные пункты для взрослых */
+    .site-header-mobile-nav a,
+    .site-header-mobile-actions a {
+        min-height: var(--th-tap) !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        padding: 12px 14px !important;
+        display: flex !important;
+        align-items: center;
+        border-radius: 12px;
+    }
+
+    .site-header-mobile-panel__inner {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        height: auto !important;
+        padding: 16px max(16px, var(--th-safe-right)) max(24px, var(--th-safe-bottom)) max(16px, var(--th-safe-left)) !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+    }
+
+    .site-header-mobile-actions .btn-m-secondary[href^="tel:"] {
+        background: #FF6B6B !important;
+        color: #fff !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 380px) {
+    #site-header .header__phone-num {
+        font-size: 0.78rem !important;
+    }
+}
+
+/* ——— Hero + wizard: один экран, без тесноты ——— */
+@media (max-width: 767.98px) {
+    .home-hero-section {
+        min-height: auto !important;
+        min-height: calc(var(--th-vvh) - 4px) !important;
+        padding-top: var(--th-header-clearance) !important;
+        padding-bottom: 28px !important;
+        justify-content: flex-start !important;
+    }
+
+    .home-hero-section .hero-content {
+        margin-bottom: 1rem !important;
+        padding: 0 2px;
+    }
+
+    .home-hero-section .hero-content p:not(.heading-font) {
+        font-size: 1rem !important;
+        max-width: 22rem;
+    }
+
+    #tour-search-section.th-wizard,
+    .th-wizard {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 1rem 0.9rem 1.1rem !important;
+        border-radius: 18px !important;
+        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.28) !important;
+    }
+
+    .th-wizard__progress {
+        gap: 0.15rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .th-wizard__dot-num {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .th-wizard__dot-label {
+        font-size: 0.7rem !important;
+        max-width: 4.2rem;
+    }
+
+    .th-wizard__panel-title {
+        font-size: 1.2rem !important;
+    }
+
+    .th-wizard__nav {
+        position: static !important;
+        background: transparent !important;
+        margin-top: 0.75rem !important;
+        padding-top: 0.75rem !important;
+    }
+
+    .th-wizard .tv-sc-select,
+    .th-wizard .tv-sc-trigger {
+        min-height: var(--th-tap-lg) !important;
+        height: auto !important;
+        font-size: 1.05rem !important;
+    }
+}
+
+/* ——— Карточки туров: цена + CTA сразу видны ——— */
+@media (max-width: 767.98px) {
+    .th-tour-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .th-tour-card {
+        border-radius: var(--th-mobile-radius) !important;
+        box-shadow: 0 4px 18px rgba(26, 26, 64, 0.1) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .th-tour-card__media,
+    .th-tour-card__media--carousel {
+        /* fluid: 320…430+ и разные плотности экранов */
+        height: clamp(168px, 48vw, 240px) !important;
+        min-height: 168px !important;
+        max-height: 260px !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .th-tour-card__carousel,
+    .th-tour-card__carousel-viewport {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .th-tour-card__carousel-track {
+        /* JS ставит px-transform; не даём % от track «уехать» */
+        height: 100% !important;
+    }
+
+    .th-tour-card__name {
+        font-size: clamp(1.05rem, 4.2vw, 1.2rem) !important;
+        line-height: 1.3 !important;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .th-tour-card__price {
+        font-size: clamp(1.3rem, 5.5vw, 1.55rem) !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.02em;
+    }
+
+    .th-tour-card__price-label,
+    .th-tour-card__old-price {
+        font-size: 0.85rem !important;
+    }
+
+    .th-tour-card__body {
+        padding: 14px 14px 12px !important;
+        gap: 8px !important;
+        min-width: 0;
+    }
+
+    .th-tour-card__actions {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 0 14px 14px !important;
+        margin-top: auto;
+    }
+
+    .th-tour-card__btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .th-tour-card__carousel-btn {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        opacity: 1 !important;
+        z-index: 6 !important;
+    }
+
+    .th-tour-card__carousel-dots {
+        bottom: 8px !important;
+        max-width: calc(100% - 24px);
+        flex-wrap: nowrap !important;
+        justify-content: center;
+        gap: 5px !important;
+    }
+
+    .th-tour-card__carousel-dot {
+        width: 6px !important;
+        height: 6px !important;
+        min-width: 6px !important;
+        min-height: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .th-tour-card__carousel-counter {
+        font-size: 12px !important;
+        padding: 4px 9px !important;
+    }
+
+    /* Пост-фильтры: горизонтальный скролл чипов удобнее сайдбара */
+    .tv-results-sidebar {
+        position: static !important;
+        width: 100% !important;
+        margin-bottom: 12px;
+        padding: 12px !important;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid rgba(26, 26, 64, 0.08);
+    }
+
+    .tv-results-layout {
+        display: block !important;
+    }
+
+    .tv-pf-chips {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        gap: 8px !important;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .tv-pf-chips::-webkit-scrollbar { display: none; }
+
+    .tv-pf-chip {
+        flex: 0 0 auto !important;
+        white-space: nowrap;
+        padding: 10px 14px !important;
+        font-size: 0.95rem !important;
+    }
+}
+
+/* ——— Fixed bottom bars: Safari / Yandex / Chrome ——— */
+@media (max-width: 767.98px) {
+    .th-results-sticky-lead,
+    #promo-sticky-cta,
+    .th-detail__mobile-sticky,
+    #mobile-sticky-cta {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10px max(12px, var(--th-safe-left)) calc(10px + var(--th-safe-bottom)) max(12px, var(--th-safe-right)) !important;
+        background: rgba(255, 255, 255, 0.97) !important;
+        border-top: 1px solid rgba(26, 26, 64, 0.1) !important;
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        /* iOS: не прыгать от адресной строки */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+
+    .th-results-sticky-lead:not(.is-visible),
+    #mobile-sticky-cta:not(.is-visible) {
+        display: none !important;
+    }
+
+    .th-results-sticky-lead.is-visible,
+    #mobile-sticky-cta.is-visible {
+        display: block !important;
+    }
+
+    .th-results-sticky-lead.th-results-sticky-lead--actions.is-visible {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+        background: #FF6B6B !important;
+        border-top: none !important;
+        padding: 6px 6px calc(6px + var(--th-safe-bottom, env(safe-area-inset-bottom, 0px))) !important;
+    }
+
+    .th-detail__mobile-sticky {
+        display: none !important;
+    }
+
+    #promo-sticky-cta .th-promo-pick-tour-btn,
+    .th-results-sticky-lead__btn,
+    .th-detail__mobile-sticky-btn {
+        width: 100% !important;
+        max-width: 36rem;
+        margin: 0 auto;
+        display: flex !important;
+    }
+}
+
+/* ——— Модалки = bottom sheet на телефоне ——— */
+@media (max-width: 767.98px) {
+    #quick-booking-modal,
+    #booking-modal,
+    #th-tour-booking-modal,
+    #tv-nights-popup,
+    #vip-tv-nights-popup,
+    #country-tv-nights-popup,
+    .th-tour-booking-modal {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+
+    .th-qbm-modal__panel,
+    #quick-booking-modal > div[style*="position:relative"],
+    #booking-modal > div,
+    #th-tour-booking-modal .th-tour-booking-modal__panel,
+    #tv-nights-popup-card.th-coral-popup__panel,
+    .tv-nights-modal-card,
+    .promo-stars-popup {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: min(88vh, calc(var(--th-vvh) - 12px)) !important;
+        overflow: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 0 !important;
+        margin: 0 !important;
+    }
+
+    #tv-nights-popup-card:not(.th-coral-popup__panel),
+    .tv-nights-modal-card.legacy-scroll {
+        overflow-y: auto !important;
+        padding-bottom: calc(16px + var(--th-safe-bottom)) !important;
+    }
+
+    #tv-sc-date-popup.tv-sc-date-popup:not(.th-coral-popup),
+    .tv-sc-tourists-popup:not(.th-coral-popup) {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: min(90vh, calc(var(--th-vvh) - 28px)) !important;
+        overflow-y: auto !important;
+        z-index: 10180 !important;
+        box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.2) !important;
+        transform: none !important;
+    }
+    #tv-sc-overlay.tv-sc-overlay {
+        z-index: 10140 !important;
+    }
+    #tv-nights-grid .tv-nights-cell {
+        min-height: 48px !important;
+        font-size: 1rem !important;
+    }
+}
+
+/* ——— Tour detail: sidebar price + sticky ——— */
+@media (max-width: 767.98px) {
+    .th-detail__layout {
+        display: block !important;
+    }
+
+    .th-detail__sidebar {
+        margin-bottom: 1rem;
+    }
+
+    .th-detail__price-card {
+        border-radius: var(--th-mobile-radius) !important;
+        padding: 16px !important;
+    }
+
+    .th-detail__price {
+        font-size: 1.75rem !important;
+        font-weight: 800 !important;
+    }
+
+    .th-detail__cta-btn--pay-secondary {
+        min-height: 44px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Контент не перекрывается sticky */
+    .th-detail__container,
+    main.th-detail,
+    .th-detail {
+        padding-bottom: calc(72px + var(--th-safe-bottom)) !important;
+    }
+}
+
+/* ——— Акции / страны ——— */
+@media (max-width: 767.98px) {
+    .promo-unified-hero,
+    .th-page-hero-v2 {
+        padding-top: var(--th-header-clearance) !important;
+        padding-bottom: 2rem !important;
+        min-height: unset !important;
+    }
+
+    .promo-cp-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .promo-cptile {
+        min-height: 148px !important;
+        border-radius: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .promo-cptile-name {
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+    }
+
+    .promo-departure-bar__inner {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px;
+    }
+
+    .promo-departure-trigger {
+        min-height: var(--th-tap) !important;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    body.th-promo-page {
+        padding-bottom: calc(72px + var(--th-safe-bottom)) !important;
+    }
+
+    .country-card-title {
+        font-size: 1.15rem !important;
+    }
+
+    #countries-list-filter {
+        min-height: var(--th-tap-lg) !important;
+        font-size: 16px !important;
+    }
+}
+
+/* ——— Lead forms ——— */
+@media (max-width: 767.98px) {
+    .th-lead-capture {
+        max-width: 100%;
+    }
+
+    .th-lead-capture__title {
+        font-size: 1.35rem !important;
+    }
+
+    .th-lead-capture__sub {
+        font-size: 1rem !important;
+    }
+
+    .promo-lead-row {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ——— Landscape phone: не ломаем hero ——— */
+@media (max-width: 900px) and (max-height: 480px) and (orientation: landscape) {
+    .home-hero-section {
+        min-height: auto !important;
+        padding-top: var(--th-header-clearance) !important;
+        padding-bottom: 16px !important;
+    }
+
+    .home-hero-section .hero-content {
+        display: none;
+    }
+
+    .th-results-sticky-lead,
+    #promo-sticky-cta,
+    .th-detail__mobile-sticky {
+        padding-top: 6px !important;
+        padding-bottom: calc(6px + var(--th-safe-bottom)) !important;
+    }
+}
+
+/* ——— Firefox Android: scrollbar / flex gaps ——— */
+@-moz-document url-prefix() {
+    @media (max-width: 767.98px) {
+        .th-tour-grid,
+        .promo-cp-grid {
+            gap: 14px;
+        }
+    }
+}
+
+/* ——— High contrast / forced colors ——— */
+@media (forced-colors: active) {
+    .th-tour-card__btn,
+    .th-detail__cta-btn,
+    .th-results-sticky-lead__btn {
+        border: 2px solid ButtonText;
+    }
+}
+
+/* ——— Универсальная мобильная сетка: любые диагонали ——— */
+@media (max-width: 359.98px) {
+    :root {
+        --th-mobile-pad: 12px;
+        --th-tap: 46px;
+        --th-tap-lg: 50px;
+    }
+
+    .th-tour-card__media,
+    .th-tour-card__media--carousel {
+        height: 156px !important;
+        min-height: 156px !important;
+    }
+
+    .th-wizard__dot-label {
+        display: none !important;
+    }
+
+    #site-header .header__phone {
+        max-width: 46vw;
+        padding: 8px 10px !important;
+        font-size: 0.82rem !important;
+    }
+}
+
+/* Крупные телефоны / складные в узком режиме */
+@media (min-width: 430px) and (max-width: 767.98px) {
+    .th-tour-card__media,
+    .th-tour-card__media--carousel {
+        height: clamp(200px, 44vw, 260px) !important;
+    }
+}
+
+/* Планшеты: 2 колонки, без «десктопной» тесноты */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .th-tour-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+    }
+
+    .th-tour-card__media,
+    .th-tour-card__media--carousel {
+        height: 200px !important;
+    }
+
+    .th-tour-card__carousel-btn {
+        opacity: 1 !important;
+        width: 40px;
+        height: 40px;
+    }
+
+    body {
+        padding-left: var(--th-safe-left);
+        padding-right: var(--th-safe-right);
+    }
+
+    .th-container,
+    .container {
+        padding-left: max(20px, var(--th-safe-left)) !important;
+        padding-right: max(20px, var(--th-safe-right)) !important;
+    }
+}
+
+/* Горизонтальный overflow: iOS Safari / Chrome Android / Yandex */
+@media (max-width: 1023.98px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: clip;
+    }
+
+    img,
+    video,
+    iframe,
+    svg {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .th-tour-card__media img,
+    .th-tour-card__carousel-slide,
+    .th-tour-card__strip-img {
+        height: 100% !important;
+        width: 100%;
+        max-width: none;
+        object-fit: cover;
+    }
+
+    /* 100vw учитывает scrollbar и ломает layout — режем */
+    .th-page-hero-v2,
+    .promo-unified-hero,
+    .home-hero-section,
+    #tv-results-section,
+    .tv-results-layout,
+    .th-detail__container {
+        max-width: 100%;
+        overflow-x: clip;
+    }
+
+    #tv-sc-date-popup.tv-sc-date-popup:not(.th-coral-popup),
+    .tv-sc-tourists-popup:not(.th-coral-popup) {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* iOS: убрать rubber-band горизонтальный + стабильный dvh */
+@supports (-webkit-touch-callout: none) {
+    @media (max-width: 767.98px) {
+        body {
+            overscroll-behavior-y: none;
+        }
+
+        .th-tour-card__carousel,
+        .th-tour-card__strip-scroll {
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+    }
+}
+
+/* Результаты поиска: отступ под sticky CTA на всех узких экранах */
+@media (max-width: 767.98px) {
+    #tv-results-section,
+    #promo-tours-results,
+    .tv-results-list,
+    .th-tour-grid {
+        padding-bottom: calc(12px + var(--th-sticky-bottom-h, 0px)) !important;
+    }
+
+    .tv-results-lead-bar {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+
+    .tv-results-lead-bar__btn {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+    }
+}

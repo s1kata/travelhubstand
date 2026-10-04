@@ -1,0 +1,165 @@
+/**
+ * Hard funnel UI — sticky results lead (Call / MAX / Заявка) + demoted secondary CTAs.
+ */
+.th-results-sticky-lead {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    z-index: 9990;
+    display: none;
+    box-sizing: border-box;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: #FF6B6B;
+    border-top: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 -8px 28px rgba(255, 107, 107, 0.35);
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+.th-results-sticky-lead.is-visible {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.th-results-sticky-lead--actions .th-results-sticky-lead__btn {
+    display: none !important;
+}
+
+.th-results-sticky-lead__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 52px;
+    padding: 0 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    background: transparent;
+    box-shadow: none;
+}
+
+.th-results-sticky-lead__action--call,
+.th-results-sticky-lead__action--max,
+.th-results-sticky-lead__action--lead {
+    background: transparent;
+    box-shadow: none;
+}
+
+.th-results-sticky-lead__action:active {
+    transform: scale(0.98);
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* ПК: компактная плашка по центру без translateX (конфликтует с translateZ из th-mobile.js) */
+@media (min-width: 768px) {
+    .th-results-sticky-lead.th-results-sticky-lead--actions.is-visible,
+    .th-results-sticky-lead.is-visible {
+        left: 0 !important;
+        right: 0 !important;
+        width: min(420px, calc(100% - 32px)) !important;
+        max-width: 420px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        gap: 0;
+        padding: 5px;
+        border-radius: 14px 14px 0 0;
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
+    }
+
+    .th-results-sticky-lead__action {
+        min-height: 40px;
+        font-size: 0.8rem;
+        border-radius: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .th-results-sticky-lead__action:first-child {
+        border-radius: 10px 0 0 10px;
+    }
+
+    .th-results-sticky-lead__action:last-child {
+        border-right: none;
+        border-radius: 0 10px 10px 0;
+    }
+}
+
+/* legacy single-button (promo page) */
+.th-results-sticky-lead__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: #FF6B6B;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35);
+}
+
+.th-results-sticky-lead__btn:hover {
+    background: #f65252;
+}
+
+/* tour-detail: primary CTA dominant, pay secondary */
+.th-detail__cta-wrap .th-detail__cta-btn {
+    width: 100%;
+}
+
+.th-detail__cta-btn--pay-secondary {
+    margin-top: 0.5rem !important;
+    background: transparent !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    min-height: 42px !important;
+}
+
+.th-detail__cta-btn--pay-secondary:hover {
+    background: #f8fafc !important;
+    color: #1A1A40 !important;
+    border-color: #cbd5e1 !important;
+    transform: none !important;
+}
+
+.th-detail__cta-btn--pay-primary {
+    margin-top: 0.65rem !important;
+    background: linear-gradient(135deg, #0c4a6e 0%, #366360 45%, #5DA9A4 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 8px 22px rgba(93, 169, 164, 0.35) !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    min-height: 50px !important;
+}
+
+.th-detail__cta-btn--pay-primary:hover {
+    background: linear-gradient(135deg, #0a3d5c 0%, #2d524f 45%, #4f9691 100%) !important;
+    color: #fff !important;
+    transform: none !important;
+}
+
+.th-detail__mobile-sticky-btn {
+    background: #FF6B6B !important;
+}

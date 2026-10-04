@@ -1,0 +1,209 @@
+{
+  "type": "widget",
+  "display": {
+    "desktop": true,
+    "mobile": true
+  },
+  "theme": "auto",
+  "animation": {
+    "enabled": true,
+    "style": "pulse"
+  },
+  "personalization": {
+    "segments": {
+      "enabled": false,
+      "greetingDefault": "Выберите удобный мессенджер",
+      "greetingNew": "Привет! Задайте вопрос — ответим за 5 минут",
+      "greetingReturning": "С возвращением! Чем можем помочь?"
+    },
+    "qr": {
+      "enabled": false
+    },
+    "language": {
+      "mode": "all",
+      "list": ""
+    },
+    "privacyPolicyUrl": "",
+    "chat": {
+      "enabled": false,
+      "unavailableText": "Онлайн-чат скоро будет доступен",
+      "operatorName": "Оператор",
+      "operatorRole": "Менеджер поддержки",
+      "greeting": "Здравствуйте! Чем можем помочь?",
+      "responseTime": "none",
+      "offlineMessage": "Оставьте email, мы ответим как только будем онлайн",
+      "soundEnabled": true,
+      "emojiEnabled": true,
+      "ratingEnabled": false,
+      "preChatEnabled": false,
+      "offlineModeEnabled": false,
+      "quickQuestionsEnabled": false,
+      "quickQuestions": ""
+    }
+  },
+  "appearance": {
+    "button": {
+      "style": "solid",
+      "bg": "#6C4F98",
+      "text": "Связаться",
+      "fontSize": 15,
+      "height": 48,
+      "radius": 12,
+      "textColor": "#FFFFFF",
+      "showIcon": true,
+      "icon": "fa-solid fa-comment-dots",
+      "iconColor": "#FFFFFF",
+      "iconSize": 15
+    },
+    "typography": {
+      "fontFamily": "inherit",
+      "fontWeight": "700"
+    },
+    "widget": {
+      "layout": "classic",
+      "size": 56,
+      "shape": "50%",
+      "iconStyle": "color",
+      "iconSize": 20,
+      "textColor": "#F8F5FF",
+      "singleChannelDirect": true,
+      "multiIconMode": "fa",
+      "multiIcon": "fa-solid fa-comments",
+      "multiIconUrl": "",
+      "multiIconColor": "#FFFFFF",
+      "useDefaultMaxLogo": true,
+      "customMaxLogoUrl": "",
+      "managerPhotoUrl": ""
+    },
+    "welcome": {
+      "enabled": true,
+      "hideOnMobile": false,
+      "text": "Здравствуйте! Чем помочь?",
+      "opacity": 95,
+      "fontSize": 13
+    },
+    "mobile": {
+      "scale": 92
+    }
+  },
+  "style": "aurora",
+  "pos": "bottom-right",
+  "bg": "#6C4F98",
+  "offset": 20,
+  "zIndex": 9999,
+  "hideOnMobile": false,
+  "triggers": {
+    "mode": "immediate",
+    "delaySec": 0,
+    "scrollPercent": 50,
+    "openBy": "click",
+    "closeBy": "manual"
+  },
+  "urlRules": {
+    "mode": "all",
+    "patterns": ""
+  },
+  "utm": {
+    "enabled": false,
+    "source": "",
+    "medium": "",
+    "campaign": ""
+  },
+  "callbackLead": {
+    "fields": {
+      "name": true,
+      "phone": true,
+      "email": false,
+      "message": false
+    },
+    "delivery": {
+      "email": {
+        "enabled": true,
+        "to": "hello@travelhub63.ru"
+      },
+      "webhook": {
+        "enabled": false,
+        "url": ""
+      },
+      "telegram": {
+        "enabled": false,
+        "botToken": "",
+        "chatId": ""
+      }
+    },
+    "texts": {
+      "title": "Заказать звонок",
+      "button": "Перезвоните мне",
+      "success": "Спасибо! Мы перезвоним в ближайшее время."
+    }
+  },
+  "integrations": {
+    "ga": {
+      "enabled": false,
+      "eventName": "widget_click",
+      "events": ["click", "channel_click"]
+    },
+    "ym": {
+      "enabled": false,
+      "counterId": "",
+      "goalName": "widget_lead",
+      "trigger": "channel_click"
+    },
+    "jsCallback": {
+      "enabled": false,
+      "functionName": "onWidgetClick"
+    }
+  },
+  "workSchedule": {
+    "enabled": true,
+    "mon": { "start": "09:00", "end": "20:00" },
+    "tue": { "start": "09:00", "end": "18:00" },
+    "wed": { "start": "09:00", "end": "18:00" },
+    "thu": { "start": "09:00", "end": "18:00" },
+    "fri": { "start": "09:00", "end": "17:00" },
+    "sat": null,
+    "sun": null
+  },
+  "popup": {
+    "preset": "glass",
+    "title": "Свяжитесь с нами",
+    "titleSize": 14,
+    "textSize": 14,
+    "descSize": 11,
+    "width": 260,
+    "radius": 16,
+    "shadow": "soft",
+    "bg": "#705492",
+    "cardBg": "#8B6BA8",
+    "headBg": "#7B5E9C",
+    "titleColor": "#FFFFFF",
+    "textColor": "#F1E9FF",
+    "hoverTextColor": "#FFFFFF",
+    "hoverIconColor": "#FFFFFF",
+    "borderColor": "#C5AEDB",
+    "borderOpacity": 18
+  },
+  "channels": [
+    {
+      "type": "max",
+      "on": false,
+      "url": "https://t.me/TrevelHub",
+      "label": "Telegram",
+      "btnText": "Написать в Telegram"
+    },
+    {
+      "type": "tg",
+      "on": true,
+      "url": "https://t.me/travelhub63",
+      "label": "Telegram",
+      "btnText": "Написать в Telegram"
+    },
+    {
+      "type": "callback",
+      "on": true,
+      "url": "",
+      "label": "Обратный звонок",
+      "btnText": "Заказать звонок"
+    }
+  ]
+}

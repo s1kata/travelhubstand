@@ -1,0 +1,693 @@
+/**
+ * Tour Search Wizard — поэтапный поиск (v2 tokens).
+ * Работает поверх #tour-search-section / country search / promo.
+ */
+.th-wizard {
+    --thw-navy: #1A1A40;
+    --thw-teal: #5DA9A4;
+    --thw-coral: #FF6B6B;
+    --thw-coral-hover: #f65252;
+    --thw-bg: rgba(255, 255, 255, 0.96);
+    --thw-muted: #64748b;
+    --thw-line: rgba(26, 26, 64, 0.1);
+    --thw-radius: 20px;
+    position: relative;
+    width: 100%;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--thw-bg);
+    border-radius: var(--thw-radius);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(12px);
+    padding: 1.15rem 1.15rem 1.25rem;
+    overflow: visible;
+}
+
+.th-wizard.tv-sc-shell {
+    max-width: 42rem;
+}
+
+.th-wizard__head {
+    text-align: center;
+    margin-bottom: 0.85rem;
+}
+
+.th-wizard__title {
+    font-family: Outfit, 'Work Sans', system-ui, sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--thw-navy);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.25rem;
+}
+
+.th-wizard__sub {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--thw-muted);
+    line-height: 1.4;
+}
+
+.th-wizard__progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.th-wizard__progress::before {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 14px;
+    height: 2px;
+    background: var(--thw-line);
+    z-index: 0;
+}
+
+.th-wizard__dot {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: var(--thw-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.2;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.th-wizard__dot-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2f6;
+    color: var(--thw-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.th-wizard__dot.is-active {
+    color: var(--thw-navy);
+}
+
+.th-wizard__dot.is-active .th-wizard__dot-num {
+    background: var(--thw-teal);
+    color: #fff;
+    transform: scale(1.06);
+}
+
+.th-wizard__dot.is-done .th-wizard__dot-num {
+    background: var(--thw-navy);
+    color: #fff;
+}
+
+.th-wizard__dot-label {
+    max-width: 4.8rem;
+    text-align: center;
+}
+
+.th-wizard__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 0;
+    margin-bottom: 0.85rem;
+}
+
+.th-wizard__summary:empty {
+    display: none;
+    margin: 0;
+}
+
+.th-wizard__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(93, 169, 164, 0.12);
+    color: var(--thw-navy);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid rgba(93, 169, 164, 0.22);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.2;
+    text-align: left;
+    transition: background 0.15s, border-color 0.15s, transform 0.12s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button.th-wizard__chip:hover {
+    background: rgba(93, 169, 164, 0.2);
+    border-color: rgba(93, 169, 164, 0.45);
+}
+
+button.th-wizard__chip:active {
+    transform: scale(0.97);
+}
+
+button.th-wizard__chip:focus-visible {
+    outline: 2px solid var(--thw-teal, #5DA9A4);
+    outline-offset: 2px;
+}
+
+.th-wizard__chip i {
+    color: var(--thw-teal);
+    font-size: 0.7rem;
+}
+
+.th-wizard__chip-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.th-wizard__panels {
+    position: relative;
+}
+
+.th-wizard__panel {
+    display: none;
+    animation: thWizardIn 0.28s ease;
+}
+
+.th-wizard__panel.is-active {
+    display: block;
+}
+
+@keyframes thWizardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .th-wizard__panel { animation: none; }
+    .th-wizard__dot-num { transition: none; }
+}
+
+.th-wizard__panel-title {
+    font-family: Outfit, 'Work Sans', system-ui, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--thw-navy);
+    margin: 0 0 0.25rem;
+    letter-spacing: -0.02em;
+}
+
+.th-wizard__panel-hint {
+    margin: 0 0 0.9rem;
+    font-size: 0.84rem;
+    color: var(--thw-muted);
+}
+
+.th-wizard .tv-sc-field,
+.th-wizard .tv-sc-field--sel,
+.th-wizard .tv-sc-field--pop {
+    width: 100% !important;
+    max-width: none !important;
+    flex: 1 1 auto !important;
+    margin: 0 0 0.75rem;
+    height: auto !important;
+    min-height: 52px;
+}
+
+.th-wizard .tv-sc-field--filters {
+    display: none !important;
+}
+
+.th-wizard .th-wizard__legacy-fields {
+    display: none !important;
+}
+
+/* Попапы туристов/дат остаются поверх wizard */
+.th-wizard #tv-tourists-block:not(.hidden),
+.th-wizard #tv-sc-date-popup {
+    z-index: 40;
+}
+
+.th-wizard .tv-sc-select,
+.th-wizard .tv-sc-trigger {
+    width: 100% !important;
+    min-height: 52px !important;
+    height: 52px !important;
+    border-radius: 14px !important;
+    border: 1.5px solid rgba(26, 26, 64, 0.12);
+    background: #fff;
+    font-size: 1rem;
+}
+
+.th-wizard .tv-sc-field--sel {
+    background: #fff !important;
+    border: 1.5px solid rgba(26, 26, 64, 0.12) !important;
+    border-radius: 14px !important;
+    padding: 0 12px !important;
+}
+
+.home-hero-inner #tour-search-section.tv-sc-shell.th-wizard {
+    max-width: 42rem !important;
+}
+
+.th-wizard .tv-sc-select:focus,
+.th-wizard .tv-sc-trigger:focus-visible {
+    border-color: var(--thw-teal);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(93, 169, 164, 0.18);
+}
+
+.th-wizard__when-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+}
+
+.th-wizard__route-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+}
+
+@media (min-width: 540px) {
+    .th-wizard__route-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.th-wizard__extra-filters {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--thw-line);
+}
+
+.th-wizard__extra-filters-title {
+    margin: 0 0 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(26, 26, 64, 0.55);
+}
+
+.th-wizard__extra-filters-grid {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .th-wizard__extra-filters-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.th-wizard__filter-field .tv-sc-field-label {
+    position: static;
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(26, 26, 64, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.th-wizard__filter-field .tv-sc-select {
+    width: 100%;
+}
+
+.th-wizard__chip--placeholder {
+    opacity: 0.72;
+    border-style: dashed;
+}
+
+.th-wizard__chip--placeholder .th-wizard__chip-text {
+    font-style: italic;
+}
+
+.th-wizard__nav {
+    display: grid;
+    grid-template-columns: minmax(92px, 34%) 1fr;
+    align-items: stretch;
+    gap: 0.65rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--thw-line);
+}
+
+.th-wizard__nav .th-wizard__back,
+.th-wizard__nav .th-wizard__next,
+.th-wizard__nav .tv-sc-search-btn,
+.th-wizard__nav #tv-search-btn {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    flex: none;
+}
+
+.th-wizard__nav .th-wizard__back[hidden] + .th-wizard__next,
+.th-wizard__nav .th-wizard__back[hidden] + #tv-search-btn {
+    grid-column: 1 / -1;
+}
+
+.th-wizard__back {
+    min-height: 48px;
+    padding: 0 1rem;
+    border-radius: 12px;
+    border: 1.5px solid rgba(26, 26, 64, 0.14);
+    background: #fff;
+    color: var(--thw-navy);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.th-wizard__back:hover {
+    background: #f8fafc;
+    border-color: rgba(26, 26, 64, 0.28);
+}
+
+.th-wizard__back[hidden] {
+    display: none !important;
+}
+
+.th-wizard__next,
+.th-wizard .tv-sc-search-btn,
+.th-wizard #tv-search-btn {
+    min-height: 48px;
+    border-radius: 12px !important;
+    background: var(--thw-coral) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    box-shadow: 0 6px 18px rgba(255, 107, 107, 0.35) !important;
+    cursor: pointer;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.th-wizard__next:hover,
+.th-wizard .tv-sc-search-btn:hover,
+.th-wizard #tv-search-btn:hover {
+    background: var(--thw-coral-hover) !important;
+    transform: translateY(-1px);
+}
+
+.th-wizard__next:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.th-wizard__advanced {
+    margin-top: 0.75rem;
+}
+
+.th-wizard__advanced-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1.5px solid rgba(93, 169, 164, 0.42);
+    border-radius: 12px;
+    background: rgba(93, 169, 164, 0.1);
+    color: var(--thw-navy);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+    line-height: 1.25;
+    transition: background 0.15s, border-color 0.15s, transform 0.12s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.th-wizard__advanced-btn i {
+    color: var(--thw-teal);
+    font-size: 0.85rem;
+}
+
+.th-wizard__advanced-btn:hover {
+    background: rgba(93, 169, 164, 0.18);
+    border-color: rgba(93, 169, 164, 0.55);
+    color: var(--thw-navy);
+}
+
+.th-wizard__advanced-btn:active {
+    transform: scale(0.98);
+}
+
+/* Country page wizard shell */
+.th-wizard--country {
+    max-width: 48rem;
+    box-shadow: 0 12px 36px rgba(26, 26, 64, 0.08);
+    border: 1px solid rgba(26, 26, 64, 0.08);
+    background: #fff;
+}
+
+.th-wizard--country .th-wizard__progress::before {
+    left: 16%;
+    right: 16%;
+}
+
+/* Hide classic one-row layout when wizard mode is on */
+.th-wizard #tv-sc-main-row.tv-sc-row {
+    display: none !important;
+}
+
+.th-wizard .th-wizard__legacy-fields {
+    display: none !important;
+}
+
+/* Countries list / promo page alignment helpers */
+.th-page-hero-v2 {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 60% at 90% 10%, rgba(255, 107, 107, 0.22), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 10% 90%, rgba(93, 169, 164, 0.28), transparent 50%),
+        linear-gradient(135deg, #1A1A40 0%, #24305e 48%, #366360 100%);
+    color: #fff;
+    padding: calc(4.5rem + 48px) 1.25rem 3rem;
+}
+
+.th-page-hero-v2 h1 {
+    font-family: Outfit, 'Work Sans', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.th-section-accent {
+    width: 4px;
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, #FF6B6B, #5DA9A4);
+    flex-shrink: 0;
+}
+
+body.th-promo-page {
+    font-family: 'Work Sans', Inter, system-ui, sans-serif;
+    background: #f7f9fb;
+}
+
+body.th-promo-page .heading-font {
+    font-family: Outfit, 'Work Sans', system-ui, sans-serif;
+}
+
+body.th-promo-page .promo-unified-hero {
+    background:
+        radial-gradient(ellipse 80% 60% at 90% 10%, rgba(255, 107, 107, 0.25), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 10% 90%, rgba(93, 169, 164, 0.22), transparent 50%),
+        linear-gradient(135deg, #1A1A40 0%, #24305e 45%, #366360 100%) !important;
+}
+
+body.countries-list-page-wrap {
+    font-family: 'Work Sans', Inter, system-ui, sans-serif;
+    background: #f7f9fb;
+    color: #1E293B;
+}
+
+body.countries-list-page-wrap .heading-font {
+    font-family: Outfit, 'Work Sans', system-ui, sans-serif;
+}
+
+@media (max-width: 479px) {
+    .th-wizard {
+        padding: 1rem 0.9rem 1.1rem;
+        border-radius: 18px;
+    }
+    .th-wizard__dot-label {
+        font-size: 0.62rem;
+        max-width: 3.6rem;
+    }
+    .th-wizard__dot-num {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* ── Lite: меньше визуального шума ── */
+.th-wizard--lite {
+    padding: 0.95rem 1rem 1rem;
+    box-shadow: 0 10px 32px rgba(15, 23, 42, 0.14);
+    border-radius: 16px;
+}
+
+.th-wizard--lite .th-wizard__stepbar {
+    margin-bottom: 0.85rem;
+}
+
+.th-wizard--lite .th-wizard__stepbar-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(26, 26, 64, 0.08);
+    overflow: hidden;
+}
+
+.th-wizard--lite .th-wizard__stepbar-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--thw-teal), #79bcb7);
+    transition: width 0.28s ease;
+}
+
+.th-wizard--lite .th-wizard__stepbar-label {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(100, 116, 139, 0.85);
+    text-align: center;
+    letter-spacing: 0.04em;
+}
+
+.th-wizard--lite .th-wizard__panels .tv-sc-field-label {
+    display: none;
+}
+
+.th-wizard--lite .th-wizard__panel-title {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+}
+
+.th-wizard--lite .th-wizard__panels .tv-sc-field,
+.th-wizard--lite .th-wizard__panels .tv-sc-field--sel,
+.th-wizard--lite .th-wizard__panels .tv-sc-field--pop {
+    margin-bottom: 0.5rem;
+    min-height: 48px;
+}
+
+.th-wizard--lite .th-wizard__nav {
+    margin-top: 0.65rem;
+    padding-top: 0;
+    border-top: none;
+}
+
+.th-wizard--lite .th-wizard__panel-hint {
+    display: none;
+}
+
+.th-wizard--lite .th-wizard__summary {
+    display: none !important;
+}
+
+.th-wizard--lite .th-wizard__filters-fold {
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--thw-line);
+    padding-top: 0.35rem;
+}
+
+.th-wizard--lite .th-wizard__filters-fold-summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--thw-muted);
+    padding: 0.5rem 0;
+    user-select: none;
+}
+
+.th-wizard--lite .th-wizard__filters-fold-summary::-webkit-details-marker {
+    display: none;
+}
+
+.th-wizard--lite .th-wizard__filters-fold-summary::before {
+    content: '+ ';
+    color: var(--thw-teal);
+    font-weight: 700;
+}
+
+.th-wizard--lite .th-wizard__filters-fold[open] .th-wizard__filters-fold-summary::before {
+    content: '− ';
+}
+
+.th-wizard--lite .th-wizard__filters-fold-hint {
+    font-weight: 500;
+    opacity: 0.75;
+}
+
+.th-wizard--lite .th-wizard__extra-filters {
+    margin-top: 0;
+    padding-top: 0.5rem;
+    border-top: none;
+}
+
+.th-wizard--lite .th-wizard__advanced-btn {
+    font-size: 0.8125rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+}
+
+.th-wizard--lite .tv-sc-trigger,
+.th-wizard--lite .tv-sc-select {
+    min-height: 48px;
+    font-size: 0.9375rem;
+}
+
+@media (max-width: 479px) {
+    .th-wizard--lite {
+        padding: 0.85rem 0.85rem 0.95rem;
+    }
+}
+
+.th-wizard--shake {
+    animation: thWizardShake 0.4s ease;
+}
+
+@keyframes thWizardShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}

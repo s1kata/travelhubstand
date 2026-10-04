@@ -1,0 +1,312 @@
+/**
+ * Travel Hub — unified UI (desktop = mobile patterns).
+ * Lead bar, sticky CTAs, Umnico, back-to-top, hero — одинаково на всех viewport.
+ * Подключать ПОСЛЕ mobile-site.css.
+ */
+
+:root {
+    --th-z-umnico: 9885;
+    --th-z-back-top: 9880;
+    --th-z-sticky-cta: 950;
+    --th-z-lead-bar: 9990;
+}
+
+/* ——— Lead bar: все экраны ——— */
+.th-site-lead-bar {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    z-index: var(--th-z-lead-bar);
+    background: #1A1A40 !important;
+    box-shadow: 0 -4px 18px rgba(16, 16, 46, 0.35) !important;
+}
+
+@media (min-width: 768px) {
+    .th-site-lead-bar {
+        left: 0 !important;
+        right: 0 !important;
+        width: min(420px, calc(100% - 32px)) !important;
+        max-width: 420px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 5px !important;
+        gap: 0 !important;
+        border-radius: 14px 14px 0 0;
+        transform: none !important;
+    }
+
+    .th-site-lead-bar__btn {
+        min-height: 40px !important;
+        font-size: 0.8rem !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.4);
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .th-site-lead-bar__btn:last-child {
+        border-right: none;
+    }
+}
+
+/* На акциях свой sticky — глобальный lead bar не дублируем */
+body.th-promo-page .th-site-lead-bar,
+body.th-page-auth .th-site-lead-bar {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+body.th-page-auth,
+body.th-page-auth.has-th-lead-bar {
+    padding-bottom: 0 !important;
+}
+
+/* Нижний отступ: lead bar и/или page sticky */
+body.has-th-lead-bar:not(.th-promo-page):not(.th-page-auth) {
+    padding-bottom: calc(
+        max(var(--th-lead-bar-h, 48px), var(--th-sticky-bottom-h, 0px))
+        + env(safe-area-inset-bottom, 0px)
+    );
+}
+
+/* ——— Fixed bottom CTAs: single-button (promo / detail) ——— */
+#promo-results-sticky-lead,
+#promo-sticky-cta,
+.th-detail__mobile-sticky,
+#mobile-sticky-cta {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    z-index: var(--th-z-sticky-cta);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    background: rgba(255, 255, 255, 0.97) !important;
+    border-top: 1px solid rgba(26, 26, 64, 0.1) !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+@media (min-width: 768px) {
+    #promo-results-sticky-lead,
+    #promo-sticky-cta,
+    .th-detail__mobile-sticky,
+    #mobile-sticky-cta {
+        padding-left: max(16px, calc((100% - 42rem) / 2)) !important;
+        padding-right: max(16px, calc((100% - 42rem) / 2)) !important;
+    }
+
+    #promo-sticky-cta .th-promo-pick-tour-btn,
+    .th-detail__mobile-sticky-btn,
+    #mobile-sticky-cta .mobile-sticky-btn {
+        max-width: 36rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+#promo-sticky-cta[hidden] {
+    display: none !important;
+}
+
+.th-results-sticky-lead:not(.is-visible),
+#promo-results-sticky-lead:not(.is-visible),
+#mobile-sticky-cta:not(.is-visible) {
+    display: none !important;
+}
+
+#promo-results-sticky-lead.is-visible,
+#mobile-sticky-cta.is-visible {
+    display: block !important;
+}
+
+/* Call / MAX / Заявка — не смешивать с белыми single-CTA стилями выше */
+.th-results-sticky-lead.th-results-sticky-lead--actions.is-visible {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    z-index: var(--th-z-lead-bar);
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #FF6B6B !important;
+    border-top: none !important;
+    box-shadow: 0 -8px 28px rgba(255, 107, 107, 0.35);
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+@media (min-width: 768px) {
+    .th-results-sticky-lead.th-results-sticky-lead--actions.is-visible {
+        width: min(420px, calc(100% - 32px)) !important;
+        max-width: 420px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        gap: 0 !important;
+        padding: 5px !important;
+        border-radius: 14px 14px 0 0;
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
+    }
+
+    .th-results-sticky-lead__action {
+        min-height: 40px !important;
+        font-size: 0.8rem !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .th-results-sticky-lead__action:last-child {
+        border-right: none;
+    }
+}
+
+#promo-sticky-cta .th-promo-pick-tour-btn,
+.th-results-sticky-lead__btn,
+.th-detail__mobile-sticky-btn {
+    width: 100%;
+    max-width: 36rem;
+    margin: 0 auto;
+    display: flex !important;
+}
+
+/* Tour detail: CTA только у ценника — без дубля sticky внизу экрана */
+.th-detail__mobile-sticky {
+    display: none !important;
+}
+
+body.th-page-tour-detail .th-detail__page {
+    padding-bottom: calc(
+        24px + var(--th-lead-bar-h, 0px) + env(safe-area-inset-bottom, 0px)
+    ) !important;
+}
+
+body.th-page-tour-detail:has(.th-detail__mobile-sticky:not([hidden])) .th-detail__page,
+body.th-page-tour-detail:has(#th-detail-mobile-sticky:not(.hidden)) .th-detail__page {
+    padding-bottom: calc(
+        24px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+}
+
+/* ——— Umnico: над lead bar / sticky ——— */
+.th-umnico-widget__brand,
+.th-umnico-widget__loader,
+.th-umnico-widget [data-umnico-logo],
+.th-umnico-widget [data-umnico-loader],
+[class*="umnico"],
+[id*="umnico"],
+[class*="Umnico"],
+iframe[src*="umnico"],
+.jivo-widget,
+[class*="jivo-"] {
+    bottom: calc(
+        max(var(--th-sticky-bottom-h, 0px), var(--th-lead-bar-h, 64px)) + 10px
+        + env(safe-area-inset-bottom, 0px)
+    ) !important;
+    right: 12px !important;
+    z-index: var(--th-z-umnico) !important;
+    max-width: calc(100vw - 24px) !important;
+}
+
+body.th-promo-page [class*="umnico"],
+body.th-promo-page [id*="umnico"] {
+    bottom: calc(var(--th-sticky-bottom-h, 88px) + 10px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+body.th-modal-open [class*="umnico"],
+body.th-modal-open [id*="umnico"],
+body.th-modal-open .th-umnico-widget {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+html.th-kb-open .th-umnico-widget,
+html.th-kb-open [class*="umnico"],
+body.th-promo-open .th-umnico-widget {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body.th-modal-open .th-detail__mobile-sticky,
+body.th-modal-open #promo-sticky-cta,
+body.th-modal-open #promo-results-sticky-lead,
+body.th-modal-open #mobile-sticky-cta,
+.th-detail__mobile-sticky[hidden] {
+    display: none !important;
+}
+
+/* ——— Back to top ——— */
+.v2-back-to-top {
+    bottom: calc(
+        max(var(--th-sticky-bottom-h, 0px), var(--th-lead-bar-h, 64px)) + 120px
+        + env(safe-area-inset-bottom, 0px)
+    ) !important;
+    right: 16px !important;
+    z-index: var(--th-z-back-top) !important;
+}
+
+body.th-modal-open .v2-back-to-top {
+    display: none !important;
+}
+
+/* ——— Country hero: контраст на всех экранах ——— */
+.th-country-hero {
+    padding-top: var(--th-header-clearance, calc(5.25rem + var(--th-safe-top, 0px)));
+}
+
+/* Country hero: один ISO-бейдж на всех экранах (эмодзи-флаг на Edge = второй «ID») */
+.th-country-hero__iso {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+.th-country-hero__badge-row .th-country-hero__flag-desktop {
+    display: none !important;
+}
+
+.th-country-hero__iso-code {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.th-country-hero .th-country-hero__overlay {
+    background: linear-gradient(
+        to top,
+        rgba(2, 6, 23, 0.96) 0%,
+        rgba(15, 23, 42, 0.82) 42%,
+        rgba(15, 23, 42, 0.58) 100%
+    ) !important;
+}
+
+.th-country-hero h1,
+.th-country-hero p {
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+}
+
+/* ——— Countries list: поиск скрыт везде (фильтр на карточках) ——— */
+.countries-list-page-wrap .mb-10.max-w-xl:has(#countries-list-filter) {
+    display: none !important;
+}

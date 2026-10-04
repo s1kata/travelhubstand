@@ -1,0 +1,1 @@
+<?php var_dump(getenv('TOURVIOSR_TOKEN'));

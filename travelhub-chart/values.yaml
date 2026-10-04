@@ -1,0 +1,36 @@
+app:
+  replicaCount: 1
+
+  image:
+    repository: travelhub_app
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  containerPort: 9000
+  service:
+    type: ClusterIP
+    port: 9000
+db:
+  replicaCount: 1
+  image:
+    repository: mysql
+    pullPolicy: IfNotPresent
+    tag: "5.7"
+  containerPort: 3306
+  service:
+    type: ClusterIP
+    port: 3306
+  env:
+    MYSQL_USER: user
+    MYSQL_PASSWORD: pass
+    MYSQL_DATABASE: app
+    MYSQL_ROOT_PASSWORD: pass123
+web:
+  replicaCount: 1
+  image:
+    repository: nginx
+    pullPolicy: IfNotPresent
+    tag: "1.25-alpine"
+  containerPort: 80
+  service:
+    type: ClusterIP
+    port: 80

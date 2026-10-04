@@ -1,0 +1,2 @@
+@keyframes vip-spin { to { transform: rotate(360deg); } }
+        .vip-price-block { border-top: 1px solid #f1f5f9; padding-top: 12px; }

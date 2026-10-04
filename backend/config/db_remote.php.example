@@ -1,0 +1,97 @@
+<?php
+/**
+ * Конфигурация для удаленной облачной базы данных
+ * РОССИЙСКИЕ ПРОВАЙДЕРЫ (рекомендуется для РФ)
+ * 
+ * ИНСТРУКЦИЯ:
+ * 1. Скопируйте этот файл и переименуйте в db_remote.php
+ * 2. Выберите один из российских вариантов ниже
+ * 3. Заполните реальные данные
+ * 4. Сохраните файл
+ * 
+ * Файл db_remote.php не будет добавлен в Git (защищен .gitignore)
+ * 
+ * Подробная инструкция: SETUP_REMOTE_DB_RU.md
+ */
+
+// ============================================
+// ВАРИАНТ 1: Timeweb Cloud MySQL (РОССИЯ - РЕКОМЕНДУЕТСЯ)
+// ============================================
+$REMOTE_DB_CONFIG = [
+    'driver' => 'mysql',
+    'host' => 'your-mysql-server.timeweb.cloud', // Замените на ваш хост
+    'port' => '3306',
+    'database' => 'your_database_name', // Замените на имя БД
+    'username' => 'your_username', // Замените на логин
+    'password' => 'your_password', // Замените на пароль
+    'charset' => 'utf8mb4',
+    'ssl' => false,
+];
+
+// ============================================
+// ВАРИАНТ 2: Yandex Cloud Managed MySQL (РОССИЯ)
+// ============================================
+/*
+$REMOTE_DB_CONFIG = [
+    'driver' => 'mysql',
+    'host' => 'c-xxxxx.rw.mdb.yandexcloud.net', // Замените на ваш хост
+    'port' => '3306',
+    'database' => 'your_database_name',
+    'username' => 'your_username',
+    'password' => 'your_password',
+    'charset' => 'utf8mb4',
+    'ssl' => true, // Yandex Cloud требует SSL
+];
+*/
+
+// ============================================
+// ВАРИАНТ 3: REG.RU Cloud MySQL (РОССИЯ)
+// ============================================
+/*
+$REMOTE_DB_CONFIG = [
+    'driver' => 'mysql',
+    'host' => 'mysql.reg.ru', // или ваш хост
+    'port' => '3306',
+    'database' => 'your_database_name',
+    'username' => 'your_username',
+    'password' => 'your_password',
+    'charset' => 'utf8mb4',
+    'ssl' => false,
+];
+*/
+
+// ============================================
+// ВАРИАНТ 4: Selectel Cloud MySQL (РОССИЯ)
+// ============================================
+/*
+$REMOTE_DB_CONFIG = [
+    'driver' => 'mysql',
+    'host' => 'your-mysql.selectel.ru',
+    'port' => '3306',
+    'database' => 'your_database_name',
+    'username' => 'your_username',
+    'password' => 'your_password',
+    'charset' => 'utf8mb4',
+    'ssl' => false,
+];
+*/
+
+// ============================================
+// ВАРИАНТ 5: VK Cloud MySQL (РОССИЯ)
+// ============================================
+/*
+$REMOTE_DB_CONFIG = [
+    'driver' => 'mysql',
+    'host' => 'your-mysql.vk.cloud',
+    'port' => '3306',
+    'database' => 'your_database_name',
+    'username' => 'your_username',
+    'password' => 'your_password',
+    'charset' => 'utf8mb4',
+    'ssl' => false,
+];
+*/
+
+// ============================================
+return $REMOTE_DB_CONFIG;
+

@@ -1,0 +1,138 @@
+:root {
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --bg-body: #f4f9ff;
+            --accent-primary: #5DA9A4;
+            --accent-secondary: #8CC7C3;
+            --text-primary: #1f2a44;
+            --text-secondary: #2d3748;
+            --border-soft: rgba(93, 169, 164, 0.18);
+            --shadow-soft: 0 20px 48px rgba(93, 169, 164, 0.18);
+        }
+        body {
+            font-family: var(--font-sans);
+            background: #ffffff;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        .heading-font { font-family: var(--font-sans); font-weight: 600; }
+        .hero-section {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 58, 138, 0.6) 100%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+        .image-section {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+        .image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .image-section:hover img {
+            transform: scale(1.05);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #5DA9A4 0%, #8CC7C3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(93, 169, 164, 0.05) 0%, rgba(140, 199, 195, 0.05) 100%);
+            border: 1px solid rgba(93, 169, 164, 0.1);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(93, 169, 164, 0.15);
+        }
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(93, 169, 164, 0.1) 0%, rgba(140, 199, 195, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .contact-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border: 2px solid rgba(93, 169, 164, 0.1);
+            transition: all 0.3s ease;
+        }
+        .contact-card:hover {
+            border-color: rgba(93, 169, 164, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(93, 169, 164, 0.15);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #1f2a44 0%, #4f5f78 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* U-ON widget styling to match site cards */
+        .uon-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,248,255,0.98) 100%);
+            border: 1px solid rgba(93, 169, 164, 0.18);
+            box-shadow: 0 20px 48px rgba(93, 169, 164, 0.18);
+            border-radius: 24px;
+        }
+        .uon-card .uon-widget iframe {
+            border-radius: 16px;
+            border: 1px solid rgba(93, 169, 164, 0.12);
+            box-shadow: 0 10px 28px rgba(93, 169, 164, 0.12);
+        }
+        .partner-logo-card {
+            background: #fff;
+            border: 1px solid rgba(93, 169, 164, 0.16);
+            border-radius: 16px;
+            min-height: 92px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .partner-logo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(93, 169, 164, 0.18);
+            border-color: rgba(93, 169, 164, 0.35);
+        }
+        .partner-logo-card img {
+            max-height: 44px;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: grayscale(0.05);
+        }

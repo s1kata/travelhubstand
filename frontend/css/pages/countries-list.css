@@ -1,0 +1,158 @@
+.country-card {
+            background: #fff;
+            border-radius: 1.25rem;
+            border: 1px solid rgba(26, 26, 64, 0.08);
+            box-shadow: 0 6px 28px rgba(26, 26, 64, 0.07);
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+            cursor: pointer;
+            /* Клип ISO-бейджа и картинки строго внутри рамки карточки */
+            overflow: hidden;
+            overflow: clip;
+            position: relative;
+            isolation: isolate;
+            width: 100%;
+            max-width: 100%;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            box-sizing: border-box;
+        }
+        .country-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 48px rgba(26, 26, 64, 0.13);
+        }
+        .country-card-media {
+            position: relative;
+            /* width:100% + aspect-ratio; НЕ min-height — иначе браузер
+               раздувает ширину под 5/3 и ISO вылезает за рамку карточки */
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 5 / 3;
+            min-height: 0;
+            overflow: hidden;
+            overflow: clip;
+            border-radius: inherit;
+            background: linear-gradient(145deg, #1e293b 0%, #334155 50%, #475569 100%);
+            box-sizing: border-box;
+            contain: layout paint;
+        }
+        .country-card-media img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .country-card:hover .country-card-media img {
+            transform: scale(1.07);
+        }
+        .country-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                180deg,
+                rgba(2, 6, 23, 0.22) 0%,
+                rgba(2, 6, 23, 0.38) 35%,
+                rgba(2, 6, 23, 0.9) 100%
+            );
+            z-index: 1;
+        }
+        .country-card-shine {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(125deg, rgba(255, 255, 255, 0.14) 0%, transparent 42%);
+            opacity: 0.9;
+        }
+        .country-card-copy {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 1rem 1rem 1.1rem;
+            z-index: 2;
+            color: #fff;
+        }
+        .country-card-title-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.45rem;
+            margin-bottom: 0.4rem;
+        }
+        .country-card-emoji {
+            font-size: 1.35rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+            flex-shrink: 0;
+        }
+        .country-card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            color: #fff;
+            text-shadow: 0 2px 16px rgba(2, 6, 23, 0.85), 0 1px 3px rgba(0, 0, 0, 0.55);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .country-card-subtitle {
+            margin: 0;
+            font-size: 0.72rem;
+            line-height: 1.3;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(121, 188, 183, 0.2);
+            border: 1px solid rgba(125, 211, 252, 0.35);
+            color: #f0f9ff;
+            backdrop-filter: blur(6px);
+        }
+        .country-card-iso {
+            position: absolute;
+            /* inset от скругления 1.25rem, чтобы бейдж не «торчал» из угла */
+            top: 0.7rem;
+            right: 0.7rem;
+            left: auto;
+            z-index: 3;
+            min-width: 2.1rem;
+            max-width: min(4.5rem, calc(100% - 1.4rem));
+            height: 2.1rem;
+            padding: 0 0.45rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            color: #0f172a;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 12px rgba(2, 6, 23, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            pointer-events: none;
+            contain: layout paint;
+        }
+        @media (max-width: 640px) {
+            .country-card-title { font-size: 1.05rem; }
+            .country-card-iso { top: 0.55rem; right: 0.55rem; }
+            .countries-list-page-wrap .mb-10.max-w-xl:has(#countries-list-filter) {
+                display: none !important;
+            }
+            /* Запас снизу под панель браузера и safe-area */
+            .countries-list-page-wrap {
+                padding-bottom: max(3.5rem, calc(2rem + env(safe-area-inset-bottom, 0px) + 2.5rem));
+            }
+        }

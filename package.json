@@ -1,0 +1,11 @@
+{
+  "name": "travelhub",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./frontend/css/tailwind.input.css -o ./frontend/css/tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i ./frontend/css/tailwind.input.css -o ./frontend/css/tailwind.min.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

@@ -1,0 +1,34 @@
+/**
+ * Travel Hub — design tokens (z-index, breakpoints, spacing).
+ * Подключать первым в CSS-стеке.
+ */
+:root {
+    /* Breakpoints (reference only — use in @media) */
+    --th-bp-mobile-max: 767.98px;
+    --th-bp-tablet-min: 768px;
+
+    /* Viewport helpers (JS sets --th-vvh / --th-vvw / --th-header-*) */
+    --th-safe-top: env(safe-area-inset-top, 0px);
+    --th-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --th-safe-left: env(safe-area-inset-left, 0px);
+    --th-safe-right: env(safe-area-inset-right, 0px);
+    /* Fallback until th-mobile.js measures #site-header (includes safe-area) */
+    --th-header-h: 72px;
+    --th-header-clearance: calc(var(--th-header-h) + var(--th-safe-top) + 16px);
+
+    /* Z-index scale — единая иерархия fixed UI */
+    --th-z-header: 1000;
+    --th-z-dropdown: 1100;
+    --th-z-wizard-popup: 10140;
+    --th-z-promo-tab: 950;
+    --th-z-sticky: 9990;
+    --th-z-umnico: 9885;
+    --th-z-cookie: 10190;
+    --th-z-modal-backdrop: 10200;
+    --th-z-modal: 10250;
+    --th-z-toast: 10300;
+
+    /* Tap targets */
+    --th-tap-min: 44px;
+    --th-tap-comfort: 48px;
+}

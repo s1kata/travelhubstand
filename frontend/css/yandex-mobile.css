@@ -1,0 +1,737 @@
+/**
+ * Travel Hub — полная мобильная адаптация под Яндекс.Браузер (Android / iOS).
+ * Активируется классом html.th-yandex-mobile (ставит th-mobile.js).
+ * Подключать ПОСЛЕДНИМ после mobile-adult.css.
+ *
+ * Типичные баги Яндекса: 100dvh > видимой области, overflow:clip,
+ * fixed + адресная строка, font-boosting, backdrop-filter, «слипшиеся» блоки.
+ */
+
+html.th-yandex {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+html.th-yandex-mobile {
+    --th-mobile-pad: 18px;
+    --th-section-gap: 28px;
+    --th-block-gap: 16px;
+    --th-tap: 50px;
+    --th-tap-lg: 54px;
+    --th-mobile-radius: 18px;
+    --th-yandex-fixed-gap: 0px;
+    /* fallback пока JS не выставил --th-vvh */
+    --th-vvh: 100vh;
+}
+
+/* ——— База: воздух между блоками, без горизонтального скролла ——— */
+html.th-yandex-mobile,
+html.th-yandex-mobile body {
+    max-width: 100%;
+    overflow-x: hidden !important; /* clip в Яндексе часто игнорируется */
+    overscroll-behavior-x: none;
+}
+
+html.th-yandex-mobile body {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+    padding-left: max(0px, var(--th-safe-left, 0px));
+    padding-right: max(0px, var(--th-safe-right, 0px));
+    padding-bottom: calc(
+        var(--th-sticky-bottom-h, 0px) +
+        var(--th-safe-bottom, 0px) +
+        8px
+    ) !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+html.th-yandex-mobile .th-container,
+html.th-yandex-mobile .container,
+html.th-yandex-mobile .home-hero-inner,
+html.th-yandex-mobile #tv-results-section .th-container {
+    padding-left: max(var(--th-mobile-pad), var(--th-safe-left, 0px)) !important;
+    padding-right: max(var(--th-mobile-pad), var(--th-safe-right, 0px)) !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+/* Секции: единый вертикальный ритм — не «натыканы» */
+html.th-yandex-mobile section,
+html.th-yandex-mobile .how-it-works,
+html.th-yandex-mobile .partners-section,
+html.th-yandex-mobile #contact {
+    padding-top: var(--th-section-gap) !important;
+    padding-bottom: var(--th-section-gap) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+html.th-yandex-mobile section + section {
+    border-top: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+html.th-yandex-mobile .home-hero-section {
+    border-top: none !important;
+    /* Не растягивать на весь экран — wizard должен дышать */
+    min-height: 0 !important;
+    height: auto !important;
+    padding-top: var(--th-header-clearance) !important;
+    padding-bottom: 24px !important;
+    justify-content: flex-start !important;
+}
+
+html.th-yandex-mobile .home-hero-section .hero-content {
+    margin-bottom: 1.1rem !important;
+    padding: 0 4px;
+}
+
+html.th-yandex-mobile .home-hero-section h1 {
+    font-size: clamp(1.45rem, 6vw, 1.85rem) !important;
+    line-height: 1.22 !important;
+    margin-bottom: 0.65rem !important;
+}
+
+html.th-yandex-mobile .home-hero-section .hero-content p:not(.heading-font) {
+    font-size: 0.95rem !important;
+    line-height: 1.45 !important;
+    max-width: 22rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ——— Поиск / wizard: главный экран в Яндексе ——— */
+html.th-yandex-mobile #tour-search-section.th-wizard,
+html.th-yandex-mobile .th-wizard {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 1.15rem 1rem 1.2rem !important;
+    border-radius: var(--th-mobile-radius) !important;
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.28) !important;
+    /* без тяжёлого blur — Яндекс на слабых GPU тормозит */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #fff !important;
+}
+
+html.th-yandex-mobile .th-wizard__head {
+    margin-bottom: 1rem !important;
+}
+
+html.th-yandex-mobile .th-wizard__title {
+    font-size: 1.2rem !important;
+}
+
+html.th-yandex-mobile .th-wizard__sub {
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+}
+
+html.th-yandex-mobile .th-wizard__progress {
+    gap: 0.25rem !important;
+    margin-bottom: 1.1rem !important;
+}
+
+html.th-yandex-mobile .th-wizard__dot {
+    gap: 0.4rem !important;
+    min-height: 44px;
+}
+
+html.th-yandex-mobile .th-wizard__dot-num {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 0.9rem !important;
+}
+
+html.th-yandex-mobile .th-wizard__dot-label {
+    font-size: 0.72rem !important;
+    max-width: 4.5rem;
+}
+
+html.th-yandex-mobile .th-wizard__panel-title {
+    font-size: 1.15rem !important;
+    margin-bottom: 0.35rem !important;
+}
+
+html.th-yandex-mobile .th-wizard__panel-hint {
+    margin-bottom: 1rem !important;
+    font-size: 0.92rem !important;
+}
+
+html.th-yandex-mobile .th-wizard .tv-sc-field,
+html.th-yandex-mobile .th-wizard .tv-sc-field--sel,
+html.th-yandex-mobile .th-wizard .tv-sc-field--pop {
+    margin: 0 0 0.9rem !important;
+    min-height: var(--th-tap-lg) !important;
+}
+
+html.th-yandex-mobile .th-wizard .tv-sc-select,
+html.th-yandex-mobile .th-wizard .tv-sc-trigger {
+    min-height: var(--th-tap-lg) !important;
+    height: auto !important;
+    font-size: 16px !important; /* без zoom при фокусе */
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+html.th-yandex-mobile .th-wizard__nav {
+    gap: 0.75rem !important;
+    margin-top: 1.1rem !important;
+    padding-top: 1rem !important;
+    position: static !important; /* sticky внутри hero ломает Яндекс */
+    background: transparent !important;
+}
+
+html.th-yandex-mobile .th-wizard__next,
+html.th-yandex-mobile .th-wizard #tv-search-btn,
+html.th-yandex-mobile .th-wizard .tv-sc-search-btn {
+    min-height: var(--th-tap-lg) !important;
+    font-size: 1.05rem !important;
+}
+
+html.th-yandex-mobile .th-wizard__summary {
+    gap: 0.5rem !important;
+    margin-bottom: 0.95rem !important;
+}
+
+html.th-yandex-mobile .tv-sc-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+/* Дата / туристы — bottom sheet с учётом --th-vvh */
+html.th-yandex-mobile #tv-sc-date-popup.tv-sc-date-popup:not(.th-coral-popup),
+html.th-yandex-mobile .tv-sc-date-popup:not(.th-coral-popup),
+html.th-yandex-mobile .tv-sc-tourists-popup:not(.hidden):not(.th-coral-popup),
+html.th-yandex-mobile #tv-tourists-block.tv-sc-tourists-popup:not(.hidden):not(.th-coral-popup) {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: var(--th-yandex-fixed-gap, 0px) !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: min(88%, calc(var(--th-vvh) - 24px)) !important;
+    border-radius: 20px 20px 0 0 !important;
+    transform: none !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10180 !important;
+    box-sizing: border-box !important;
+    padding-bottom: calc(16px + var(--th-safe-bottom, 0px)) !important;
+    background: #fff !important;
+}
+
+html.th-yandex-mobile .tv-sc-date-popup .tv-sc-chip,
+html.th-yandex-mobile #tv-sc-date-chips-row .tv-sc-chip {
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    font-size: 0.95rem !important;
+}
+
+html.th-yandex-mobile .tv-sc-cal-container .flatpickr-day {
+    height: 46px !important;
+    line-height: 46px !important;
+    font-size: 1rem !important;
+}
+
+/* ——— Промо-попап + cookies: не душить экран ——— */
+html.th-yandex-mobile .th-promo-popup {
+    align-items: flex-end !important;
+    z-index: 10060 !important;
+}
+
+html.th-yandex-mobile .th-promo-popup__sheet {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(var(--th-vvh) - 48px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 18px calc(20px + var(--th-safe-bottom, 0px)) !important;
+    border-radius: 22px 22px 0 0 !important;
+    box-sizing: border-box !important;
+}
+
+html.th-yandex-mobile .th-promo-popup__title {
+    font-size: 1.35rem !important;
+    line-height: 1.25 !important;
+    margin: 0.5rem 0 0.6rem !important;
+}
+
+html.th-yandex-mobile .th-promo-popup__sub {
+    font-size: 0.9rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 1rem !important;
+}
+
+html.th-yandex-mobile .th-promo-popup__cta,
+html.th-yandex-mobile .th-promo-popup__copy {
+    min-height: 50px !important;
+    width: 100% !important;
+    margin-top: 0.75rem !important;
+}
+
+html.th-yandex-mobile .th-promo-popup__backdrop {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(0, 0, 0, 0.58) !important;
+}
+
+/* Cookie: компактный bottom-bar над lead-bar, не модалка на весь экран */
+html.th-yandex-mobile .cookie-consent-banner {
+    z-index: 10070 !important;
+    bottom: calc(var(--th-sticky-bottom-h, 0px) + var(--th-yandex-fixed-gap, 0px)) !important;
+    max-height: 42vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 14px calc(12px + var(--th-safe-bottom, 0px)) !important;
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+}
+
+html.th-yandex-mobile .cookie-consent-banner__inner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+}
+
+html.th-yandex-mobile .cookie-consent-banner__links .cookie-consent-banner__link {
+    display: inline !important;
+    margin-right: 0.75em;
+}
+
+html.th-yandex-mobile .cookie-consent-banner__actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+
+html.th-yandex-mobile .cookie-consent-banner__btn {
+    min-height: 46px !important;
+    width: 100% !important;
+}
+
+/* Когда промо открыто — cookies не конкурируют */
+html.th-yandex-mobile:has(.th-promo-popup--visible) .cookie-consent-banner {
+    display: none !important;
+}
+
+/* ——— Sticky bars: прилипают к visualViewport ——— */
+html.th-yandex-mobile .th-site-lead-bar,
+html.th-yandex-mobile .th-results-sticky-lead,
+html.th-yandex-mobile #promo-sticky-cta,
+html.th-yandex-mobile .th-detail__mobile-sticky,
+html.th-yandex-mobile #mobile-sticky-cta {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: var(--th-yandex-fixed-gap, 0px) !important;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 9990 !important;
+}
+
+html.th-yandex-mobile .th-site-lead-bar {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    padding: 4px 4px calc(4px + var(--th-safe-bottom, 0px)) !important;
+    background: #1A1A40 !important;
+    box-shadow: 0 -4px 18px rgba(16, 16, 46, 0.35) !important;
+}
+
+html.th-yandex-mobile .th-site-lead-bar__btn {
+    min-height: 40px !important;
+    font-size: 0.78rem !important;
+    gap: 5px !important;
+    padding: 0 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html.th-yandex-mobile.th-kb-open .th-site-lead-bar,
+html.th-yandex-mobile.th-kb-open .th-results-sticky-lead,
+html.th-yandex-mobile.th-kb-open #promo-sticky-cta {
+    display: none !important; /* клавиатура — не перекрывать инпуты */
+}
+
+html.th-yandex-mobile body.th-promo-tab-bottom .th-promo-popup--collapsed .th-promo-popup__tab {
+    top: calc(var(--th-header-clearance) - 10px) !important;
+    bottom: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    height: auto !important;
+    justify-content: center;
+}
+
+/* ——— Карточки туров / результаты ——— */
+html.th-yandex-mobile .th-tour-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding-bottom: calc(20px + var(--th-sticky-bottom-h, 0px)) !important;
+}
+
+html.th-yandex-mobile .th-tour-card {
+    border-radius: var(--th-mobile-radius) !important;
+    overflow: hidden !important;
+    box-shadow: 0 6px 22px rgba(26, 26, 64, 0.1) !important;
+    margin: 0 !important;
+}
+
+html.th-yandex-mobile .th-tour-card__media,
+html.th-yandex-mobile .th-tour-card__media--carousel {
+    height: clamp(180px, 48vw, 240px) !important;
+    min-height: 180px !important;
+}
+
+html.th-yandex-mobile .th-tour-card__body {
+    padding: 16px 16px 12px !important;
+    gap: 10px !important;
+}
+
+html.th-yandex-mobile .th-tour-card__actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 0 16px 16px !important;
+}
+
+html.th-yandex-mobile .th-tour-card__btn {
+    width: 100% !important;
+    min-height: var(--th-tap-lg) !important;
+    font-size: 1.05rem !important;
+}
+
+html.th-yandex-mobile .th-tour-card__carousel-btn {
+    width: 44px !important;
+    height: 44px !important;
+    opacity: 1 !important;
+}
+
+html.th-yandex-mobile .tv-results-layout {
+    display: block !important;
+}
+
+html.th-yandex-mobile .tv-results-sidebar {
+    position: static !important;
+    width: 100% !important;
+    margin-bottom: 16px !important;
+    padding: 14px !important;
+    border-radius: 16px !important;
+}
+
+html.th-yandex-mobile .tv-pf-chips {
+    gap: 10px !important;
+    padding-bottom: 6px !important;
+}
+
+html.th-yandex-mobile .tv-pf-chip {
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    font-size: 0.95rem !important;
+}
+
+html.th-yandex-mobile .tv-results-lead-bar {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+    padding: 14px !important;
+}
+
+html.th-yandex-mobile .tv-results-toolbar {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+}
+
+/* ——— Контентные блоки главной ——— */
+html.th-yandex-mobile .how-it-works__grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+}
+
+html.th-yandex-mobile .how-step {
+    padding: 18px 16px !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+html.th-yandex-mobile .how-step__title {
+    font-size: 1.1rem !important;
+    margin: 0.5rem 0 0.4rem !important;
+}
+
+html.th-yandex-mobile .how-step__text {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+html.th-yandex-mobile .th-app-banner__inner {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 22px 18px !important;
+    text-align: center !important;
+}
+
+html.th-yandex-mobile #home-popular-destinations-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+}
+
+html.th-yandex-mobile .dest-card {
+    min-height: 140px !important;
+    border-radius: 16px !important;
+}
+
+html.th-yandex-mobile .dest-card-title {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+}
+
+/* Преимущества / отзывы / партнёры */
+html.th-yandex-mobile .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4,
+html.th-yandex-mobile section .grid {
+    gap: 20px !important;
+}
+
+html.th-yandex-mobile #contact .th-container,
+html.th-yandex-mobile #contact {
+    padding-left: max(var(--th-mobile-pad), var(--th-safe-left, 0px));
+    padding-right: max(var(--th-mobile-pad), var(--th-safe-right, 0px));
+}
+
+html.th-yandex-mobile iframe[src*="yandex.ru/map-widget"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 240px !important;
+    border-radius: 14px !important;
+}
+
+/* ——— Header ——— */
+html.th-yandex-mobile #site-header.header {
+    min-height: calc(56px + var(--th-safe-top, 0px));
+    padding-top: max(10px, var(--th-safe-top, 0px)) !important;
+    padding-left: max(12px, var(--th-safe-left, 0px)) !important;
+    padding-right: max(12px, var(--th-safe-right, 0px)) !important;
+}
+
+/* Внутренние страницы и главная после скрола — белая шапка (как Level/Ostrovok) */
+html.th-yandex-mobile #site-header.header:not([data-home="1"]),
+html.th-yandex-mobile #site-header.header[data-home="1"].scrolled {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* Главная на hero — стекло, не белая полоска */
+html.th-yandex-mobile #site-header.header[data-home="1"]:not(.scrolled) {
+    background: rgba(15, 23, 42, 0.24) !important;
+    backdrop-filter: blur(12px) saturate(1.15) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.15) !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+html.th-yandex-mobile #site-header .header__phone {
+    display: inline-flex !important;
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9rem !important;
+    max-width: 48vw;
+}
+
+html.th-yandex-mobile .site-header-mobile-panel__inner {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y;
+    padding-bottom: calc(24px + var(--th-sticky-bottom-h, 0px) + var(--th-safe-bottom, 0px)) !important;
+}
+html.th-yandex-mobile .site-header-mobile-panel {
+    height: 100% !important;
+    max-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+/* ——— Tour detail / promo / offices / countries ——— */
+html.th-yandex-mobile .th-detail__layout {
+    display: block !important;
+}
+
+html.th-yandex-mobile .th-detail__gallery {
+    max-height: 240px !important;
+    border-radius: 14px !important;
+    margin-bottom: 16px !important;
+}
+
+html.th-yandex-mobile .th-detail__price-card {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    border-radius: 16px !important;
+}
+
+html.th-yandex-mobile .th-detail__container,
+html.th-yandex-mobile main.th-detail {
+    padding-bottom: calc(80px + var(--th-safe-bottom, 0px)) !important;
+}
+
+html.th-yandex-mobile .th-page-hero-v2,
+html.th-yandex-mobile .promo-unified-hero,
+html.th-yandex-mobile .th-off-hero {
+    padding-top: var(--th-header-clearance) !important;
+    padding-bottom: 1.75rem !important;
+    min-height: unset !important;
+}
+
+html.th-yandex-mobile .promo-cp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+}
+
+html.th-yandex-mobile .promo-cptile,
+html.th-browser-safari .promo-cptile {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    justify-self: stretch !important;
+}
+
+html.th-yandex-mobile .th-off-hero__cta {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+}
+
+html.th-yandex-mobile .th-off-hero__cta a,
+html.th-yandex-mobile .th-off-hero__cta .button {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: var(--th-tap) !important;
+}
+
+html.th-yandex-mobile .th-page-cta {
+    padding: 2rem 1.15rem !important;
+    margin: 1.25rem 0 !important;
+}
+
+html.th-yandex-mobile .th-page-cta__title {
+    font-size: 1.35rem !important;
+    line-height: 1.3 !important;
+    color: #fff !important;
+}
+
+html.th-yandex-mobile .th-lead-capture {
+    padding: 1.25rem 0 !important;
+}
+
+html.th-yandex-mobile .th-lead-capture__title {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+html.th-yandex-mobile .promo-lead-row,
+html.th-yandex-mobile .th-lead-capture form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+html.th-yandex-mobile input[type="text"],
+html.th-yandex-mobile input[type="email"],
+html.th-yandex-mobile input[type="tel"],
+html.th-yandex-mobile input[type="search"],
+html.th-yandex-mobile textarea,
+html.th-yandex-mobile select,
+html.th-yandex-mobile .th-lead-capture__input,
+html.th-yandex-mobile .promo-lead-inp {
+    font-size: 16px !important;
+    min-height: var(--th-tap) !important;
+    border-radius: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+html.th-yandex-mobile .th-detail__promo-input,
+html.th-yandex-mobile #th-td-promo-input {
+    border: 2px solid #64748b !important;
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Модалки бронирования */
+html.th-yandex-mobile #quick-booking-modal,
+html.th-yandex-mobile #booking-modal,
+html.th-yandex-mobile #th-tour-booking-modal {
+    align-items: flex-end !important;
+    padding: 0 !important;
+}
+
+html.th-yandex-mobile #quick-booking-modal > div,
+html.th-yandex-mobile #th-tour-booking-modal .th-tour-booking-modal__panel,
+html.th-yandex-mobile .tv-nights-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(var(--th-vvh) - 16px) !important;
+    border-radius: 20px 20px 0 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 !important;
+    padding-bottom: calc(16px + var(--th-safe-bottom, 0px)) !important;
+}
+
+/* Узкие экраны Яндекса (≤360) */
+@media (max-width: 359.98px) {
+    html.th-yandex-mobile {
+        --th-mobile-pad: 14px;
+        --th-section-gap: 22px;
+    }
+
+    html.th-yandex-mobile .th-wizard__dot-label {
+        display: none !important;
+    }
+
+    html.th-yandex-mobile .th-site-lead-bar__btn span:not(.th-max-badge) {
+        font-size: 0.72rem !important;
+    }
+
+    html.th-yandex-mobile #home-popular-destinations-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Landscape в Яндексе */
+@media (max-width: 900px) and (max-height: 480px) and (orientation: landscape) {
+    html.th-yandex-mobile .home-hero-section .hero-content {
+        display: none !important;
+    }
+
+    html.th-yandex-mobile .th-promo-popup__sheet,
+    html.th-yandex-mobile #tv-sc-date-popup.tv-sc-date-popup {
+        max-height: calc(var(--th-vvh) - 8px) !important;
+    }
+}
+
+/* Отключить hover-подпрыгивания (тач в Яндексе эмулирует hover) */
+html.th-yandex-mobile .th-tour-card:hover,
+html.th-yandex-mobile .dest-card:hover,
+html.th-yandex-mobile .country-card:hover,
+html.th-yandex-mobile .th-tour-card__btn:hover,
+html.th-yandex-mobile .th-wizard__next:hover {
+    transform: none !important;
+}

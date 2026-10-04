@@ -1,0 +1,363 @@
+/**
+ * Travel Hub — кросс-браузерная база
+ * Yandex Browser (Blink), Chrome, Safari, Firefox, Edge; iOS/Android.
+ * Детали adult-mobile UX — в mobile-adult.css (подключать после этого файла).
+ */
+
+/* ——— Переменные: вырезы экрана (iPhone, Android gesture bar) ——— */
+:root {
+    --th-safe-top: env(safe-area-inset-top, 0px);
+    --th-safe-right: env(safe-area-inset-right, 0px);
+    --th-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --th-safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ——— Корень: без лишнего масштабирования текста (моб. браузеры) ——— */
+html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    color-scheme: light;
+}
+
+/* ——— Высота страницы: динамический viewport (адресная строка) ——— */
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* .ds-page — min-height: 100dvh в design-system.css */
+
+/* ——— Медиа: не ломают вёрстку ——— */
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+img {
+    -webkit-user-drag: none;
+}
+
+/* ——— Длинные строки / URL ——— */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dd,
+td,
+th {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* ——— Интерактив: тач без 300ms задержки (уже manipulation на бургере) ——— */
+a,
+button,
+input,
+select,
+textarea,
+label[for],
+summary,
+[role="button"],
+[tabindex]:not([tabindex="-1"]) {
+    touch-action: manipulation;
+}
+
+a,
+button,
+[role="button"] {
+    -webkit-tap-highlight-color: rgba(93, 169, 164, 0.12);
+}
+
+/* ——— Фокус клавиатуры ——— */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid #5DA9A4;
+    outline-offset: 2px;
+}
+
+/* ——— Формы: единый шрифт, без zoom iOS при font-size < 16px ——— */
+input,
+textarea,
+select,
+button {
+    font: inherit;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    font-size: 16px;
+}
+
+@media (min-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="search"],
+    input[type="password"],
+    input[type="number"],
+    textarea,
+    select {
+        font-size: inherit;
+    }
+}
+
+/* ——— Фиксированный header + safe-area (чёлка / закругления экрана) ——— */
+#site-header.header {
+    padding-top: max(12px, var(--th-safe-top));
+    padding-left: max(16px, var(--th-safe-left));
+    padding-right: max(16px, var(--th-safe-right));
+}
+
+@media (min-width: 1025px) {
+    #site-header.header {
+        padding-left: max(40px, var(--th-safe-left));
+        padding-right: max(40px, var(--th-safe-right));
+    }
+}
+
+/* Мобильная панель меню — отступ снизу под home indicator (inline padding в header перебиваем по нижнему краю) */
+.site-header-mobile-panel__inner {
+    padding-bottom: max(1.5rem, var(--th-safe-bottom)) !important;
+}
+
+/* ——— Горизонтальный скролл таблиц (если появятся без обёртки) ——— */
+.table-responsive,
+table.th-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+    table.th-responsive {
+        display: table;
+    }
+}
+
+/* ——— iframe (виджеты): не вылезают за экран ——— */
+iframe {
+    max-width: 100%;
+}
+
+/* ——— Уменьшение «резинового» оверскролла по X ——— */
+body {
+    overscroll-behavior-x: none;
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+html {
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+/* ——— Печать ——— */
+@media print {
+    body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    #site-header,
+    .header__burger,
+    .site-header-mobile-overlay {
+        display: none !important;
+    }
+}
+
+/* ——— Доступность: уважение к reduced motion ——— */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== Safari / WebKit: главная и акции (flex/grid, без регрессий в Blink/Gecko) ========== */
+
+/* Safari fix: hero — явная ширина и box-sizing, чтобы min-height + flex не «схлопывали» контент */
+.home-hero-section {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Safari fix: вложенный flex-контейнер с flex-1 — min-width:0 снимает overflow в WebKit */
+.home-hero-section .home-hero-inner {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Safari fix: карточка поиска — min-width:0 для grid; не задаём max-width (перебивает Tailwind max-w-6xl) */
+#tour-search-section.search-hero-card {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Safari fix: сетка полей — дублируем gap через legacy-префиксы для старых WebKit */
+#tour-search-section .tv-search-main-grid {
+    -webkit-column-gap: 0.95rem;
+    column-gap: 0.95rem;
+    -webkit-row-gap: 0.95rem;
+    row-gap: 0.95rem;
+}
+
+/* Safari fix: футер формы поиска — ширина ряда и сжатие flex-item (без max-width — не раздвигаем ряд) */
+#tour-search-section .tv-search-footer {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Safari fix: нативные стили кнопок в блоке поиска (iOS/macOS WebKit) */
+#tour-search-section .tv-summary-btn,
+#tour-search-section .tv-filters-trigger,
+#tour-search-section #tv-search-btn.button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* iOS Safari: дополнительное уточнение через @supports — только тач-устройства Apple */
+@supports (-webkit-touch-callout: none) {
+    /* Safari fix: iOS — clip поверх hidden, если движок поддерживает */
+    .home-hero-section {
+        overflow-x: clip;
+    }
+}
+
+/* Safari fix: страница акций — гриды с динамическим контентом */
+body.th-promo-page #promo-departures-grid,
+body.th-promo-page #promo-countries-grid,
+body.th-promo-page #promo-tours-results {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Safari fix: сетки акций — явные промежутки (дублируют Tailwind gap-5 / gap-6) */
+body.th-promo-page #promo-departures-grid {
+    -webkit-column-gap: 1.25rem;
+    column-gap: 1.25rem;
+    -webkit-row-gap: 1.25rem;
+    row-gap: 1.25rem;
+}
+
+body.th-promo-page #promo-countries-grid {
+    -webkit-column-gap: 1.5rem;
+    column-gap: 1.5rem;
+    -webkit-row-gap: 1.5rem;
+    row-gap: 1.5rem;
+}
+
+/* Safari fix: как у Tailwind sm:gap-8 для #promo-countries-grid */
+@media (min-width: 640px) {
+    body.th-promo-page #promo-countries-grid {
+        -webkit-column-gap: 2rem;
+        column-gap: 2rem;
+        -webkit-row-gap: 2rem;
+        row-gap: 2rem;
+    }
+}
+
+body.th-promo-page #promo-tours-results {
+    -webkit-column-gap: 1.5rem;
+    column-gap: 1.5rem;
+    -webkit-row-gap: 1.5rem;
+    row-gap: 1.5rem;
+}
+
+/* Safari / WebKit: кнопки заявки на карточке тура */
+.th-tour-card__actions .th-tour-card__btn {
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    min-height: 44px;
+    touch-action: manipulation;
+}
+.th-tour-card__carousel {
+    -webkit-overflow-scrolling: touch;
+}
+.th-tour-card__carousel-btn {
+    -webkit-appearance: none;
+    appearance: none;
+}
+.th-tour-card__strip-scroll {
+    -webkit-overflow-scrolling: touch;
+}
+.th-tour-booking-modal__input {
+    font-size: 16px;
+}
+
+/* Firefox / Safari: пост-фильтры и сайдбар результатов */
+.tv-post-filters .tv-pf-chips {
+    display: -webkit-box;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.tv-results-sidebar {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.tv-results-layout {
+    min-width: 0;
+    width: 100%;
+}
+@supports (-webkit-touch-callout: none) {
+    .tv-pf-chip {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+}
+#tv-results-section .tv-results-shell {
+    margin-top: 0;
+}
+
+/* Safari fix: лента фото — flex + gap в WebKit */
+body.th-promo-page .promo-tape-scroll {
+    -webkit-column-gap: 1.5rem;
+    column-gap: 1.5rem;
+    -webkit-box-align: stretch;
+    align-items: stretch;
+    min-width: 0;
+}
+
+@supports (-webkit-touch-callout: none) {
+    /* Safari fix: iOS — кнопки ленты без системного gloss */
+    body.th-promo-page .promo-scroll-hint {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+}

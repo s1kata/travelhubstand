@@ -1,0 +1,1866 @@
+@import url("cross-browser.css?v=3");
+
+/* ============================================
+   CLS: резервирование места для изображений (до загрузки Tailwind)
+   ============================================ */
+.tv-card-img-wrap,
+.aspect-\[4\/3\] { aspect-ratio: 4/3; }
+
+/* ============================================
+   ПОЛНАЯ АДАПТИВНОСТЬ ДЛЯ ВСЕХ УСТРОЙСТВ
+   ============================================ */
+
+/* Базовые переменные для адаптивности + UI refresh (2025) */
+:root {
+    --breakpoint-xs: 320px;
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+    --breakpoint-2xl: 1536px;
+
+    --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Сетка 8px */
+    --space-1: 0.5rem;   /* 8px */
+    --space-2: 1rem;     /* 16px */
+    --space-3: 1.5rem;   /* 24px */
+    --space-4: 2rem;     /* 32px */
+    --space-5: 2.5rem;   /* 40px */
+    --space-6: 3rem;     /* 48px */
+    --space-8: 4rem;     /* 64px */
+    --space-10: 5rem;    /* 80px */
+    --space-12: 6rem;    /* 96px */
+
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+
+    /* Отступы для разных экранов */
+    --padding-mobile: var(--space-2);
+    --padding-tablet: var(--space-3);
+    --padding-desktop: var(--space-4);
+
+    /* Размеры шрифтов */
+    --font-size-base-mobile: 14px;
+    --font-size-base-tablet: 15px;
+    --font-size-base-desktop: 16px;
+
+    /* Размеры заголовков */
+    --h1-mobile: 1.875rem;
+    --h1-tablet: 2.25rem;
+    --h1-desktop: 3rem;
+
+    --h2-mobile: 1.5rem;
+    --h2-tablet: 1.875rem;
+    --h2-desktop: 2.25rem;
+
+    /* Палитра: чистый нейтраль + акцент (бренд сохранён) */
+    --accent-primary: #5DA9A4;
+    --accent-secondary: #79BCB7;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --bg-surface: #ffffff;
+    --bg-page: #f8fafc;
+    --border-soft: rgba(93, 169, 164, 0.14);
+    --shadow-soft: 0 10px 40px rgba(15, 23, 42, 0.06);
+    --shadow-soft-hover: 0 24px 56px rgba(93, 169, 164, 0.18);
+}
+
+/* ============================================
+   БАЗОВЫЕ СТИЛИ ДЛЯ ВСЕХ УСТРОЙСТВ
+   ============================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base-mobile);
+    line-height: 1.65;
+    color: var(--text-primary);
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.22;
+    color: var(--text-primary);
+}
+
+h1 {
+    font-size: var(--h1-mobile);
+}
+
+h2 {
+    font-size: var(--h2-mobile);
+}
+
+p {
+    line-height: 1.65;
+}
+
+html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Предотвращение горизонтального скролла */
+body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Контейнеры */
+.th-container {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--padding-mobile);
+    padding-right: var(--padding-mobile);
+    box-sizing: border-box;
+}
+
+/* ============================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ (320px - 639px)
+   ============================================ */
+
+@media (max-width: 639px) {
+    /* Базовые стили */
+    body {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    /* Заголовки */
+    h1 {
+        font-size: var(--h1-mobile);
+        line-height: 1.2;
+    }
+    
+    h2 {
+        font-size: var(--h2-mobile);
+        line-height: 1.3;
+    }
+    
+    /* Контейнеры */
+    .th-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Секции */
+    section {
+        padding-top: var(--space-5);
+        padding-bottom: var(--space-5);
+    }
+    
+    /* Карточки */
+    .surface-card,
+    .pastel-card,
+    .tour-card {
+        padding: 1rem;
+        border-radius: 16px;
+    }
+    
+    /* Кнопки в формах и CTA — на всю ширину; header/toolbar — ниже */
+    form button[type="submit"],
+    form .btn-primary,
+    .btn-block,
+    .button-primary,
+    .button-secondary,
+    .th-btn-block,
+    .th-btn-manager-request {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+        width: 100%;
+        max-width: 100%;
+    }
+    /* Фиксированная шапка: кнопки и бургер не на всю ширину */
+    #site-header .button,
+    #site-header .header__burger,
+    #site-header button.header__burger {
+        width: auto;
+        max-width: none;
+        min-height: 44px;
+    }
+
+    /* Кнопка «глаз» в поле пароля — не на всю ширину (иначе уезжает в центр) */
+    .login-password-wrap > button[type="button"],
+    button.login-password-toggle,
+    button.th-password-toggle {
+        width: auto !important;
+        max-width: none !important;
+        min-height: 0 !important;
+    }
+    
+    /* Навигация в шапке Travel Hub (мобильная панель — вне <header>, не затрагивается) */
+    #site-header .header__nav {
+        display: none;
+    }
+    
+    /* Формы */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 16px; /* Предотвращает зум на iOS */
+    }
+    
+    /* Скрытие десктопных элементов */
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* Показ мобильных элементов */
+    .mobile-only {
+        display: block !important;
+    }
+    
+    /* Сетки только в блоках поиска туров (не ломаем все Tailwind .grid на сайте) */
+    #tour-search-section .grid:not(#tv-nights-grid):not(#country-tv-nights-grid):not(#vip-tv-nights-grid),
+    #country-tour-search-section .grid:not(#tv-nights-grid):not(#country-tv-nights-grid):not(#vip-tv-nights-grid),
+    #vip-tour-search-section .grid:not(#tv-nights-grid):not(#country-tv-nights-grid):not(#vip-tv-nights-grid) {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    /* Сетка ночей — на мобильных 4 колонки, чтобы не выходить за экран */
+    #tv-nights-grid,
+    #country-tv-nights-grid,
+    #vip-tv-nights-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 0.375rem !important;
+    }
+    
+    /* Flex контейнеры */
+    .flex-row {
+        flex-direction: column;
+    }
+    
+    /* Изображения */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* Фон-коллаж - скрываем на мобильных */
+    .animated-background {
+        display: none !important;
+    }
+    
+    /* Hero секции */
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+        line-height: 1.2;
+    }
+    
+    /* Метрики */
+    .hero-metrics {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .hero-metric-card {
+        padding: 0.75rem;
+    }
+    
+    .hero-metric-value {
+        font-size: 1.25rem;
+    }
+    
+    /* Карточки туров */
+    .tour-card {
+        margin-bottom: 1rem;
+    }
+    
+    .tour-card .tv-card-img-wrap img,
+    .result-card .tv-card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    /* Модальные окна */
+    .modal {
+        width: 95%;
+        max-width: 95%;
+        margin: 1rem;
+        padding: 1rem;
+    }
+    
+    /* Таблицы */
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Footer */
+    footer {
+        padding: 2rem 1rem;
+    }
+    
+    footer .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   МАЛЕНЬКИЕ ЭКРАНЫ / ПЛАНШЕТЫ (640px - 767px)
+   ============================================ */
+
+@media (min-width: 640px) and (max-width: 767px) {
+    body {
+        font-size: 15px;
+    }
+    
+    .th-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    section {
+        padding-top: 3.5rem;
+        padding-bottom: 3.5rem;
+    }
+    
+    .grid-responsive {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    #tv-nights-grid,
+    #country-tv-nights-grid { grid-template-columns: repeat(7, 1fr) !important; }
+    
+    .hero-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .surface-card,
+    .pastel-card {
+        padding: 1.5rem;
+    }
+    
+    button,
+    .btn {
+        padding: 0.875rem 1.5rem;
+        width: auto;
+    }
+}
+
+/* ============================================
+   СРЕДНИЕ ЭКРАНЫ / ПЛАНШЕТЫ (768px - 1023px)
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    body {
+        font-size: 15px;
+    }
+    
+    /* Раньше было max-width: 768px — страница выглядела узкой колонкой на планшетах */
+    .th-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        max-width: 1200px;
+    }
+    
+    section {
+        padding-top: var(--space-8);
+        padding-bottom: var(--space-8);
+    }
+    
+    h1 {
+        font-size: var(--h1-tablet);
+    }
+    
+    h2 {
+        font-size: var(--h2-tablet);
+    }
+    
+    .grid-responsive {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    #tv-nights-grid,
+    #country-tv-nights-grid { grid-template-columns: repeat(7, 1fr) !important; }
+    
+    .hero-metrics {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .surface-card,
+    .pastel-card {
+        padding: 2rem;
+    }
+    
+    /* Навигация */
+    header nav {
+        display: flex;
+    }
+    
+    #mobile-menu-button {
+        display: none;
+    }
+}
+
+/* ============================================
+   БОЛЬШИЕ ЭКРАНЫ (1024px - 1279px)
+   ============================================ */
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+    body {
+        font-size: var(--font-size-base-desktop);
+    }
+    
+    .th-container {
+        max-width: 1200px;
+        padding-left: var(--padding-desktop);
+        padding-right: var(--padding-desktop);
+    }
+    
+    .grid-responsive {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    #tv-nights-grid,
+    #country-tv-nights-grid { grid-template-columns: repeat(7, 1fr) !important; }
+    
+    section {
+        padding-top: 5.5rem;
+        padding-bottom: 5.5rem;
+    }
+}
+
+/* ============================================
+   ОЧЕНЬ БОЛЬШИЕ ЭКРАНЫ (1280px - 1535px)
+   ============================================ */
+
+@media (min-width: 1280px) and (max-width: 1535px) {
+    .th-container {
+        max-width: 1200px;
+    }
+    
+    .grid-responsive {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    #tv-nights-grid,
+    #country-tv-nights-grid { grid-template-columns: repeat(7, 1fr) !important; }
+}
+
+/* ============================================
+   ЭКСТРА БОЛЬШИЕ ЭКРАНЫ (1536px+)
+   ============================================ */
+
+@media (min-width: 1536px) {
+    .th-container {
+        max-width: 1200px;
+    }
+    
+    body {
+        font-size: 17px;
+    }
+    
+    h1 {
+        font-size: 3.5rem;
+    }
+    
+    h2 {
+        font-size: 2.5rem;
+    }
+}
+
+/* Десктоп: иерархия заголовков между планшетом и ultra-wide */
+@media (min-width: 1024px) and (max-width: 1535px) {
+    h1 {
+        font-size: var(--h1-desktop);
+    }
+
+    h2 {
+        font-size: var(--h2-desktop);
+    }
+}
+
+/* ============================================
+   ОСОБЫЕ СЛУЧАИ
+   ============================================ */
+
+/* Ландшафтная ориентация на мобильных */
+@media (max-width: 767px) and (orientation: landscape) {
+    .hero-section {
+        padding: 1.5rem 0;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Высокая плотность пикселей (Retina) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Печать */
+@media print {
+    .animated-background,
+    header,
+    footer,
+    .floating-contact-bar,
+    #mobile-menu-button,
+    .btn,
+    button {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        color: #000;
+        background: #fff;
+    }
+    
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+}
+
+/* Скрытие на мобильных */
+@media (max-width: 767px) {
+    .hidden-mobile {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   UI KIT (2025): Buttons, Cards, Reveal
+   ============================================ */
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    color: #ffffff;
+    box-shadow: 0 16px 40px rgba(93, 169, 164, 0.22);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 55px rgba(93, 169, 164, 0.35);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 10px 28px rgba(93, 169, 164, 0.28);
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 3px;
+}
+
+.btn-secondary {
+    background: rgba(93, 169, 164, 0.08);
+    color: #366360;
+    border-color: rgba(93, 169, 164, 0.22);
+}
+
+.btn-secondary:hover {
+    background: rgba(93, 169, 164, 0.12);
+    border-color: rgba(93, 169, 164, 0.32);
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+    background: rgba(93, 169, 164, 0.14);
+}
+
+/* Единый CTA «Заявка менеджеру» / «Отправить заявку менеджеру» (карточка тура + модалка) */
+/* button/… — выше специфичность, чем у Tailwind Preflight для [type=submit] (иначе фон transparent) */
+button.th-btn-manager-request,
+a.th-btn-manager-request {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.25;
+    color: #ffffff;
+    background-color: #ff7a00;
+    background-image: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+button.th-btn-manager-request:hover,
+a.th-btn-manager-request:hover {
+    background-color: #e06a00;
+    cursor: pointer;
+}
+
+button.th-btn-manager-request:disabled,
+a.th-btn-manager-request:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Поверхности (карточки форм / блоки) */
+.surface-card,
+.pastel-card {
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-soft) !important;
+    border-color: var(--border-soft) !important;
+}
+
+/* Шапка: лёгкий разделитель (Tailwind shadow-sm остаётся мягким) */
+header.sticky {
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06), 0 8px 32px rgba(15, 23, 42, 0.04);
+}
+
+/* Scroll reveal */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 600ms ease, transform 600ms ease;
+    will-change: opacity, transform;
+}
+
+.reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Disabled animations for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Не анимируем интерактивные элементы */
+    button,
+    header button,
+    .tour-card,
+    .result-card,
+    .tv-search-form .tour-card,
+    .tv-search-form .result-card,
+    .btn {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Tour cards (shared) */
+.tour-card,
+.result-card,
+.tv-search-form .tour-card,
+.tv-search-form .result-card {
+    background: var(--bg-surface) !important;
+    border-radius: var(--radius-md) !important;
+    border: 1px solid rgba(93, 169, 164, 0.14) !important;
+    box-shadow: var(--shadow-soft) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    overflow: hidden;
+}
+
+.tour-card:hover,
+.result-card:hover,
+.tv-search-form .tour-card:hover,
+.tv-search-form .result-card:hover {
+    transform: translateY(-4px) scale(1.03) !important;
+    box-shadow: var(--shadow-soft-hover) !important;
+    border-color: rgba(93, 169, 164, 0.28) !important;
+}
+
+.tour-card:active,
+.result-card:active,
+.tv-search-form .tour-card:active,
+.tv-search-form .result-card:active {
+    transform: translateY(-2px) scale(1.01) !important;
+}
+
+/* Единые внутренние отступы у контента карточек (Tailwind p-4 / p-5) */
+.tour-card .p-5,
+.result-card .p-5 {
+    padding: 1.375rem 1.5rem !important;
+}
+
+.tour-card .p-4,
+.result-card .p-4 {
+    padding: 1.125rem 1.25rem !important;
+}
+
+.tour-card img,
+.result-card img {
+    transition: transform 0.35s ease, filter 0.35s ease !important;
+}
+
+.tour-card:hover img,
+.result-card:hover img {
+    transform: scale(1.05) !important;
+    filter: saturate(1.05) !important;
+}
+
+/* Visual hierarchy helpers inside cards */
+.tour-card h3.heading-font,
+.result-card h3.heading-font {
+    font-weight: 800;
+}
+
+/* Цена (обычно имеет `text-xl font-bold`) */
+.tour-card .text-xl.font-bold,
+.result-card .text-xl.font-bold {
+    color: var(--accent-primary) !important;
+}
+
+/* Вторичный текст (снижаем контраст) */
+.tour-card p,
+.result-card p {
+    color: var(--text-secondary);
+}
+
+/* CTA как кнопка — только вложенные ссылки, не каркас карточки Tourvisor (.tv-tour-card__link) */
+.tour-card a:not(.block):not(.tv-tour-card__link):not(.tv-vip-tour-row__link),
+.result-card a:not(.block):not(.tv-tour-card__link):not(.tv-vip-tour-row__link) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem !important;
+    border-radius: var(--radius-sm);
+    font-weight: 800;
+    background: rgba(93, 169, 164, 0.08);
+    border: 1px solid rgba(93, 169, 164, 0.2);
+    color: var(--accent-primary) !important;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+    text-decoration: none !important;
+}
+
+.tour-card a:not(.block):not(.tv-tour-card__link):not(.tv-vip-tour-row__link):hover,
+.result-card a:not(.block):not(.tv-tour-card__link):not(.tv-vip-tour-row__link):hover {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 45px rgba(93, 169, 164, 0.28);
+}
+
+/* Микро-анимации UI: лёгкий подъем на hover */
+button,
+header button,
+.btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    will-change: transform;
+}
+
+button:not(:disabled):hover,
+header button:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+button:not(:disabled):active,
+header button:not(:disabled):active {
+    transform: translateY(0);
+}
+
+/* Smooth scroll (CTA "Найти тур" + якоря) */
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+}
+
+/* Учитываем sticky header при скролле к секции поиска */
+#tour-search-section {
+    scroll-margin-top: 110px;
+}
+
+/* HERO: desktop выравнивание текста/CTA влево (UX "дороже") */
+@media (min-width: 1024px) {
+    .hero-content {
+        text-align: left !important;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-content .location-tag {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+
+    .hero-content .justify-center {
+        justify-content: flex-start !important;
+    }
+
+    .hero-content .hero-cta {
+        align-self: flex-start;
+    }
+}
+
+/* Визуал CTA "Найти тур" как у premium-hero */
+.hero-cta {
+    border-radius: 9999px;
+    padding: 0.7rem 1.25rem;
+}
+
+@media (max-width: 639px) {
+    .hero-cta {
+        width: 100%;
+    }
+}
+
+/* Скрытие на десктопе */
+@media (min-width: 768px) {
+    .hidden-desktop {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   УЛУЧШЕНИЯ ДЛЯ КОНКРЕТНЫХ КОМПОНЕНТОВ
+   ============================================ */
+
+/* Header */
+@media (max-width: 767px) {
+    header {
+        padding: 0.75rem 1rem;
+    }
+    
+    header .logo {
+        font-size: 1.25rem;
+    }
+    
+    header .logo-icon {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Навигация */
+@media (max-width: 767px) {
+    #mobile-menu {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: white;
+        z-index: 9999;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: calc(100vh - 60px);
+        overflow-y: auto;
+    }
+}
+
+
+/* Карточки туров */
+@media (max-width: 767px) {
+    .tour-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .tour-card .tv-card-img-wrap img,
+    .result-card .tv-card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .tour-card-content {
+        padding: 1rem;
+    }
+}
+
+/* Таблицы */
+@media (max-width: 767px) {
+    .responsive-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .responsive-table table {
+        min-width: 600px;
+    }
+}
+
+/* Модальные окна */
+@media (max-width: 767px) {
+    .modal-dialog {
+        width: 95%;
+        margin: 1rem auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+    }
+}
+
+/* Карты Yandex (конструктор map-widget). НЕ использовать src*="yandex.ru/map" — совпадает с maps-reviews-widget и ломает высоту iframe отзывов на мобильных (WebKit / Яндекс.Браузер). */
+@media (max-width: 767px) {
+    iframe[src*="yandex.ru/map-widget"] {
+        height: 300px !important;
+    }
+}
+
+/* Виджет отзывов: явная высота после любых общих правил для iframe карт */
+@media (max-width: 767px) {
+    .office-reviews-section iframe[src*="maps-reviews-widget"],
+    .yandex-reviews-wrap iframe.yandex-reviews-iframe {
+        height: 520px !important;
+        min-height: 520px !important;
+        max-height: none !important;
+    }
+}
+
+/* Списки стран */
+@media (max-width: 767px) {
+    .countries-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .country-card {
+        padding: 0;
+    }
+}
+
+/* Секции с изображениями */
+@media (max-width: 767px) {
+    .image-section img {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        object-fit: cover;
+    }
+}
+
+/* Анимации - отключение на медленных устройствах */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Темная тема (если нужна в будущем) */
+@media (prefers-color-scheme: dark) {
+    /* Можно добавить темную тему */
+}
+
+/* Высокий контраст для доступности */
+@media (prefers-contrast: high) {
+    * {
+        border-width: 2px !important;
+    }
+}
+
+/* ============================================
+   УТИЛИТЫ ДЛЯ АДАПТИВНОСТИ
+   ============================================ */
+
+/* Flex утилиты */
+.flex-responsive {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+    .flex-responsive {
+        flex-direction: column;
+    }
+}
+
+/* Grid утилиты */
+.grid-responsive {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .grid-responsive {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Spacing утилиты */
+@media (max-width: 767px) {
+    .p-mobile {
+        padding: 1rem;
+    }
+    
+    .m-mobile {
+        margin: 1rem;
+    }
+}
+
+/* Текст */
+@media (max-width: 767px) {
+    .text-mobile-center {
+        text-align: center;
+    }
+    
+    .text-mobile-sm {
+        font-size: 0.875rem;
+    }
+}
+
+/* Visibility */
+.show-mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .show-mobile {
+        display: block;
+    }
+    
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+.show-tablet {
+    display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .show-tablet {
+        display: block;
+    }
+    
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+.show-desktop {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .show-desktop {
+        display: block;
+    }
+    
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   TOURVISOR WIDGET - МОБИЛЬНАЯ ОПТИМИЗАЦИЯ
+   ============================================ */
+
+/* TourVisor виджет - адаптация для мобильных */
+@media (max-width: 767px) {
+    /* Контейнер виджета */
+    .tv-search-form {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    /* Если виджет в карточке */
+    .surface-card .tv-search-form,
+    .pastel-card .tv-search-form {
+        margin: -1rem;
+        padding: 1rem;
+    }
+    
+    /* Стилизация iframe виджета */
+    .tv-search-form iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 600px !important;
+        border: none !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Контейнеры внутри виджета */
+    .tv-search-form > div {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Формы внутри виджета */
+    .tv-search-form form {
+        width: 100% !important;
+        padding: 0.75rem !important;
+    }
+    
+    /* Поля ввода */
+    .tv-search-form input,
+    .tv-search-form select,
+    .tv-search-form textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 16px !important; /* Предотвращает зум на iOS */
+        padding: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    /* Кнопки */
+    .tv-search-form button {
+        width: 100% !important;
+        padding: 0.875rem 1.5rem !important;
+        font-size: 1rem !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    /* Сетки и колонки */
+    .tv-search-form .row,
+    .tv-search-form .grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+    /* Сетка ночей — исключение: всегда горизонтальная 7×4 */
+    .tv-search-form #tv-nights-grid,
+    .tv-search-form #country-tv-nights-grid {
+        display: grid !important;
+        flex-direction: unset !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 0.375rem !important;
+    }
+    
+    .tv-search-form .col,
+    .tv-search-form [class*="col-"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+    
+    /* Лейблы */
+    .tv-search-form label {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+        display: block !important;
+    }
+    
+    /* Секции виджета */
+    .tv-search-form section {
+        padding: 1rem 0 !important;
+    }
+    
+    /* Карточки результатов */
+    .tv-search-form .tour-card,
+    .tv-search-form .result-card {
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    /* Изображения в результатах */
+    .tv-search-form .tour-card img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 200px !important;
+    }
+    
+    /* Таблицы в виджете */
+    .tv-search-form table {
+        display: block !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+    }
+    
+    /* Модальные окна виджета */
+    .tv-search-form .modal,
+    .tv-search-form .popup {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 1rem auto !important;
+        padding: 1rem !important;
+    }
+    
+    /* Фильтры и сортировка */
+    .tv-search-form .filters,
+    .tv-search-form .sort {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    /* Пагинация */
+    .tv-search-form .pagination {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+    
+    .tv-search-form .pagination button,
+    .tv-search-form .pagination a {
+        min-width: 40px !important;
+        padding: 0.5rem !important;
+        margin: 0.25rem !important;
+    }
+}
+
+/* Планшеты - улучшенная адаптация */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .tv-search-form {
+        padding: 1rem !important;
+    }
+    
+    .tv-search-form iframe {
+        min-height: 700px !important;
+    }
+    
+    .tv-search-form .row {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+/* Десктоп - полная ширина */
+@media (min-width: 1024px) {
+    .tv-search-form {
+        width: 100% !important;
+    }
+    
+    .tv-search-form iframe {
+        min-height: 800px !important;
+    }
+}
+
+/* ============================================
+   ОТЗЫВЫ В РАЗДЕЛЕ ОФИСОВ - МОБИЛЬНАЯ ВЕРСИЯ
+   ============================================ */
+
+@media (max-width: 767px) {
+    /* Секция отзывов — всегда видна на мобильных */
+    .office-reviews-section {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .office-reviews-widget {
+        display: block !important;
+        width: 100% !important;
+        overflow: visible !important;
+    }
+    
+    /* Карточка с iframe не режет контент (Tailwind/WebKit) */
+    .office-reviews-section .surface-card {
+        overflow: visible !important;
+    }
+
+    .yandex-reviews-wrap {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        isolation: isolate;
+    }
+
+    /* SmartWidgets (sw-app) — адаптация под мобильные */
+    .sw-app {
+        display: block !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        min-height: 400px !important;
+        overflow: visible !important;
+    }
+    
+    .sw-app iframe {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        min-height: 400px !important;
+    }
+    
+    /* Яндекс.Карты — виджет отзывов (WebKit / Яндекс.Браузер; без нулевой высоты/обрезания) */
+    .yandex-reviews-iframe,
+    iframe[src*="yandex.ru/maps-reviews-widget"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        min-height: 520px !important;
+        height: 520px !important;
+        border: 0 !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        vertical-align: top;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        box-sizing: border-box;
+    }
+}
+
+/* ============================================
+   Tourvisor: результаты поиска (кросс-браузерно, в т.ч. JS innerHTML + WebKit)
+   Не зависит от Tailwind JIT для динамически вставляемых классов.
+   ============================================ */
+
+.tv-results-shell {
+    width: 100%;
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: visible;
+    min-height: 0;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.tv-results-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    min-width: 0;
+}
+
+@media (min-width: 640px) {
+    .tv-results-toolbar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.tv-results-toolbar__title {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.tv-sort-rail {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+@media (min-width: 640px) {
+    .tv-sort-rail {
+        width: auto;
+        max-width: 18rem;
+    }
+}
+
+.tv-sort-select {
+    display: block;
+    width: 100%;
+    min-width: min(280px, 100%);
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.tv-search-results-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    align-content: start;
+    box-sizing: border-box;
+}
+
+/* Вложенные flex/grid на мобильных WebView: min-height:0 у контейнера иногда «схлопывает» ряд карточек */
+#tv-search-results.tv-search-results-grid,
+#country-tv-search-results.tv-search-results-grid,
+#vip-tv-search-results.tv-search-results-grid {
+    min-height: auto;
+    grid-auto-rows: minmax(min-content, max-content);
+}
+
+#tv-search-results > article.tv-tour-card,
+#country-tv-search-results > article.tv-tour-card,
+#vip-tv-search-results > article.tv-tour-card {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (min-width: 768px) {
+    .tv-search-results-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .tv-search-results-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.tv-results-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #475569;
+}
+
+.tv-tour-card {
+    background: #fff;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    min-width: 0;
+}
+
+.tv-tour-card:hover {
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
+    transform: translateY(-2px);
+    border-color: rgba(93, 169, 164, 0.35);
+}
+
+/* Совместимость с legacy-классами карточки на главной */
+article.tv-tour-card.result-card:hover,
+article.tv-tour-card.tour-card:hover {
+    transform: translateY(-3px);
+}
+
+.tv-tour-card__link {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+}
+
+.tv-tour-card__media {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #f1f5f9;
+    /* Запасная высота, если padding-hack у ::before ведёт себя иначе в WebKit/Yandex */
+    min-height: 11rem;
+}
+
+.tv-tour-card__media::before {
+    content: "";
+    display: block;
+    width: 100%;
+    padding-bottom: 75%;
+}
+
+.tv-tour-card__media--strip {
+    min-height: 0;
+}
+.tv-tour-card__media--strip::before {
+    display: none !important;
+}
+.tv-tour-card__strip-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+.tv-tour-card__strip-img {
+    flex: 0 0 auto;
+    width: 31%;
+    min-width: 104px;
+    height: 92px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #e2e8f0;
+    display: block;
+}
+
+.country-promo-strip-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+.country-promo-strip-img {
+    flex: 0 0 auto;
+    width: 32%;
+    min-width: 104px;
+    height: 92px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #e2e8f0;
+}
+
+.tv-tour-card__img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    min-height: 0;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.tv-tour-card__body {
+    padding: 1.25rem;
+}
+
+.tv-tour-card__title {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.35;
+    color: #0f172a;
+    margin: 0 0 0.25rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.tv-tour-card__location {
+    font-size: 0.875rem;
+    color: #334155;
+    margin: 0 0 0.5rem;
+}
+
+.tv-tour-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #475569;
+    margin-bottom: 0.75rem;
+}
+
+.tv-tour-card__meta-accent {
+    color: #5DA9A4;
+}
+
+.tv-tour-card__meta-rating {
+    color: #f59e0b;
+}
+
+.tv-tour-card__flight {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.5rem;
+    background: rgba(224, 242, 254, 0.6);
+    border: 1px solid rgba(186, 230, 253, 0.8);
+    font-size: 0.75rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tv-tour-card__flight .fa-plane {
+    color: #5DA9A4;
+}
+
+.tv-tour-card__flight--indigo {
+    background: rgba(238, 242, 255, 0.85);
+    border-color: rgba(199, 210, 254, 0.85);
+}
+
+.tv-tour-card__flight--indigo .fa-plane {
+    color: #1A1A40;
+}
+
+.tv-tour-card__bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.tv-tour-card__price-label {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.tv-tour-card__price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.tv-tour-card__cta {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #5DA9A4;
+    white-space: nowrap;
+    flex-shrink: 0;
+    max-width: 100%;
+}
+
+.tv-tour-card--main .tv-tour-card__meta-accent {
+    color: #1A1A40;
+}
+
+.tv-tour-card--main .tv-tour-card__cta {
+    color: #1A1A40;
+}
+
+.tv-tour-card--main .tv-tour-card__price {
+    color: #111827;
+}
+
+.tv-vip-tour-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+}
+
+.tv-vip-tour-row__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.tv-vip-tour-row__link:hover {
+    background: #f0f9ff;
+    border-color: rgba(93, 169, 164, 0.35);
+}
+
+.tv-vip-tour-row__left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+.tv-vip-tour-row__date {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.tv-vip-tour-row__right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.tv-vip-tour-row__price {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.tv-vip-tour-row__cta {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #5DA9A4;
+}
+
+/* Динамические карточки: не оставлять opacity:0 при сбое IntersectionObserver */
+#tv-search-results .reveal-on-scroll,
+#country-tv-search-results .reveal-on-scroll,
+#vip-tv-search-results .reveal-on-scroll,
+#home-popular-destinations-grid .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Модалка «ночи»: явная ширина карточки (WebKit / Yandex; без arbitrary Tailwind) */
+.tv-nights-modal-card {
+    width: 100%;
+    max-width: min(calc(100vw - 2rem), 24rem);
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* ============================================
+   Поле пароля + «глаз» (вход / регистрация / десктоп-формы)
+   ============================================ */
+.login-password-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.login-password-wrap:focus-within {
+    border-color: #79BCB7;
+    box-shadow: 0 0 0 3px rgba(121, 188, 183, 0.2);
+}
+.login-password-wrap.is-error {
+    border-color: #fca5a5;
+}
+.login-password-wrap.is-error:focus-within {
+    border-color: #f87171;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+}
+.login-password-wrap input[type="password"],
+.login-password-wrap input[type="text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    width: auto;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none;
+    background: transparent;
+}
+.login-password-toggle,
+.th-password-toggle {
+    flex: 0 0 auto;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    padding: 0 0.65rem;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.login-password-toggle:hover,
+.th-password-toggle:hover {
+    color: #5DA9A4;
+}
+
+/* Страница списка стран: сетка на всю ширину, без «полосы» справа на мобильных */
+@media (max-width: 640px) {
+    .countries-list-page-wrap section .container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding-left: max(1rem, env(safe-area-inset-left, 0px));
+        padding-right: max(1rem, env(safe-area-inset-right, 0px));
+    }
+    .countries-list-page-wrap .max-w-6xl {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+}
+
+/* Офисы: «Популярные направления» — без сдвига и полосы справа (WebKit / Yandex моб.) */
+.office-popular-destinations .tourvisor-widget.office-popular-destinations__inner {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: clip;
+}
+@media (max-width: 639px) {
+    .office-popular-destinations .tourvisor-widget.office-popular-destinations__inner {
+        padding-left: max(1rem, env(safe-area-inset-left, 0px));
+        padding-right: max(1rem, env(safe-area-inset-right, 0px));
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+}
+
+/* Шапка: линии бургера не обрезаются контейнером (iOS / Yandex; специфичность выше design-system.css) */
+#site-header.header .header__burger {
+    overflow: visible;
+    box-sizing: border-box;
+}
+#site-header.header .header__burger-line {
+    flex-shrink: 0;
+}
+

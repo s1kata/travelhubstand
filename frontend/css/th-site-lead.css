@@ -1,0 +1,286 @@
+/**
+ * Sitewide hard lead — compact contact bar (brand navy, not coral).
+ */
+:root {
+    --th-lead-bar-h: 48px;
+}
+
+body.has-th-lead-bar:not(.th-promo-page):not(.th-page-auth) {
+    padding-bottom: calc(var(--th-lead-bar-h) + env(safe-area-inset-bottom, 0px));
+}
+
+.th-site-lead-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9990;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    background: #1A1A40;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 -4px 18px rgba(16, 16, 46, 0.35);
+}
+
+.th-site-lead-bar__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 40px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    background: transparent;
+    box-shadow: none;
+}
+
+.th-site-lead-bar__btn i {
+    font-size: 0.85rem;
+    opacity: 0.95;
+}
+
+.th-site-lead-bar__btn--call,
+.th-site-lead-bar__btn--wa,
+.th-site-lead-bar__btn--max,
+.th-site-lead-bar__btn--lead {
+    background: transparent;
+    box-shadow: none;
+}
+
+.th-max-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    height: 1.1rem;
+    padding: 0 3px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+.th-site-lead-bar__btn:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ПК: компактная плашка по центру */
+@media (min-width: 768px) {
+    :root {
+        --th-lead-bar-h: 44px;
+    }
+
+    .th-site-lead-bar {
+        left: 0;
+        right: 0;
+        width: min(380px, calc(100% - 32px));
+        max-width: 380px;
+        margin-left: auto;
+        margin-right: auto;
+        gap: 0;
+        padding: 4px;
+        border-radius: 12px 12px 0 0;
+        transform: none;
+        box-shadow: 0 -4px 16px rgba(16, 16, 46, 0.3);
+    }
+
+    .th-site-lead-bar__btn {
+        min-height: 36px;
+        font-size: 0.75rem;
+        border-radius: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .th-site-lead-bar__btn:first-child {
+        border-radius: 8px 0 0 8px;
+    }
+
+    .th-site-lead-bar__btn:last-child {
+        border-right: none;
+        border-radius: 0 8px 8px 0;
+    }
+}
+
+/* Hide when another sticky funnel CTA / overlays / sheets are open */
+body.th-sticky-cta-active .th-site-lead-bar,
+body.has-results-sticky .th-site-lead-bar,
+body:has(.th-results-sticky-lead.is-visible) .th-site-lead-bar,
+body:has(.th-detail__mobile-sticky:not([hidden])) .th-site-lead-bar,
+body:has(#th-detail-mobile-sticky:not(.hidden)) .th-site-lead-bar,
+body.th-promo-page .th-site-lead-bar,
+body.th-support-chat-open .th-site-lead-bar,
+body.th-abandon-open .th-site-lead-bar,
+body.th-promo-open .th-site-lead-bar,
+html.th-kb-open .th-site-lead-bar,
+body.th-sheet-open .th-site-lead-bar,
+body.th-coral-popup-open .th-site-lead-bar,
+body.th-modal-open .th-site-lead-bar,
+body.th-flight-pick-modal-open .th-site-lead-bar,
+body.th-deals-cal-page .th-site-lead-bar,
+body.th-page-auth .th-site-lead-bar,
+body.th-page-auth .th-site-lead-bar[data-th-site-lead-bar] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+body.th-page-auth,
+body.th-page-auth.has-th-lead-bar {
+    padding-bottom: 0 !important;
+}
+
+body.th-support-chat-open,
+body.th-deals-cal-page,
+body.th-sheet-open,
+body.th-coral-popup-open,
+body.th-modal-open {
+    padding-bottom: 0 !important;
+}
+
+/* Page CTA band */
+.th-page-cta {
+    position: relative;
+    overflow: hidden;
+    padding: 3.5rem 1.25rem;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(93, 169, 164, 0.35), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 100%, rgba(93, 169, 164, 0.18), transparent 50%),
+        linear-gradient(135deg, #1A1A40 0%, #10102E 55%, #162447 100%);
+    color: #fff;
+}
+
+.th-page-cta__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    display: grid;
+    gap: 2rem;
+}
+
+@media (min-width: 900px) {
+    .th-page-cta__inner {
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: center;
+        gap: 3rem;
+    }
+}
+
+.th-page-cta__title {
+    font-family: Outfit, "Work Sans", sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+
+.th-page-cta__sub {
+    margin: 0 0 1.25rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 34rem;
+}
+
+.th-off-page .th-page-cta,
+.th-off-page .th-page-cta .th-page-cta__title,
+.th-off-page .th-page-cta .th-page-cta__sub,
+.th-off-page .th-page-cta .th-page-cta__trust {
+    color: #fff;
+}
+.th-off-page .th-page-cta .th-page-cta__sub,
+.th-off-page .th-page-cta .th-page-cta__trust {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.th-page-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.th-page-cta__actions a,
+.th-page-cta__actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 48px;
+    padding: 0 1.15rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.th-page-cta__btn-primary {
+    background: #5DA9A4;
+    color: #fff;
+    box-shadow: 0 8px 22px rgba(93, 169, 164, 0.35);
+}
+
+.th-page-cta__btn-wa,
+.th-page-cta__btn-max {
+    background: #0F1C3F;
+    color: #fff;
+}
+
+.th-page-cta__btn-call {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+.th-page-cta__form-wrap {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 18px;
+    padding: 1.25rem 1.15rem 1.35rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.th-page-cta__form-wrap .th-lead-capture {
+    max-width: none;
+}
+
+.th-page-cta__form-wrap .th-lead-capture__title {
+    color: #1A1A40;
+}
+
+.th-page-cta__trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.th-page-cta__trust span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}

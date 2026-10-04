@@ -1,0 +1,12 @@
+{
+    "name": "travelhub/website",
+    "description": "Travel Hub - сайт туристического агентства",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "voronkovich/sberbank-acquiring-client": "^2.10"
+    },
+    "autoload": {
+        "psr-4": {}
+    }
+}

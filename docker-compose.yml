@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: .
+    image: travelhub_app:latest
+    container_name: travelhub_site
+    restart: unless-stopped
+    env_file: .env.local
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db 
+    
+  db:
+    
+    image: mysql:5.7
+    container_name: db-site
+    restart: unless-stopped
+    ##healthcheck:
+      ##test: ["CMD-SHELL", "mysql -e 'SELECT 1'"]
+      ##interval: 5s
+     ## timeout: 5s
+     ## retries: 5
+
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: app
+      MYSQL_ROOT_PASSWORD: pass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+      ##- ./db/travelhub_dump.sql:/docker-entrypoint-initdb.d/garant77li.sql
+  web:
+    image: nginx:1.25-alpine
+    container_name: travelhub_web
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./:/var/www/html:ro
+
+
+volumes:
+  mysqldata:

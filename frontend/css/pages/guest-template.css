@@ -1,0 +1,6 @@
+body { background: #f4f9ff; min-height: 100vh; min-height: 100dvh; }
+        .guest-shell { padding: max(16px, var(--th-safe-top)) 16px max(24px, var(--th-safe-bottom)); max-width: 520px; margin: 0 auto; }
+        .guest-card { margin-bottom: 20px; padding: 16px; background: #fff; border-radius: 16px; border: 1px solid #DCEEEC; }
+        .guest-shell h2 { text-align: center; margin: 16px 0; font-size: clamp(1.25rem, 4vw, 1.5rem); }
+        .guest-shell input[type="text"] { font-size: 16px; width: 100%; margin: 10px 0; padding: 12px; border-radius: 12px; border: 1px solid #C2E2DF; box-sizing: border-box; }
+        .guest-shell button[type="submit"] { width: 100%; background: #5DA9A4; color: #fff; padding: 14px 24px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; min-height: 48px; cursor: pointer; }

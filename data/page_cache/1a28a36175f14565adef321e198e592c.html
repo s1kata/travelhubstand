@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>Офисы Travel Hub — Самара и Москва</title>
+    <meta name="description" content="Офисы Travel Hub в Самаре и Москве: адреса, фото, телефоны. Позвоните или оставьте заявку — подберём тур за 15 минут.">
+    <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/frontend/css/th-offices.css?v=4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/frontend/css/tokens.css?v=3">
+<link rel="stylesheet" href="/frontend/css/tailwind.min.css?v=1">
+<link rel="stylesheet" href="/frontend/css/responsive.css?v=17">
+<link rel="stylesheet" href="/frontend/css/design-system.css?v=16">
+<link rel="stylesheet" href="/frontend/css/redesign.css?v=41">
+<link rel="stylesheet" href="/frontend/css/v2-theme.css?v=5">
+<link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=2">
+<link rel="stylesheet" href="/frontend/css/th-hard-funnel.css?v=8">
+<link rel="stylesheet" href="/frontend/css/mobile-adult.css?v=16">
+<link rel="stylesheet" href="/frontend/css/th-site-lead.css?v=11">
+<link rel="stylesheet" href="/frontend/css/yandex-mobile.css?v=11">
+<link rel="stylesheet" href="/frontend/css/th-sheet.css?v=2">
+<script src="/frontend/js/th-browser-detect.js?v=2"></script>
+<link rel="stylesheet" href="/frontend/css/mobile-site.css?v=21">
+<link rel="stylesheet" href="/frontend/css/th-unified-ui.css?v=12">
+<link rel="stylesheet" href="/frontend/css/support-chat.css?v=9">
+<script src="/frontend/js/v2-theme.js?v=1" defer></script>
+<script src="/frontend/js/th-lead-capture.js?v=5" defer></script>
+<script src="/frontend/js/th-mobile.js?v=16" defer></script>
+<script src="/frontend/js/th-modal.js?v=2" defer></script>
+<script src="/frontend/js/th-gallery.js?v=1" defer></script>
+<script src="/frontend/js/support-chat-widget.js?v=4" defer></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+</head>
+<body class="th-off-page text-slate-900">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/frontend/css/v2-theme.css?v=5">
+<script src="/frontend/js/v2-theme.js?v=1" defer></script>
+<style>
+    /* Fallback styles: header works even without design-system.css */
+    #site-header.header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0;
+        padding: 10px clamp(16px, 3vw, 40px);
+        min-height: 56px;
+        box-sizing: border-box;
+        border-bottom: 1px solid transparent;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    #site-header .header__logo {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    #site-header .header__nav {
+        display: flex;
+        gap: clamp(12px, 1.8vw, 24px);
+        align-items: center;
+        justify-content: flex-start;
+        flex: 0 1 auto;
+        margin-left: clamp(16px, 2.5vw, 36px);
+    }
+
+    #site-header .header__nav a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 500;
+        opacity: 1;
+        white-space: nowrap;
+    }
+
+    #site-header .header__nav a.is-active,
+    #site-header .header__nav a:hover {
+        color: #ffffff;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    #site-header .header__more {
+        position: relative;
+    }
+
+    #site-header .header__more-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        font: inherit;
+        font-weight: 500;
+        /* Цвет как у соседних пунктов nav — задаёт v2-theme / home.css */
+        color: inherit;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        font-family: inherit;
+    }
+
+    #site-header .header__more-toggle:hover,
+    #site-header .header__more-toggle:focus-visible {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        outline: none;
+    }
+
+    #site-header .header__more-menu {
+        position: absolute;
+        /* Привязка к правому краю «Ещё» — не уезжает под Акции/Страны */
+        left: auto;
+        right: 0;
+        /* Без зазора с кнопкой — иначе при движении курсора :hover пропадает */
+        top: calc(100% - 2px);
+        min-width: 220px;
+        padding: 8px;
+        padding-top: 10px;
+        border-radius: 12px;
+        /* Один стиль меню на всех страницах (баг Даника: разный цвет на Главной / остальных) */
+        background: #ffffff;
+        border: 1px solid rgba(26, 26, 64, 0.12);
+        box-shadow: 0 18px 42px rgba(2, 6, 23, 0.18);
+        display: none;
+        z-index: 1200;
+    }
+
+    /* Невидимый «мост» над меню — курсор не выходит из зоны hover */
+    #site-header .header__more-menu::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 100%;
+        height: 14px;
+    }
+
+    #site-header .header__more-menu a,
+    #site-header[data-home="1"] .header__more-menu a,
+    #site-header[data-home="1"]:not(.scrolled) .header__nav .header__more-menu a,
+    #site-header[data-home="1"].scrolled .header__nav .header__more-menu a {
+        display: block;
+        padding: 9px 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        /* !important + выше specificity, чем home nav white */
+        color: #1A1A40 !important;
+        -webkit-text-fill-color: #1A1A40 !important;
+        font-weight: 500;
+        opacity: 1 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    #site-header .header__more-menu a:hover,
+    #site-header[data-home="1"]:not(.scrolled) .header__nav .header__more-menu a:hover {
+        background: rgba(93, 169, 164, 0.18) !important;
+        text-decoration: none;
+        color: #1A1A40 !important;
+        -webkit-text-fill-color: #1A1A40 !important;
+    }
+
+    #site-header .header__more:hover .header__more-menu,
+    #site-header .header__more:focus-within .header__more-menu {
+        display: block;
+    }
+
+    #site-header .th-promo-header-slot {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #site-header .header__actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    #site-header .header__burger {
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+        #site-header .header__burger {
+            margin-left: auto;
+        }
+    }
+
+    /* UX: телефон в шапке — всегда на виду, кликабельный */
+    #site-header .header__phone {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 9999px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        white-space: nowrap;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    #site-header .header__phone:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.45);
+    }
+    #site-header .header__phone i {
+        font-size: 12px;
+        color: #79BCB7;
+    }
+    @media (max-width: 1240px) {
+        #site-header .header__phone-num { display: none; }
+        #site-header .header__phone { padding: 9px 12px; }
+        #site-header .header__phone i { font-size: 14px; }
+    }
+    @media (max-width: 768px) {
+        #site-header .header__phone { display: none; }
+    }
+
+    #site-header .th-departure-pill {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.42rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+        max-width: 11rem;
+    }
+
+    #site-header .th-departure-pill:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    #site-header .th-departure-pill__text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+        #site-header .th-departure-pill {
+            display: none;
+        }
+    }
+
+    #site-header .header__actions .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        line-height: 1.1;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    #site-header .header__actions .button-secondary {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.45);
+        color: #ffffff;
+    }
+
+    #site-header .header__actions .button-secondary:hover {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+    }
+
+    #site-header .header__actions .button-primary {
+        background: linear-gradient(135deg, #FF6B6B, #F65252);
+        border-color: rgba(93, 169, 164, 0.65);
+        color: #ffffff;
+    }
+
+    #site-header .header__actions .button-primary:hover {
+        filter: brightness(1.04);
+        transform: translateY(-1px);
+        color: #ffffff;
+    }
+
+    #site-header .header__actions .button-ghost {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.28);
+        color: #ffffff;
+    }
+
+    #site-header .header__actions .button-ghost:hover {
+        background: rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+    }
+
+    @media (max-width: 1024px) {
+        #site-header.header {
+            padding: 12px 16px;
+            gap: 14px;
+        }
+
+        #site-header .header__nav {
+            gap: 14px;
+        }
+    }
+
+    #site-header .header__burger {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        margin: 0;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 14px;
+        background: linear-gradient(152deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%);
+        color: #fff;
+        cursor: pointer;
+        flex-shrink: 0;
+        overflow: visible;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.38) inset,
+            0 4px 18px rgba(0, 0, 0, 0.2);
+        transition:
+            background 0.22s ease,
+            border-color 0.22s ease,
+            box-shadow 0.22s ease,
+            transform 0.2s ease;
+    }
+    #site-header .header__burger:hover {
+        background: linear-gradient(152deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.14) 100%);
+        border-color: rgba(255, 255, 255, 0.78);
+        box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.45) inset,
+            0 6px 22px rgba(0, 0, 0, 0.22);
+        transform: scale(1.04);
+    }
+    #site-header .header__burger:active {
+        transform: scale(0.96);
+    }
+    #site-header .header__burger:focus-visible {
+        outline: none;
+        box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.38) inset,
+            0 4px 18px rgba(0, 0, 0, 0.2),
+            0 0 0 2px rgba(255, 107, 107, 0.75),
+            0 0 0 5px rgba(255, 107, 107, 0.18);
+    }
+    #site-header .header__burger.is-open {
+        background: linear-gradient(152deg, rgba(255, 107, 107, 0.42) 0%, rgba(255, 140, 60, 0.22) 100%);
+        border-color: rgba(255, 200, 160, 0.9);
+        box-shadow:
+            0 1px 0 rgba(255, 230, 210, 0.35) inset,
+            0 4px 22px rgba(255, 107, 107, 0.35);
+    }
+    #site-header .header__burger-line {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: currentColor;
+        border-radius: 2px;
+        position: relative;
+        flex-shrink: 0;
+        transition: background 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #site-header .header__burger-line::before,
+    #site-header .header__burger-line::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 20px;
+        height: 2px;
+        background: currentColor;
+        border-radius: 2px;
+        transition:
+            transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+            top 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+            background 0.22s ease;
+    }
+    #site-header .header__burger-line::before { top: -6px; }
+    #site-header .header__burger-line::after { top: 6px; }
+    #site-header .header__burger.is-open .header__burger-line {
+        background: transparent;
+    }
+    #site-header .header__burger.is-open .header__burger-line::before {
+        top: 0;
+        transform: rotate(45deg);
+    }
+    #site-header .header__burger.is-open .header__burger-line::after {
+        top: 0;
+        transform: rotate(-45deg);
+    }
+
+    @media (min-width: 769px) {
+        #site-header .header__burger {
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #site-header .header__nav {
+            display: none;
+        }
+        #site-header .header__actions {
+            display: none;
+        }
+        #site-header .th-promo-header-slot {
+            display: none !important;
+        }
+        #site-header .header__burger {
+            display: inline-flex;
+            margin-left: auto;
+            order: 10;
+        }
+        #site-header .header__logo {
+            flex: 0 0 auto;
+            min-width: max-content;
+            overflow: visible;
+        }
+    }
+
+    .site-header-mobile-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1090;
+        background: rgba(11, 11, 34, 0.55);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .site-header-mobile-overlay.is-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    .site-header-mobile-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 1100;
+        width: min(100vw - 1.5rem, 320px);
+        max-width: 100%;
+        max-height: 100vh;
+        max-height: 100dvh;
+        height: 100%;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: rgba(16, 16, 46, 0.98);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: -12px 0 40px rgba(0, 0, 0, 0.35);
+        transform: translate3d(100%, 0, 0);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        visibility: hidden;
+        pointer-events: none;
+        will-change: transform;
+    }
+    .site-header-mobile-panel.is-open {
+        transform: translate3d(0, 0, 0);
+        visibility: visible;
+        pointer-events: auto;
+    }
+    .site-header-mobile-panel__inner {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        height: auto !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        padding: 1rem 1rem max(1.5rem, env(safe-area-inset-bottom, 0px));
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+    }
+    .site-header-mobile-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 1.5rem;
+        line-height: 1;
+        cursor: pointer;
+    }
+    .site-header-mobile-close:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    .site-header-mobile-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding-top: 2.75rem;
+    }
+    .site-header-mobile-nav a {
+        display: block;
+        padding: 0.75rem 0.75rem;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.95);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .site-header-mobile-nav a:hover,
+    .site-header-mobile-nav a.is-active {
+        background: rgba(93, 169, 164, 0.3);
+    }
+    .site-header-mobile-nav .site-header-mobile-muted {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgba(255, 255, 255, 0.78);
+        padding: 0.75rem 0.75rem 0.35rem;
+        margin-top: 0.5rem;
+    }
+    .site-header-mobile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .site-header-mobile-actions a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.65rem 1rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+    }
+    .site-header-mobile-actions .btn-m-secondary {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+    }
+    .site-header-mobile-actions .btn-m-primary {
+        background: linear-gradient(135deg, #FF6B6B, #F65252);
+        color: #fff;
+        border: 1px solid rgba(93, 169, 164, 0.5);
+    }
+    .site-header-mobile-actions .btn-m-ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+    }
+</style>
+<header id="site-header" class="header">
+    <a href="/index.php" class="header__logo">Travel Hub</a>
+
+    <nav class="header__nav" aria-label="Главная навигация">
+        <a href="/index.php" class="">Главная</a>
+        <a href="/frontend/window/promotions.php" class="">Акции</a>
+        <a href="/frontend/window/countries-list.php" class="">Страны</a>
+                <a href="/frontend/window/offices.php" class="is-active">Офисы</a>
+        <div class="header__more">
+            <button type="button" class="header__more-toggle " aria-label="Ещё разделы" aria-haspopup="true" aria-controls="site-header-more-menu">
+                Ещё <span aria-hidden="true">▾</span>
+            </button>
+            <div class="header__more-menu" id="site-header-more-menu" role="menu" aria-label="Дополнительные разделы">
+                <a href="/frontend/window/about.php">О нас</a>
+                <a href="/frontend/window/services.php">Услуги</a>
+                <a href="/frontend/window/tour-calendar.php">Календарь выгодных дат</a>
+                <a href="/frontend/window/turkey-vip-hotels.php">VIP отели Турции</a>
+                <a href="/frontend/window/contacts.php">Контакты</a>
+                <a href="/frontend/window/banks_rekvesit.php">Реквизиты</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Плашка «Вылет» в шапке отключена
+    <button type="button" id="th-departure-header-btn" class="th-departure-pill" hidden title="Город вылета">
+        <span class="th-departure-pill__icon" aria-hidden="true">✈</span>
+        <span class="th-departure-pill__text">Вылет</span>
+    </button>
+    -->
+
+    <div id="th-promo-header-slot" class="th-promo-header-slot" aria-hidden="true"></div>
+
+    <div class="header__actions">
+        <a href="tel:+78462541656" class="header__phone" title="Позвонить нам">
+            <i class="fas fa-phone" aria-hidden="true"></i>
+            <span class="header__phone-num">+7 (846) 254-16-56</span>
+        </a>
+                    <a href="/frontend/window/login-desktop.php" class="button button-secondary">Войти</a>
+            <a href="/frontend/window/registration-desktop.php" class="button button-primary">Регистрация</a>
+            </div>
+
+    <button type="button" class="header__burger" id="site-header-burger" aria-expanded="false" aria-controls="site-header-mobile-panel" aria-label="Открыть меню">
+        <span class="header__burger-line" aria-hidden="true"></span>
+    </button>
+</header>
+
+<div id="site-header-mobile-overlay" class="site-header-mobile-overlay" aria-hidden="true"></div>
+<div id="site-header-mobile-panel" class="site-header-mobile-panel" role="dialog" aria-modal="true" aria-label="Меню сайта" aria-hidden="true">
+    <div class="site-header-mobile-panel__inner" style="position:relative">
+        <button type="button" class="site-header-mobile-close" id="site-header-mobile-close" aria-label="Закрыть меню">&times;</button>
+        <nav class="site-header-mobile-nav" aria-label="Разделы">
+            <a href="/index.php" class="">Главная</a>
+            <a href="/frontend/window/promotions.php" class="">Акции</a>
+            <a href="/frontend/window/countries-list.php" class="">Страны</a>
+                        <a href="/frontend/window/offices.php" class="is-active">Офисы</a>
+            <span class="site-header-mobile-muted">Ещё</span>
+            <a href="/frontend/window/about.php" class="">О нас</a>
+            <a href="/frontend/window/services.php" class="">Услуги</a>
+            <a href="/frontend/window/tour-calendar.php" class="">Календарь выгодных дат</a>
+            <a href="/frontend/window/turkey-vip-hotels.php" class="">VIP отели Турции</a>
+            <a href="/frontend/window/contacts.php" class="">Контакты</a>
+            <span class="site-header-mobile-muted">Документы</span>
+            <a href="/frontend/window/banks_rekvesit.php" class="">Реквизиты</a>
+            <a href="/frontend/window/consent.php" class="">Согласие на обработку ПД</a>
+            <a href="/frontend/window/privacy.php" class="">Политика конфиденциальности</a>
+            <a href="/frontend/window/terms.php" class="">Пользовательское соглашение</a>
+        </nav>
+        <div class="site-header-mobile-actions">
+            <a href="tel:+78462541656" class="btn-m-secondary" style="text-align:center"><i class="fas fa-phone" aria-hidden="true"></i> +7 (846) 254-16-56</a>
+                            <a href="/frontend/window/login.php" class="btn-m-secondary">Войти</a>
+                <a href="/frontend/window/registration-desktop.php" class="btn-m-primary">Регистрация</a>
+                    </div>
+    </div>
+</div>
+<script>
+(function () {
+    var burger = document.getElementById('site-header-burger');
+    var overlay = document.getElementById('site-header-mobile-overlay');
+    var panel = document.getElementById('site-header-mobile-panel');
+    var closeBtn = document.getElementById('site-header-mobile-close');
+    if (!burger || !overlay || !panel) return;
+
+    if (overlay.parentNode !== document.body) document.body.appendChild(overlay);
+    if (panel.parentNode !== document.body) document.body.appendChild(panel);
+
+    var scrollLockY = 0;
+
+    function setOpen(open) {
+        var wasOpen = panel.classList.contains('is-open');
+        overlay.classList.toggle('is-visible', open);
+        panel.classList.toggle('is-open', open);
+        burger.classList.toggle('is-open', open);
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+        overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+        panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+        if (open) {
+            scrollLockY = window.scrollY || window.pageYOffset || 0;
+            document.body.classList.add('th-modal-open');
+            document.body.style.position = 'fixed';
+            document.body.style.top = '-' + scrollLockY + 'px';
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+            try { if (closeBtn) closeBtn.focus(); } catch (e) {}
+        } else {
+            document.body.classList.remove('th-modal-open');
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            if (wasOpen) {
+                try { window.scrollTo(0, scrollLockY); } catch (e2) {}
+            }
+            try { burger.focus(); } catch (e3) {}
+        }
+        if (window.THMobile && window.THMobile.sync) window.THMobile.sync();
+    }
+
+    burger.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpen(!panel.classList.contains('is-open'));
+    });
+    overlay.addEventListener('click', function () { setOpen(false); });
+    overlay.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+    if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });
+    panel.addEventListener('click', function (e) { e.stopPropagation(); });
+    panel.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { setOpen(false); });
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+            e.preventDefault();
+            setOpen(false);
+        }
+    });
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768 && panel.classList.contains('is-open')) {
+            setOpen(false);
+        }
+    });
+})();
+</script>
+<script>
+(function () {
+    var b = "http://localhost:8080/frontend/api/tourvisor-proxy.php";
+    if (typeof location !== 'undefined' && location.protocol === 'https:' && typeof b === 'string' && b.indexOf('http://') === 0) {
+        b = 'https:' + b.substring(5);
+    }
+    window.TH_TV_API_BASE = b;
+    var imgP = "http://localhost:8080/backend/api/tourvisor-image-proxy.php";
+    if (typeof location !== 'undefined' && location.protocol === 'https:' && typeof imgP === 'string' && imgP.indexOf('http://') === 0) {
+        imgP = 'https:' + imgP.substring(5);
+    }
+    window.TH_TV_IMAGE_PROXY = imgP;
+    window.TV_IMAGE_PROXY = imgP;
+    window.TH_DEPARTURE = { id: 7, name: "Самара" };
+    window.TH_CSRF = "ae344598c3c450365e7dfbfa8453a52952241c1779b29ed2452b34ac45db03ed";
+})();
+</script>
+<script src="/frontend/js/th-date-presets.js?v=1784718446" defer></script>
+<script src="/frontend/js/departure-preference.js" defer></script>
+<script src="/frontend/js/tourvisor-flight-pick.js?v=1788595898" defer></script>
+<script src="/frontend/js/th-tour-price-sanity.js?v=1788595898" defer></script>
+<script src="/frontend/js/th-tour-card.js?v=1788595898" defer></script>
+<script src="/frontend/js/session-manager.js?v=1788120669" defer></script>
+<script src="/frontend/js/th-tour-post-filters.js?v=1785917217" defer></script>
+<script src="/frontend/js/th-tour-booking-modal.js?v=1788595898" defer></script>
+<style id="th-cookie-consent-critical">
+.cookie-consent-banner{position:fixed;bottom:0;left:0;right:0;z-index:10050;background:#f9fafb;border-top:1px solid rgba(15,23,42,.08);box-shadow:0 -4px 24px rgba(15,23,42,.12);padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.45;color:#334155;transform:translateY(100%);opacity:0;transition:transform .28s ease,opacity .28s ease;pointer-events:none}
+.cookie-consent-banner.is-visible{transform:translateY(0);opacity:1;pointer-events:auto}
+.cookie-consent-banner__inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 20px}
+.cookie-consent-banner__text{margin:0;flex:1 1 220px;max-width:52rem;text-align:left}
+.cookie-consent-banner__link{color:#1A1A40;font-weight:600;text-decoration:underline}
+.cookie-consent-banner__actions{display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.cookie-consent-banner__btn{border:none;border-radius:10px;padding:9px 20px;font-size:.875rem;font-weight:600;cursor:pointer}
+.cookie-consent-banner__btn--accept{background:linear-gradient(135deg,#FF6B6B,#F65252);color:#fff}
+.cookie-consent-banner__btn--decline{background:#e2e8f0;color:#475569}
+@media (max-width:640px){.cookie-consent-banner{font-size:.75rem}.cookie-consent-banner__inner{flex-direction:column;align-items:stretch}.cookie-consent-banner__text{text-align:center}.cookie-consent-banner__actions{width:100%}.cookie-consent-banner__btn{flex:1 1 auto}}
+</style>
+<script src="/frontend/js/cookie-consent.js?v=1788595898" defer></script>
+
+    <header class="th-off-hero">
+        <img class="th-off-hero__bg" src="/frontend/window/img/offices/samara/fun-sun/01-cover.png" alt="Офис Travel Hub" loading="eager">
+        <div class="th-off-hero__shade" aria-hidden="true"></div>
+        <div class="th-off-hero__inner">
+            <p class="th-off-hero__brand">Travel Hub</p>
+            <p class="th-off-hero__lead">Офисы в Самаре и Москве — заходите или оставьте заявку, менеджер перезвонит за 15 минут.</p>
+            <div class="th-off-hero__cta">
+                <a class="th-off-hero__cta-primary" href="#th-offices-cta-form">Оставить заявку</a>
+                <a class="th-off-hero__cta-ghost" href="tel:+78462541656">
+                    <i class="fas fa-phone" aria-hidden="true"></i>
+                    +7 (846) 254-16-56                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="th-off-wrap">
+        <div class="th-off-filters" role="tablist" aria-label="Город">
+            <button type="button" class="th-off-filter is-active" data-city="all" role="tab" aria-selected="true">
+                Все · 7            </button>
+            <button type="button" class="th-off-filter" data-city="samara" role="tab" aria-selected="false">
+                Самара · 5            </button>
+            <button type="button" class="th-off-filter" data-city="moscow" role="tab" aria-selected="false">
+                Москва · 2            </button>
+        </div>
+
+        <div class="th-off-grid" id="th-offices-grid">
+                        <article class="th-off-card" data-city="samara" style="animation-delay:0s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=samara-funsun">
+                    <img src="/frontend/window/img/offices/samara/fun-sun/01-cover.png"
+                         alt="Fun&amp;Sun — Парк Хаус"
+                         loading="eager"
+                         decoding="async">
+                    <span class="th-off-card__badge">Fun&amp;Sun</span>
+                    <span class="th-off-card__city">Самара</span>
+                                        <div class="th-off-thumbs" aria-hidden="true">
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                            </div>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=samara-funsun">Fun&amp;Sun — Парк Хаус</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Самара, Молл «Парк Хаус», Московское шоссе, 81Б, 2 этаж (рядом с МФЦ)                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>пн–сб: 10:00–20:00, вс: 10:00–16:00                    </p>
+                    <p class="th-off-card__blurb">Пляжный отдых и семейные туры. Главный офис в Парк Хаус.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+78462541656">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Самара"
+                                data-office-name="Fun&amp;Sun — Парк Хаус">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=samara-funsun">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                        <article class="th-off-card" data-city="samara" style="animation-delay:0.08s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=samara-funsun-gudok">
+                    <img src="/frontend/window/img/offices/samara/fun-sun-gudok/01-cover.png"
+                         alt="Fun&amp;Sun — ТЦ «Гудок»"
+                         loading="eager"
+                         decoding="async">
+                    <span class="th-off-card__badge">Fun&amp;Sun</span>
+                    <span class="th-off-card__city">Самара</span>
+                                        <div class="th-off-thumbs" aria-hidden="true">
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                            </div>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=samara-funsun-gudok">Fun&amp;Sun — ТЦ «Гудок»</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Самара, ТЦ «Гудок», ул. Красноармейская, 131 (цоколь, напротив «Ленты»)                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>пн–пт: 9:00–20:00, сб–вс: 10:00–18:00                    </p>
+                    <p class="th-off-card__blurb">Удобно в центре: подбор тура без очереди.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+78462550115">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Самара"
+                                data-office-name="Fun&amp;Sun — ТЦ «Гудок»">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=samara-funsun-gudok">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                        <article class="th-off-card" data-city="samara" style="animation-delay:0.16s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=samara-anex-moskovskoe">
+                    <img src="/frontend/window/img/offices/samara/anex-tour-moskovskoe-81b/01-cover.png"
+                         alt="Anex Tour — Московское шоссе"
+                         loading="eager"
+                         decoding="async">
+                    <span class="th-off-card__badge">Anex Tour</span>
+                    <span class="th-off-card__city">Самара</span>
+                                        <div class="th-off-thumbs" aria-hidden="true">
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                            </div>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=samara-anex-moskovskoe">Anex Tour — Московское шоссе</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Самара, Московское шоссе, 81Б                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>пн–сб: 10:00–20:00, вс: 10:00–16:00                    </p>
+                    <p class="th-off-card__blurb">Горящие туры и семейный отдых.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+78462552563">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Самара"
+                                data-office-name="Anex Tour — Московское шоссе">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=samara-anex-moskovskoe">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                        <article class="th-off-card" data-city="samara" style="animation-delay:0.24s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=samara-anex-apelsin">
+                    <img src="/frontend/window/img/offices/samara/anex-apelsin/01-cover.png"
+                         alt="Anex Tour — ТЦ «Апельсин»"
+                         loading="lazy"
+                         decoding="async">
+                    <span class="th-off-card__badge">Anex Tour</span>
+                    <span class="th-off-card__city">Самара</span>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=samara-anex-apelsin">Anex Tour — ТЦ «Апельсин»</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Самара, ТЦ «Апельсин», ул. Ново-Садовая, 305А (1 этаж, офис 105)                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>ежедневно 10:00–19:00                    </p>
+                    <p class="th-off-card__blurb">Anex Tour в ТЦ «Апельсин» — подбор туров и авиабилетов.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+78469550170">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Самара"
+                                data-office-name="Anex Tour — ТЦ «Апельсин»">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=samara-anex-apelsin">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                        <article class="th-off-card" data-city="samara" style="animation-delay:0.32s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=samara-coral">
+                    <img src="/frontend/window/img/offices/samara/coral-travel/01-cover.png"
+                         alt="Coral Travel — ТЦ «Эль Рио»"
+                         loading="lazy"
+                         decoding="async">
+                    <span class="th-off-card__badge">Coral Travel</span>
+                    <span class="th-off-card__city">Самара</span>
+                                        <div class="th-off-thumbs" aria-hidden="true">
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                            </div>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=samara-coral">Coral Travel — ТЦ «Эль Рио»</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Самара, ТЦ «Эль Рио», Московское шоссе, 205 (3 этаж, у «Детского мира»)                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>пн–сб 10:00–20:00, вс 11:00–20:00                    </p>
+                    <p class="th-off-card__blurb">Международный туроператор Coral Travel.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+78462500306">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Самара"
+                                data-office-name="Coral Travel — ТЦ «Эль Рио»">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=samara-coral">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                        <article class="th-off-card" data-city="moscow" style="animation-delay:0.4s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=moscow-coral-elite">
+                    <img src="/frontend/window/img/offices/moscow/coral-elite-service/01-cover.jpg"
+                         alt="Coral Elite Service"
+                         loading="lazy"
+                         decoding="async">
+                    <span class="th-off-card__badge">Coral Elite</span>
+                    <span class="th-off-card__city">Москва</span>
+                                        <div class="th-off-thumbs" aria-hidden="true">
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                                    <span></span>
+                                            </div>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=moscow-coral-elite">Coral Elite Service</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Москва, Первомайская ул., 42, этаж 1                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>ежедневно 10:00–20:00                    </p>
+                    <p class="th-off-card__blurb">Премиум-сервис в Москве.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+74956603666">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Москва"
+                                data-office-name="Coral Elite Service">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=moscow-coral-elite">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                        <article class="th-off-card" data-city="moscow" style="animation-delay:0s">
+                <a class="th-off-card__media" href="/frontend/window/offices/office.php?slug=moscow-anex">
+                    <img src="/frontend/window/img/offices/moscow/anex-tour/01-cover.png"
+                         alt="Anex Tour"
+                         loading="lazy"
+                         decoding="async">
+                    <span class="th-off-card__badge">Anex Tour</span>
+                    <span class="th-off-card__city">Москва</span>
+                                    </a>
+                <div class="th-off-card__body">
+                    <h2 class="th-off-card__name">
+                        <a href="/frontend/window/offices/office.php?slug=moscow-anex">Anex Tour</a>
+                    </h2>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>г. Москва, Первомайская ул., 42, этаж 1                    </p>
+                    <p class="th-off-card__meta">
+                        <i class="fas fa-clock" aria-hidden="true"></i>пн–пт: 9:00–21:00, сб–вс: 10:00–18:00                    </p>
+                    <p class="th-off-card__blurb">Семейный отдых и надёжные пакеты Anex.</p>
+                    <div class="th-off-card__actions">
+                        <a class="th-off-card__call" href="tel:+74993220289">
+                            <i class="fas fa-phone" aria-hidden="true"></i> Позвонить
+                        </a>
+                        <a class="th-off-card__wa th-off-card__max" href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                        <button type="button" class="th-off-card__lead"
+                                data-th-office-lead-btn="1"
+                                data-office-city="Москва"
+                                data-office-name="Anex Tour">
+                            Заявка в этот офис
+                        </button>
+                        <a class="th-off-card__more" href="/frontend/window/offices/office.php?slug=moscow-anex">
+                            Фото и детали <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+                    </div>
+        <p class="th-off-empty hidden" id="th-offices-empty">В этом городе офисов пока нет в списке.</p>
+
+        <section class="th-off-map mt-10 rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+    <div class="px-4 py-4 sm:px-6 border-b border-slate-100 text-center sm:text-left">
+        <h2 class="heading-font text-xl sm:text-2xl font-bold text-slate-900 m-0">Все офисы в Самаре на карте</h2>
+                <p class="text-slate-600 mt-1 mb-0">5 офисов Travel Hub — Fun&Sun, Anex Tour и Coral Travel. Нажмите на метку для адреса и телефона. Также: <a class="text-[#5DA9A4] font-semibold underline" href="/frontend/window/offices/moscow-offices.php">офисы в Москве</a>.</p>
+            </div>
+    <div id="offices-samara-map"
+         class="th-off-map__canvas w-full"
+         style="height:450px;min-height:400px;background:#e2e8f0;"
+         role="region"
+         aria-label="Все офисы в Самаре на карте"></div>
+</section>
+<script>
+(function () {
+  var mapId = "offices-samara-map";
+  var officesData = [{"name":"Fun\u0026Sun — Парк Хаус","lat":53.23345,"lon":50.2009,"geo":"Самара, Московское шоссе, 81Б","address":"г. Самара, Молл «Парк Хаус», Московское шоссе, 81Б, 2 этаж (рядом с МФЦ)","phone":"+7 (846) 254-16-56","page_url":"\/frontend\/window\/offices\/office.php?slug=samara-funsun"},{"name":"Fun\u0026Sun — ТЦ «Гудок»","lat":53.1909,"lon":50.11117,"geo":"Самара, Красноармейская, 131","address":"г. Самара, ТЦ «Гудок», ул. Красноармейская, 131 (цоколь, напротив «Ленты»)","phone":"+7 (846) 255-01-15","page_url":"\/frontend\/window\/offices\/office.php?slug=samara-funsun-gudok"},{"name":"Anex Tour — Московское шоссе","lat":53.23355,"lon":50.2012,"geo":"Самара, Московское шоссе, 81Б","address":"г. Самара, Московское шоссе, 81Б","phone":"+7 (846) 255-25-63","page_url":"\/frontend\/window\/offices\/office.php?slug=samara-anex-moskovskoe"},{"name":"Anex Tour — ТЦ «Апельсин»","lat":53.21255,"lon":50.17785,"geo":"Самара, Ново-Садовая, 305А","address":"г. Самара, ТЦ «Апельсин», ул. Ново-Садовая, 305А (1 этаж, офис 105)","phone":"+7 (846) 955-01-70","page_url":"\/frontend\/window\/offices\/office.php?slug=samara-anex-apelsin"},{"name":"Coral Travel — ТЦ «Эль Рио»","lat":53.2278,"lon":50.1964,"geo":"Самара, Московское шоссе, 205","address":"г. Самара, ТЦ «Эль Рио», Московское шоссе, 205 (3 этаж, у «Детского мира»)","phone":"+7 (846) 250-03-06","page_url":"\/frontend\/window\/offices\/office.php?slug=samara-coral"}];
+  var mapCenter = [53.2335,50.201];
+  var mapZoom = 12;
+  var preset = "islands#blueCircleIcon";
+  var apiSrc = "https:\/\/api-maps.yandex.ru\/2.1\/?lang=ru_RU";
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function boot(ymaps) {
+    var el = document.getElementById(mapId);
+    if (!el || !ymaps) return;
+
+    ymaps.ready(function () {
+      var map = new ymaps.Map(mapId, {
+        center: mapCenter,
+        zoom: mapZoom,
+        controls: ['zoomControl', 'fullscreenControl']
+      });
+      var collection = new ymaps.GeoObjectCollection();
+      map.geoObjects.add(collection);
+
+      function addPlacemark(lat, lon, o) {
+        var phone = (o.phone || '').replace(/[^\d+]/g, '');
+        var html = '<div style="padding:4px 0;min-width:220px;max-width:280px;line-height:1.45">' +
+          '<strong>' + esc(o.name) + '</strong><br>' +
+          esc(o.address) + '<br>' +
+          (phone ? '<a href="tel:' + esc(phone) + '">' + esc(o.phone) + '</a><br>' : '') +
+          (o.page_url ? '<a href="' + esc(o.page_url) + '">Подробнее об офисе</a>' : '') +
+          '</div>';
+        collection.add(new ymaps.Placemark([lat, lon], {
+          balloonContent: html,
+          hintContent: o.name
+        }, { preset: preset }));
+      }
+
+      function fitBounds() {
+        if (collection.getLength() > 1) {
+          try {
+            map.setBounds(collection.getBounds(), { checkZoomRange: true, zoomMargin: 48 });
+          } catch (e) {}
+        } else if (collection.getLength() === 1) {
+          try {
+            var c = collection.get(0).geometry.getCoordinates();
+            map.setCenter(c, 15);
+          } catch (e2) {}
+        }
+      }
+
+      var pending = 0;
+      function doneGeocode() {
+        pending--;
+        if (pending <= 0) fitBounds();
+      }
+
+      officesData.forEach(function (o) {
+        var lat = parseFloat(o.lat);
+        var lon = parseFloat(o.lon);
+        if (!isNaN(lat) && !isNaN(lon) && !(lat === 0 && lon === 0)) {
+          addPlacemark(lat, lon, o);
+          return;
+        }
+        if (!o.geo) return;
+        pending++;
+        ymaps.geocode('Россия, ' + o.geo, { results: 1 }).then(function (res) {
+          var first = res.geoObjects.get(0);
+          if (first) {
+            var coords = first.geometry.getCoordinates();
+            addPlacemark(coords[0], coords[1], o);
+          }
+          doneGeocode();
+        }, function () { doneGeocode(); });
+      });
+
+      if (pending === 0) fitBounds();
+    });
+  }
+
+  function ensureYmaps(cb) {
+    if (typeof ymaps !== 'undefined') {
+      cb(ymaps);
+      return;
+    }
+    var existing = document.querySelector('script[data-th-ymaps]');
+    if (existing) {
+      existing.addEventListener('load', function () { cb(window.ymaps); });
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = apiSrc;
+    s.async = true;
+    s.setAttribute('data-th-ymaps', '1');
+    s.onload = function () { cb(window.ymaps); };
+    document.head.appendChild(s);
+  }
+
+  ensureYmaps(boot);
+})();
+</script>
+    </main>
+
+    <section class="th-page-cta" id="th-offices-cta">
+    <div class="th-page-cta__inner">
+        <div>
+            <h2 class="th-page-cta__title">Не можете выбрать офис? Напишите — подскажем ближайший</h2>
+            <p class="th-page-cta__sub">Или сразу подберём тур удалённо: 2–3 варианта под даты и бюджет.</p>
+            <div class="th-page-cta__actions">
+                <a class="th-page-cta__btn-primary" href="#th-offices-cta-form">
+                    Оставить заявку
+                </a>
+                <a class="th-page-cta__btn-wa th-page-cta__btn-max"
+                   href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk"
+                   target="_blank" rel="noopener noreferrer">
+                    MAX
+                </a>
+                <a class="th-page-cta__btn-call"
+                   href="tel:+78462541656">
+                    <i class="fas fa-phone" aria-hidden="true"></i>
+                    +7 (846) 254-16-56                </a>
+            </div>
+            <div class="th-page-cta__trust">
+                <span><i class="fas fa-check-circle" aria-hidden="true"></i> Ответ за 15 минут</span>
+                <span><i class="fas fa-shield-alt" aria-hidden="true"></i> Без спама</span>
+                <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Самара, Московское шоссе, 81Б</span>
+            </div>
+        </div>
+        <div class="th-page-cta__form-wrap" id="th-offices-cta-form">
+            <div class="th-lead-capture th-lead-capture--compact" data-th-lead-wrap="offices_hub">
+        <h3 class="th-lead-capture__title heading-font">Быстрая заявка</h3>
+            <p class="th-lead-capture__sub">Имя и телефон — этого достаточно.</p>
+            <ul class="th-lead-capture__proof" aria-label="Гарантии">
+        <li><i class="fas fa-clock" aria-hidden="true"></i> Ответ за 15 минут</li>
+        <li><i class="fas fa-shield-alt" aria-hidden="true"></i> Без спама</li>
+    </ul>
+        <form id="th-offices-cta-lead"
+          class="th-lead-capture__form"
+          data-th-lead
+          data-th-lead-source="offices_hub"
+          data-th-lead-msg="th-offices-cta-lead-msg"
+          >
+                <div class="th-lead-capture__row">
+            <label class="th-lead-capture__lbl" for="th-offices-cta-lead-name">ФИО</label>
+            <input type="text" id="th-offices-cta-lead-name" name="name" required maxlength="100"
+                   autocomplete="name" placeholder="Иванов Иван Иванович" class="th-lead-capture__input">
+        </div>
+                <div class="th-lead-capture__row">
+            <label class="th-lead-capture__lbl" for="th-offices-cta-lead-phone">Телефон</label>
+            <input type="tel" id="th-offices-cta-lead-phone" name="phone" required
+                   autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__" class="th-lead-capture__input">
+        </div>
+                <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+            <label for="th-offices-cta-lead-website">Сайт</label>
+            <input type="text" id="th-offices-cta-lead-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <label class="th-lead-capture__agree">
+            <input type="checkbox" id="th-offices-cta-lead-agree" name="agree" required>
+            <span>Согласен на <a href="/frontend/window/consent.php" target="_blank" rel="noopener">обработку персональных данных</a>, с <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="/frontend/window/terms.php" target="_blank" rel="noopener">Пользовательским соглашением</a></span>
+        </label>
+        <div id="th-offices-cta-lead-msg" class="th-lead-capture__msg hidden" data-th-lead-msg hidden></div>
+        <button type="submit" class="th-lead-capture__submit">Жду звонка</button>
+    </form>
+</div>
+<style>
+.th-lead-capture { max-width: 28rem; margin-left: auto; margin-right: auto; width: 100%; }
+.th-lead-capture__title { font-size: 1.35rem; font-weight: 700; color: #1A1A40; margin: 0 0 0.35rem; }
+.th-lead-capture__sub { font-size: 0.9rem; color: #64748b; margin: 0 0 1rem; line-height: 1.4; }
+.th-lead-capture__form { display: flex; flex-direction: column; gap: 0.75rem; position: relative; }
+.th-lead-capture__lbl { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.th-lead-capture__input {
+    width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 12px;
+    font-size: 1rem; color: #1e293b; background: #fff; box-sizing: border-box;
+}
+.th-lead-capture__input:focus { outline: none; border-color: #5DA9A4; box-shadow: 0 0 0 3px rgba(93,169,164,0.18); }
+.th-lead-capture__textarea { resize: vertical; min-height: 4.5rem; }
+.th-lead-capture__agree { display: flex; align-items: flex-start; gap: 0.55rem; font-size: 0.8125rem; color: #64748b; cursor: pointer; }
+.th-lead-capture__agree input { margin-top: 0.15rem; accent-color: #FF6B6B; }
+.th-lead-capture__agree a { color: #FF6B6B; text-decoration: underline; }
+.th-lead-capture__submit {
+    width: 100%; min-height: 52px; border: none; border-radius: 12px; cursor: pointer;
+    background: #FF6B6B; color: #fff; font-weight: 700; font-size: 1rem;
+    box-shadow: 0 6px 18px rgba(255,107,107,0.32);
+}
+.th-lead-capture__submit:hover { background: #f65252; }
+.th-lead-capture__submit:disabled { opacity: 0.65; cursor: not-allowed; }
+.th-lead-capture__msg { font-size: 0.875rem; padding: 0.65rem 0.85rem; border-radius: 10px; }
+.th-lead-capture__msg.hidden, .th-lead-capture__msg[hidden] { display: none !important; }
+.th-lead-capture__msg.th-lead-msg--ok, .th-lead-capture__msg:not(.hidden):not([hidden]) { display: block; }
+</style>
+        </div>
+    </div>
+</section>
+
+    <footer class="site-footer relative mt-auto overflow-hidden border-t border-slate-800/80 text-slate-300" style="background-color:#10102E;">
+    <div class="pointer-events-none absolute inset-0" style="background:radial-gradient(ellipse 80% 50% at 50% -20%, rgba(26,26,64,0.18), transparent 55%);" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-12 lg:flex-row lg:justify-between lg:gap-16">
+            <div class="max-w-md space-y-5">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-indigo-900 text-white shadow-lg shadow-indigo-900/40">
+                        <i class="fas fa-plane text-sm" aria-hidden="true"></i>
+                    </div>
+                    <span class="heading-font text-xl font-bold tracking-tight text-white sm:text-2xl">Travel Hub</span>
+                </div>
+                <p class="text-sm leading-relaxed text-slate-400">
+                    Подбор туров и премиум‑сервис для отдыха. Работаем с проверенными туроператорами — от заявки до вылета.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="tel:+78462541656" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF6B6B] to-[#f65252] px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition duration-200 hover:opacity-95">
+                        <i class="fas fa-phone"></i>
+                        +7 (846) 254-16-56                    </a>
+                    <a href="/frontend/window/banks_rekvesit.php" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/50 transition duration-200 hover:from-indigo-500 hover:to-indigo-600 hover:shadow-xl">
+                        <i class="fas fa-university"></i>
+                        Реквизиты
+                    </a>
+                </div>
+                <div class="flex flex-wrap gap-2 pt-1">
+                    <a href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk" class="inline-flex h-11 min-w-[2.75rem] items-center justify-center rounded-xl bg-slate-800/90 px-2 text-xs font-extrabold tracking-wide text-slate-200 transition duration-200 hover:bg-[#5B7CFF] hover:text-white" aria-label="MAX" rel="noopener noreferrer" target="_blank">MAX</a>
+                    <a href="https://t.me/TravelHub63" class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800/90 text-slate-300 transition duration-200 hover:bg-sky-600 hover:text-white" aria-label="Telegram" rel="noopener noreferrer" target="_blank"><i class="fab fa-telegram text-lg"></i></a>
+                    <a href="https://vk.ru/hubtravel" class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800/90 text-slate-300 transition duration-200 hover:bg-[#0077FF] hover:text-white" aria-label="VK" rel="noopener noreferrer" target="_blank"><i class="fab fa-vk text-lg"></i></a>
+                </div>
+            </div>
+
+            <div class="grid flex-1 grid-cols-2 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
+                <div>
+                    <h3 class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Компания</h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="/frontend/window/about.php" class="text-slate-400 transition hover:text-white">О нас</a></li>
+                        <li><a href="/frontend/window/offices.php" class="text-slate-400 transition hover:text-white">Офисы</a></li>
+                        <li><a href="/frontend/window/contacts.php" class="text-slate-400 transition hover:text-white">Контакты</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Туры и цены</h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="/frontend/window/promotions.php" class="text-slate-400 transition hover:text-white">Акции</a></li>
+                        <li><a href="/frontend/window/countries-list.php" class="text-slate-400 transition hover:text-white">Страны</a></li>
+                        <li><a href="/frontend/window/popular-hotels.php" class="text-slate-400 transition hover:text-white">Отели</a></li>
+                        <li><a href="/frontend/window/offices.php" class="text-slate-400 transition hover:text-white">Офисы</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Сервис</h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="/frontend/window/services.php" class="text-slate-400 transition hover:text-white">Услуги</a></li>
+                        <li><a href="/frontend/window/tour-calendar.php" class="text-slate-400 transition hover:text-white">Календарь дат</a></li>
+                        <li><a href="https://apps.apple.com/ru/app/travelhub/id6786282632" class="text-slate-400 transition hover:text-white" target="_blank" rel="noopener noreferrer" id="th-app-install-link">Приложение iOS</a></li>
+                        <li><a href="/frontend/window/for-operators.php" class="text-slate-400 transition hover:text-white">Для менеджеров</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Связь</h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="tel:+78462541656" class="text-slate-400 transition hover:text-white">+7 (846) 254-16-56</a></li>
+                        <li><a href="mailto:hello@travelhub63.ru" class="text-slate-400 transition hover:text-white">hello@travelhub63.ru</a></li>
+                        <li class="text-slate-500">Самара, Московское шоссе, 81Б</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-800/90 pt-8 text-xs text-slate-500 sm:flex-row">
+            <p>© 2026 Travel Hub. Все права защищены.</p>
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <a href="/frontend/window/consent.php" class="transition hover:text-indigo-400">Согласие на обработку ПД</a>
+                <a href="/frontend/window/privacy.php" class="transition hover:text-indigo-400">Политика конфиденциальности</a>
+                <a href="/frontend/window/terms.php" class="transition hover:text-indigo-400">Пользовательское соглашение</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<div id="th-tour-booking-modal" class="th-tour-booking-modal" style="display:none" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="th-tour-booking-title">
+    <div class="th-tour-booking-modal__backdrop" data-th-booking-close></div>
+    <div class="th-tour-booking-modal__panel">
+        <div class="th-tour-booking-modal__head">
+            <h2 id="th-tour-booking-title" class="th-tour-booking-modal__title">Заявка на тур</h2>
+            <button type="button" class="th-tour-booking-modal__close" data-th-booking-close aria-label="Закрыть">&times;</button>
+        </div>
+        <p id="th-tour-booking-summary" class="th-tour-booking-modal__summary"></p>
+        <form id="th-tour-booking-form" class="th-tour-booking-modal__form">
+            <input type="hidden" name="booking_type" value="without_payment">
+            <label class="th-tour-booking-modal__lbl">ФИО <span class="th-tour-booking-modal__req">*</span>
+                <input type="text" name="name" id="th-tb-name" autocomplete="name" required maxlength="100" class="th-tour-booking-modal__input" placeholder="Иванов Иван Иванович">
+            </label>
+            <label class="th-tour-booking-modal__lbl">Телефон <span class="th-tour-booking-modal__req">*</span>
+                <input type="tel" name="phone" id="th-tb-phone" autocomplete="tel" required class="th-tour-booking-modal__input" placeholder="+7 (999) 123-45-67">
+            </label>
+            <label class="th-tour-booking-modal__agree">
+                <input type="checkbox" id="th-tb-agree" required>
+                <span>Согласен на <a href="/frontend/window/consent.php" target="_blank" rel="noopener">обработку персональных данных</a>, с <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="/frontend/window/terms.php" target="_blank" rel="noopener">Пользовательским соглашением</a></span>
+            </label>
+            <p id="th-tour-booking-msg" class="th-tour-booking-modal__msg hidden"></p>
+            <button type="submit" id="th-tb-submit" class="th-tour-card__btn th-tour-card__btn--lead th-tour-booking-modal__submit">Отправить заявку</button>
+        </form>
+    </div>
+</div>
+<div id="th-site-feedback-overlay" class="th-sf-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="th-sf-title">
+    <div class="th-sf-backdrop" data-th-sf-close="1"></div>
+    <div class="th-sf-card">
+        <button type="button" class="th-sf-x" data-th-sf-close="1" aria-label="Закрыть">&times;</button>
+        <h2 id="th-sf-title" class="th-sf-title">Обратная связь</h2>
+        <p class="th-sf-sub">Оставьте телефон — перезвоним за 15 минут. Без спама.</p>
+        <form id="th-site-feedback-form" class="th-sf-form">
+            <div class="th-sf-field">
+                <label for="th-sf-name">ФИО <span class="text-red-500">*</span></label>
+                <input type="text" id="th-sf-name" name="name" required maxlength="100" autocomplete="name" class="th-sf-input" placeholder="Иванов Иван Иванович">
+            </div>
+            <div class="th-sf-field">
+                <label for="th-sf-phone">Телефон <span class="text-red-500">*</span></label>
+                <input type="tel" id="th-sf-phone" name="phone" required maxlength="20" autocomplete="tel" class="th-sf-input" placeholder="+7">
+            </div>
+            <div class="th-sf-field">
+                <label for="th-sf-email">Email</label>
+                <input type="email" id="th-sf-email" name="email" maxlength="120" autocomplete="email" class="th-sf-input">
+            </div>
+            <div class="th-sf-field">
+                <label for="th-sf-comment">Комментарий</label>
+                <textarea id="th-sf-comment" name="message" rows="4" maxlength="1000" class="th-sf-input th-sf-textarea"></textarea>
+            </div>
+            <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+                <label for="th-sf-website">Сайт</label>
+                <input type="text" id="th-sf-website" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <label class="th-sf-agree flex items-start gap-2 cursor-pointer text-sm text-slate-600">
+                <input type="checkbox" id="th-sf-agree" name="agree" required class="mt-1 rounded border-slate-300">
+                <span>Согласен на <a href="/frontend/window/consent.php" target="_blank" rel="noopener">обработку персональных данных</a>, с <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="/frontend/window/terms.php" target="_blank" rel="noopener">Пользовательским соглашением</a></span>
+            </label>
+            <p id="th-sf-msg" class="th-sf-msg hidden text-sm"></p>
+            <button type="submit" id="th-sf-submit" class="th-sf-submit">Отправить</button>
+        </form>
+    </div>
+</div>
+<style>
+.th-sf-overlay { position: fixed; inset: 0; z-index: 100050; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.th-sf-overlay.hidden { display: none !important; }
+.th-sf-backdrop { position: absolute; inset: 0; background: rgba(15,23,42,.55); backdrop-filter: blur(6px); }
+.th-sf-card { position: relative; z-index: 1; width: 100%; max-width: 26rem; max-height: min(90vh, 640px); overflow-y: auto; background: #fff; border-radius: 1.25rem; padding: 1.5rem 1.35rem 1.25rem; box-shadow: 0 25px 50px -12px rgba(15,23,42,.35); border: 1px solid #e2e8f0; }
+.th-sf-x { position: absolute; top: 0.65rem; right: 0.75rem; width: 2.25rem; height: 2.25rem; border: none; background: transparent; font-size: 1.5rem; line-height: 1; color: #64748b; cursor: pointer; border-radius: 0.5rem; }
+.th-sf-x:hover { color: #0f172a; background: #f1f5f9; }
+.th-sf-title { font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 2rem 0.35rem 0; }
+.th-sf-sub { font-size: 0.875rem; color: #64748b; margin: 0 0 1rem; }
+.th-sf-field { margin-bottom: 0.85rem; }
+.th-sf-field label { display: block; font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; }
+.th-sf-input { width: 100%; box-sizing: border-box; padding: 0.65rem 0.85rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; font-size: 0.95rem; }
+.th-sf-input:focus { outline: none; border-color: #5DA9A4; box-shadow: 0 0 0 3px rgba(93,169,164,.2); }
+.th-sf-textarea { resize: vertical; min-height: 5rem; }
+.th-sf-msg.th-success { color: #15803d; }
+.th-sf-msg.th-error { color: #b91c1c; }
+.th-sf-submit { width: 100%; margin-top: 0.75rem; padding: 0.75rem 1rem; border: none; border-radius: 0.85rem; font-weight: 700; font-size: 0.95rem; color: #fff; cursor: pointer; background: linear-gradient(135deg, #0c4a6e 0%, #366360 45%, #5DA9A4 100%); }
+.th-sf-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+</style>
+<script>
+(function () {
+    'use strict';
+    var overlay = document.getElementById('th-site-feedback-overlay');
+    if (!overlay) return;
+    var form = document.getElementById('th-site-feedback-form');
+    var modalState = { source: 'site_feedback', phoneOnly: false };
+    var defaultTitle = 'Обратная связь';
+    var defaultSub = 'Оставьте контакты — ответим в ближайшее время.';
+
+    function promoYm(goal) {
+        try {
+            var c = window.__TH_PROMO_PAGE__;
+            var id = (c && c.ymId && String(c.ymId).replace(/\D/g, ''))
+                ? parseInt(String(c.ymId).replace(/\D/g, ''), 10) : 0;
+            if (id && typeof ym === 'function') ym(id, 'reachGoal', goal);
+        } catch (e) {}
+    }
+
+    function applyModalCopy(opts) {
+        var titleEl = document.getElementById('th-sf-title');
+        var subEl = overlay.querySelector('.th-sf-sub');
+        if (titleEl) titleEl.textContent = (opts && opts.title) ? opts.title : defaultTitle;
+        if (subEl) subEl.textContent = (opts && opts.sub) ? opts.sub : defaultSub;
+        var commentEl = document.getElementById('th-sf-comment');
+        if (commentEl) commentEl.value = (opts && opts.message) ? String(opts.message) : '';
+    }
+
+    function open(opts) {
+        opts = opts || {};
+        modalState.source = opts.source || 'site_feedback';
+        /* focusPhone только ставит фокус — не скрывает поле ФИО */
+        modalState.phoneOnly = !!opts.phoneOnly;
+        applyModalCopy(opts);
+        var nameField = document.getElementById('th-sf-name');
+        var nameWrap = nameField && nameField.closest('.th-sf-field');
+        if (nameField && nameWrap) {
+            if (modalState.phoneOnly) {
+                nameField.removeAttribute('required');
+                nameWrap.style.display = 'none';
+            } else {
+                nameField.setAttribute('required', 'required');
+                nameWrap.style.display = '';
+            }
+        }
+        overlay.classList.remove('hidden');
+        if (window.THMobile && window.THMobile.lockScroll) window.THMobile.lockScroll(true);
+        try {
+            var phoneEl = document.getElementById('th-sf-phone');
+            var nameEl = document.getElementById('th-sf-name');
+            var focusEl = (opts.focusPhone && phoneEl) ? phoneEl : nameEl;
+            if (focusEl) setTimeout(function () { focusEl.focus(); }, 80);
+        } catch (e) {}
+    }
+    function close() {
+        overlay.classList.add('hidden');
+        if (window.THMobile && window.THMobile.lockScroll) window.THMobile.lockScroll(false);
+        modalState.source = 'site_feedback';
+        modalState.phoneOnly = false;
+        applyModalCopy({});
+    }
+    document.addEventListener('click', function (e) {
+        var trigger = e.target && e.target.closest ? e.target.closest('[data-th-site-feedback]') : null;
+        if (!trigger) return;
+        e.preventDefault();
+        open();
+    });
+    window.openSiteFeedbackModal = open;
+    overlay.querySelectorAll('[data-th-sf-close]').forEach(function (el) {
+        el.addEventListener('click', function () { close(); });
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !overlay.classList.contains('hidden')) close();
+    });
+    if (form) {
+        var phoneEl = document.getElementById('th-sf-phone');
+        if (window.THLeadCapture && phoneEl) THLeadCapture.formatPhoneInput(phoneEl);
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var msg = document.getElementById('th-sf-msg');
+            var btn = document.getElementById('th-sf-submit');
+            var nameEl = document.getElementById('th-sf-name');
+            var phoneEl2 = document.getElementById('th-sf-phone');
+            var emailEl = document.getElementById('th-sf-email');
+            var name = ((nameEl || {}).value || '').trim();
+            var phone = ((phoneEl2 || {}).value || '').trim();
+            if (!name && modalState.phoneOnly) name = 'Клиент сайта';
+            var email = ((emailEl || {}).value || '').trim();
+            var message = ((document.getElementById('th-sf-comment') || {}).value || '').trim();
+            var agree = !!(document.getElementById('th-sf-agree') || {}).checked;
+            var website = ((document.getElementById('th-sf-website') || {}).value || '');
+            btn.disabled = true;
+            if (msg) msg.classList.add('hidden');
+
+            function markField(el, bad) {
+                if (!el) return;
+                el.style.borderColor = bad ? '#f87171' : '';
+                el.setAttribute('aria-invalid', bad ? 'true' : 'false');
+            }
+            markField(nameEl, false);
+            markField(phoneEl2, false);
+            markField(emailEl, false);
+
+            function finish(data) {
+                if (data && data.success) {
+                    if (msg) {
+                        msg.textContent = data.message || 'Заявка отправлена.';
+                        msg.className = 'th-sf-msg th-success';
+                        msg.classList.remove('hidden');
+                    }
+                    form.reset();
+                    setTimeout(close, 900);
+                } else {
+                    if (msg) {
+                        msg.textContent = (data && data.error) ? data.error : 'Ошибка отправки';
+                        msg.className = 'th-sf-msg th-error';
+                        msg.classList.remove('hidden');
+                    }
+                }
+                btn.disabled = false;
+            }
+
+            if (window.THLeadCapture && typeof THLeadCapture.validateLeadFields === 'function') {
+                var check = THLeadCapture.validateLeadFields({
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    agree: agree,
+                    phoneOnly: modalState.phoneOnly
+                });
+                if (!check.ok) {
+                    var err = check.error || 'Проверьте данные формы';
+                    if (/ФИО/i.test(err)) markField(nameEl, true);
+                    if (/телефон/i.test(err)) markField(phoneEl2, true);
+                    if (/email/i.test(err)) markField(emailEl, true);
+                    finish({ success: false, error: err });
+                    return;
+                }
+                name = check.name;
+                phone = check.phone;
+                email = check.email;
+            } else if (window.THLeadCapture && typeof THLeadCapture.submit === 'function') {
+                /* validate внутри submit */
+            } else {
+                finish({ success: false, error: 'Форма временно недоступна. Позвоните нам.' });
+                return;
+            }
+
+            if (window.THLeadCapture && typeof THLeadCapture.submit === 'function') {
+                THLeadCapture.submit({
+                    name: name,
+                    phone: phone,
+                    agree: agree,
+                    email: email,
+                    message: message,
+                    website: website,
+                    source: modalState.source || 'site_feedback',
+                    phoneOnly: modalState.phoneOnly
+                }).then(function (data) {
+                    if (data && data.success && String(modalState.source || '').indexOf('promo_') === 0) {
+                        promoYm('promo_lead_submit');
+                        promoYm('promo_lead_success');
+                    }
+                    if (!(data && data.success)) {
+                        var err2 = (data && data.error) || '';
+                        if (/ФИО/i.test(err2)) markField(nameEl, true);
+                        if (/телефон/i.test(err2)) markField(phoneEl2, true);
+                        if (/email/i.test(err2)) markField(emailEl, true);
+                    }
+                    finish(data);
+                });
+                return;
+            }
+
+            finish({ success: false, error: 'Форма временно недоступна. Позвоните нам.' });
+        });
+    }
+})();
+</script>
+<nav class="th-site-lead-bar" aria-label="Быстрая связь" data-th-site-lead-bar>
+    <a class="th-site-lead-bar__btn th-site-lead-bar__btn--call"
+       href="tel:+78462541656"
+       data-th-track="call_bar">
+        <i class="fas fa-phone" aria-hidden="true"></i>
+        <span>Позвонить</span>
+    </a>
+    <a class="th-site-lead-bar__btn th-site-lead-bar__btn--max"
+       href="https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk"
+       target="_blank" rel="noopener noreferrer"
+       data-th-track="max_bar">
+        <span>MAX</span>
+    </a>
+    <button type="button" class="th-site-lead-bar__btn th-site-lead-bar__btn--lead"
+            data-th-open-support-chat
+            data-th-track="chat_bar"
+            aria-label="Открыть чат поддержки">
+        <i class="fas fa-comments" aria-hidden="true"></i>
+        <span>Чат</span>
+    </button>
+</nav>
+<script>
+(function () {
+  try { document.body.classList.add('has-th-lead-bar'); } catch (e) {}
+  var bar = document.querySelector('[data-th-site-lead-bar]');
+  if (bar && bar.parentNode !== document.body) {
+    try { document.body.appendChild(bar); } catch (eBar) {}
+  }
+  document.addEventListener('click', function (e) {
+    var chatBtn = e.target && e.target.closest ? e.target.closest('[data-th-open-support-chat]') : null;
+    if (chatBtn) {
+      e.preventDefault();
+      if (window.THSupportChat && typeof window.THSupportChat.open === 'function') {
+        window.THSupportChat.open();
+      } else {
+        var toggle = document.getElementById('th-support-chat-toggle');
+        if (toggle) toggle.click();
+      }
+      if (window.THLeadCapture) window.THLeadCapture.reachGoal('chat_bar_click');
+      return;
+    }
+    var el = e.target && e.target.closest ? e.target.closest('[data-th-track]') : null;
+    if (!el || !window.THLeadCapture) return;
+    var g = el.getAttribute('data-th-track');
+    if (g === 'max_bar' || g === 'wa_bar') THLeadCapture.reachGoal('max_click');
+  }, true);
+})();
+</script>
+<script src="/frontend/js/tour-link-utils.js?v=1"></script>
+<script src="/frontend/js/safe-console.js?v=1786079450" defer></script>
+<link rel="stylesheet" href="/frontend/css/th-conversion-boost.css?v=1786137294">
+<script src="/frontend/js/th-conversion-boost.js?v=1788595898" defer></script>
+<script src="/frontend/js/th-promo-apply.js?v=1784836663" defer></script>
+<script src="/frontend/js/promo-timer.js?v=1787088667" defer></script>
+<!-- Yandex.Metrika counter (loads after cookie consent) -->
+<script>
+(function () {
+    var YM_ID = 109291068;
+    var TAG_SRC = "https://mc.yandex.ru/metrika/tag.js?id=109291068";
+    var WATCH_SRC = "https://mc.yandex.ru/watch/109291068";
+
+    function hasCookieAnalyticsConsent() {
+        try {
+            if (localStorage.getItem('cookie_consent_accepted') === 'accepted') {
+                return true;
+            }
+        } catch (e) { /* private mode */ }
+        return document.cookie.split(';').some(function (part) {
+            return part.trim().indexOf('cookie_consent_accepted=accepted') === 0;
+        });
+    }
+
+    function loadYandexMetrika() {
+        if (window.__thYmLoaded) {
+            return;
+        }
+        window.__thYmLoaded = true;
+        (function (m, e, t, r, i, k, a) {
+            m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+            m[i].l = 1 * new Date();
+            for (var j = 0; j < document.scripts.length; j++) {
+                if (document.scripts[j].src === r) { return; }
+            }
+            k = e.createElement(t);
+            a = e.getElementsByTagName(t)[0];
+            k.async = 1;
+            k.src = r;
+            a.parentNode.insertBefore(k, a);
+        })(window, document, 'script', TAG_SRC, 'ym');
+        window.dataLayer = window.dataLayer || [];
+        ym(YM_ID, 'init', {
+            ssr: true,
+            webvisor: true,
+            clickmap: true,
+            ecommerce: 'dataLayer',
+            referrer: document.referrer,
+            url: location.href,
+            accurateTrackBounce: true,
+            trackLinks: true
+        });
+        try {
+            var ns = document.createElement('div');
+            ns.style.cssText = 'position:absolute;left:-9999px;';
+            ns.setAttribute('aria-hidden', 'true');
+            var img = document.createElement('img');
+            img.src = WATCH_SRC;
+            img.alt = '';
+            ns.appendChild(img);
+            document.body.appendChild(ns);
+        } catch (eImg) { /* ignore */ }
+    }
+
+    window.thLoadYandexMetrika = loadYandexMetrika;
+    window.addEventListener('th:cookie-consent-accepted', loadYandexMetrika);
+    if (hasCookieAnalyticsConsent()) {
+        loadYandexMetrika();
+    }
+})();
+</script>
+<!-- /Yandex.Metrika counter -->
+    <script src="/frontend/js/office-lead-modal.js?v=5" defer></script>
+    <script>
+    (function () {
+      var filters = document.querySelectorAll('.th-off-filter');
+      var cards = document.querySelectorAll('.th-off-card');
+      var empty = document.getElementById('th-offices-empty');
+      filters.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var city = btn.getAttribute('data-city') || 'all';
+          filters.forEach(function (b) {
+            b.classList.toggle('is-active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          var visible = 0;
+          cards.forEach(function (card) {
+            var show = city === 'all' || card.getAttribute('data-city') === city;
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+          });
+          if (empty) empty.classList.toggle('hidden', visible > 0);
+        });
+      });
+    })();
+    </script>

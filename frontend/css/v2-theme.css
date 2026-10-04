@@ -1,0 +1,442 @@
+/* Перекраска Tailwind-утилит (sky→teal, indigo→navy, orange→coral) */
+@import url('v2-tailwind-overrides.css');
+
+/**
+ * Travel Hub v2 — визуальная тема поверх design-system.css / redesign.css.
+ * Дизайн-система сгенерирована через UI/UX Pro MCP:
+ *   primary  #1A1A40 (deep navy)
+ *   secondary #5DA9A4 (teal)
+ *   cta      #FF6B6B (coral)
+ *   fonts    Outfit (заголовки) + Work Sans (текст)
+ * Подключается ПОСЛЕ design-system.css и redesign.css (см. design_system_head.php).
+ */
+
+:root {
+    /* v2 палитра */
+    --v2-primary: #1A1A40;
+    --v2-primary-soft: rgba(26, 26, 64, 0.06);
+    --v2-secondary: #5DA9A4;
+    --v2-secondary-soft: rgba(93, 169, 164, 0.12);
+    --v2-cta: #FF6B6B;
+    --v2-cta-hover: #f65252;
+    --v2-cta-soft: rgba(255, 107, 107, 0.12);
+    --v2-bg: #ffffff;
+    --v2-bg-alt: #f7f9fb;
+    --v2-text: #1E293B;
+    --v2-text-muted: #64748b;
+    --v2-radius: 18px;
+    --v2-radius-sm: 12px;
+    --v2-shadow: 0 6px 28px rgba(26, 26, 64, 0.07);
+    --v2-shadow-hover: 0 18px 48px rgba(26, 26, 64, 0.13);
+    --v2-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Переопределение токенов v1 → тема применяется ко всем ds-компонентам */
+    --font-sans: 'Work Sans', Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --ds-bg: var(--v2-bg-alt);
+    --ds-primary: var(--v2-primary);
+    --ds-primary-hover: #10102e;
+    --ds-primary-soft: var(--v2-primary-soft);
+    --ds-text: var(--v2-text);
+    --ds-text-secondary: var(--v2-text-muted);
+    --ds-radius: var(--v2-radius);
+    --ds-radius-sm: var(--v2-radius-sm);
+    --ds-shadow: var(--v2-shadow);
+    --ds-shadow-hover: var(--v2-shadow-hover);
+}
+
+/* ── Типографика ─────────────────────────────── */
+body {
+    font-family: var(--font-sans);
+}
+
+/* ── UX / доступность (WCAG): фокус, касание, читаемость ── */
+:focus-visible {
+    outline: 3px solid var(--v2-secondary) !important;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+html {
+    -webkit-text-size-adjust: 100%;
+}
+/* Крупные зоны нажатия на мобильных: кнопки и ссылки-кнопки */
+@media (max-width: 767px) {
+    .button,
+    .th-tour-card__btn,
+    .tv-pf-chip {
+        min-height: 44px;
+    }
+    .tv-pf-chip {
+        font-size: 0.875rem !important;
+        padding: 10px 14px !important;
+    }
+}
+
+h1, h2, h3, h4, h5, h6,
+.heading-font, .ds-h1, .ds-h2 {
+    font-family: 'Outfit', var(--font-sans);
+    letter-spacing: -0.02em;
+}
+
+/* ── Кнопки: коралловый CTA + микровзаимодействия ── */
+.th-tour-card__btn,
+.tv-search-btn,
+.btn-primary,
+button[type="submit"].th-cta,
+.th-detail__cta-btn {
+    transition: transform var(--v2-transition), box-shadow var(--v2-transition), background var(--v2-transition);
+    will-change: transform;
+}
+
+.th-tour-card__btn {
+    background: var(--v2-cta);
+    border-radius: 12px;
+    box-shadow: 0 4px 14px var(--v2-cta-soft);
+}
+.th-tour-card__btn:hover {
+    background: var(--v2-cta-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.38);
+}
+.th-tour-card__btn:active {
+    transform: translateY(0);
+}
+.th-tour-card__btn--secondary {
+    background: #fff;
+    color: var(--v2-cta);
+    border: 2px solid var(--v2-cta);
+    box-shadow: none;
+}
+.th-tour-card__btn--secondary:hover {
+    background: #fff5f5;
+    color: var(--v2-cta-hover);
+    box-shadow: none;
+}
+
+/* ── Карточки туров: минимализм, акцент на цену ── */
+.th-tour-card {
+    border-radius: var(--v2-radius);
+    border: 1px solid rgba(26, 26, 64, 0.06);
+    box-shadow: var(--v2-shadow);
+    transition: transform var(--v2-transition), box-shadow var(--v2-transition);
+}
+.th-tour-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--v2-shadow-hover);
+}
+.th-tour-card__price {
+    color: var(--v2-cta);
+    font-family: 'Outfit', var(--font-sans);
+    font-size: 24px;
+}
+.th-tour-card__geo {
+    color: var(--v2-secondary);
+    font-weight: 600;
+}
+
+/* surface-card (офисы, страницы) */
+.surface-card {
+    border-radius: var(--v2-radius);
+}
+
+/* ── Страница тура: CTA в коралловом акценте ── */
+.th-detail__cta-btn {
+    background: var(--v2-cta);
+    border-radius: 12px;
+}
+.th-detail__cta-btn:hover {
+    background: var(--v2-cta-hover);
+    box-shadow: 0 6px 24px rgba(255, 107, 107, 0.4);
+}
+.th-detail__cta-btn--outline {
+    background: #fff;
+    color: var(--v2-cta);
+    border-color: var(--v2-cta);
+}
+.th-detail__cta-btn--outline:hover {
+    background: #fff5f5;
+}
+/* Кнопка «Оставить заявку менеджеру» не переопределяется (просьба Никиты):
+   её стили заданы селектором с ID (#btn-booking-without.th-btn-manager-request)
+   и имеют более высокий приоритет, чем классы темы. */
+
+/* ── Поисковик: главная CTA-кнопка ───────────── */
+.tv-sc-search-btn,
+#tv-search-btn.button-primary {
+    background: linear-gradient(135deg, var(--v2-cta) 0%, #ff8a80 100%) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35) !important;
+    transition: transform var(--v2-transition), box-shadow var(--v2-transition), filter var(--v2-transition);
+}
+.tv-sc-search-btn:hover,
+#tv-search-btn.button-primary:hover {
+    filter: brightness(0.96);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(255, 107, 107, 0.45) !important;
+}
+
+/* ── Формы ───────────────────────────────────── */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--v2-secondary);
+    outline-offset: 1px;
+}
+
+/* ── Header: белый фон (скролл / внутренние страницы) ── */
+#site-header.header:not([data-home="1"]),
+#site-header.header[data-home="1"].scrolled {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom-color: rgba(226, 232, 240, 0.95) !important;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05), 0 4px 18px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Главная на hero: стеклянная шапка + белые ссылки (как на локалке) */
+#site-header.header[data-home="1"]:not(.scrolled) {
+    background: rgba(255, 255, 255, 0.14) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__logo {
+    color: #fff !important;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__nav > a,
+#site-header.header[data-home="1"]:not(.scrolled) .header__more-toggle {
+    color: rgba(255, 255, 255, 0.92) !important;
+    opacity: 1;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__nav > a.is-active,
+#site-header.header[data-home="1"]:not(.scrolled) .header__more-toggle.is-active {
+    color: #fff !important;
+    font-weight: 600;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__nav > a:hover,
+#site-header.header[data-home="1"]:not(.scrolled) .header__more-toggle:hover {
+    color: #fff !important;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__actions .button-secondary {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__actions .button-secondary:hover {
+    background: rgba(255, 255, 255, 0.24) !important;
+    color: #fff !important;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__phone {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #fff !important;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__phone i {
+    color: #79bcb7 !important;
+}
+
+#site-header.header[data-home="1"]:not(.scrolled) .header__phone-num {
+    color: #fff !important;
+}
+
+/* Hero: градиент до загрузки WebP */
+.home-hero-section {
+    background-color: #1a2744;
+    background-image: linear-gradient(165deg, #243b6e 0%, #1a2744 45%, #121830 100%);
+}
+
+#site-header.header:not([data-home="1"]) .header__logo,
+#site-header.header[data-home="1"].scrolled .header__logo {
+    color: var(--v2-primary) !important;
+}
+
+#site-header.header:not([data-home="1"]) .header__nav > a,
+#site-header.header:not([data-home="1"]) .header__more-toggle,
+#site-header.header[data-home="1"].scrolled .header__nav > a,
+#site-header.header[data-home="1"].scrolled .header__more-toggle {
+    color: #475569 !important;
+    opacity: 1;
+}
+
+#site-header.header:not([data-home="1"]) .header__nav > a.is-active,
+#site-header.header:not([data-home="1"]) .header__more-toggle.is-active,
+#site-header.header[data-home="1"].scrolled .header__nav > a.is-active,
+#site-header.header[data-home="1"].scrolled .header__more-toggle.is-active {
+    color: var(--v2-primary) !important;
+    font-weight: 600;
+}
+
+#site-header.header:not([data-home="1"]) .header__nav > a:hover,
+#site-header.header:not([data-home="1"]) .header__more-toggle:hover,
+#site-header.header[data-home="1"].scrolled .header__nav > a:hover,
+#site-header.header[data-home="1"].scrolled .header__more-toggle:hover {
+    color: var(--v2-primary) !important;
+}
+
+/* Меню «Ещё»: всегда тёмный текст на белом — не наследовать цвет nav */
+#site-header.header .header__more-menu a {
+    color: #1A1A40 !important;
+    opacity: 1 !important;
+}
+#site-header.header .header__more-menu a:hover {
+    color: #1A1A40 !important;
+    background: rgba(93, 169, 164, 0.18) !important;
+}
+
+#site-header.header:not([data-home="1"]) .header__actions .button-secondary,
+#site-header.header[data-home="1"].scrolled .header__actions .button-secondary {
+    background: #fff !important;
+    border: 1.5px solid rgba(93, 169, 164, 0.5) !important;
+    color: var(--v2-primary) !important;
+    -webkit-text-fill-color: var(--v2-primary);
+}
+
+#site-header.header:not([data-home="1"]) .header__actions .button-secondary:hover,
+#site-header.header[data-home="1"].scrolled .header__actions .button-secondary:hover {
+    background: var(--v2-secondary-soft) !important;
+    border-color: var(--v2-secondary) !important;
+    color: var(--v2-primary) !important;
+}
+
+#site-header.header:not([data-home="1"]) .header__phone,
+#site-header.header[data-home="1"].scrolled .header__phone {
+    background: transparent !important;
+    border: none !important;
+    color: var(--v2-primary) !important;
+    padding: 8px 10px !important;
+}
+
+#site-header.header:not([data-home="1"]) .header__phone i,
+#site-header.header[data-home="1"].scrolled .header__phone i {
+    color: var(--v2-secondary) !important;
+}
+
+#site-header.header:not([data-home="1"]) .header__phone-num,
+#site-header.header[data-home="1"].scrolled .header__phone-num {
+    color: var(--v2-primary) !important;
+}
+
+#site-header .header__logo {
+    font-family: 'Outfit', var(--font-sans);
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+    #site-header .header__nav {
+        margin-left: 14px;
+        gap: 10px;
+    }
+    #site-header .header__nav a,
+    #site-header .header__more-toggle {
+        font-size: 0.9rem;
+    }
+}
+
+/* ── Ссылки навигации: анимированное подчёркивание ── */
+#site-header .nav-link {
+    position: relative;
+}
+#site-header .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--v2-cta);
+    transition: width 0.3s ease;
+}
+#site-header .nav-link:hover::after {
+    width: 100%;
+}
+
+/* ── Scroll-reveal анимации (включает v2-theme.js) ── */
+.v2-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.v2-reveal.v2-reveal--visible {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .v2-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .th-tour-card,
+    .th-tour-card__btn {
+        transition: none;
+    }
+}
+
+/* ── Back to top ─────────────────────────────── */
+.v2-back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--v2-primary);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(26, 26, 64, 0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.v2-back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.v2-back-to-top:hover {
+    transform: scale(1.08);
+    background: var(--v2-cta);
+}
+@media (max-width: 768px) {
+    .v2-back-to-top {
+        bottom: calc(max(var(--th-sticky-bottom-h, 0px), var(--th-lead-bar-h, 64px)) + 58px + env(safe-area-inset-bottom, 0px));
+        right: 14px;
+        width: 44px;
+        height: 44px;
+        z-index: 9880;
+    }
+}
+
+/* ── Модалка бронирования: плавное появление ── */
+#booking-modal > div {
+    animation: v2-modal-in 0.28s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+}
+@keyframes v2-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    #booking-modal > div {
+        animation: none;
+    }
+}

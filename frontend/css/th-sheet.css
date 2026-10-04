@@ -1,0 +1,173 @@
+/**
+ * Travel Hub — универсальный bottom sheet / modal overlay.
+ * Использование: .th-sheet > .th-sheet__backdrop + .th-sheet__panel
+ * На desktop (@media min 768) — центрированная модалка.
+ */
+
+.th-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: var(--th-z-modal, 10250);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.th-sheet.is-open,
+.th-sheet:not(.hidden)[style*="flex"],
+.th-sheet.th-sheet--open {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+}
+
+.th-sheet__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.th-sheet__panel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 100%;
+    max-height: min(92%, calc(var(--th-vvh, 100vh) - 8px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 40px rgba(15, 23, 42, 0.18);
+    padding-bottom: calc(16px + var(--th-safe-bottom, 0px));
+    box-sizing: border-box;
+    transform: translateY(12px);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.th-sheet.is-open .th-sheet__panel,
+.th-sheet.th-sheet--open .th-sheet__panel {
+    transform: translateY(0);
+}
+
+.th-sheet__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    min-width: var(--th-tap-min, 44px);
+    min-height: var(--th-tap-min, 44px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+@media (min-width: 768px) {
+    .th-sheet {
+        align-items: center;
+        padding: 16px;
+    }
+
+    .th-sheet__panel {
+        width: auto;
+        min-width: min(100%, 420px);
+        max-width: min(100%, 480px);
+        border-radius: 20px;
+        max-height: min(90vh, calc(var(--th-vvh, 100vh) - 32px));
+        transform: translateY(8px) scale(0.98);
+    }
+
+    .th-sheet.is-open .th-sheet__panel,
+    .th-sheet.th-sheet--open .th-sheet__panel {
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Legacy modals — наследуют sheet-паттерн без смены markup */
+    #quick-booking-modal,
+    #booking-modal,
+    #th-tour-booking-modal,
+    #tv-nights-popup:not(.hidden),
+    #vip-tv-nights-popup:not(.hidden),
+    #country-tv-nights-popup:not(.hidden),
+    #th-site-feedback-overlay:not(.hidden),
+    #certificateModal:not(.hidden),
+    .th-tour-booking-modal,
+    #tv-filters-modal-overlay.tv-filters-modal--show {
+        align-items: flex-end !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+    .th-qbm-modal__panel,
+    #quick-booking-modal > .th-qbm-modal__panel,
+    #booking-modal > div,
+    .th-tour-booking-modal__panel,
+    #tv-nights-popup-card.th-coral-popup__panel,
+    .tv-nights-modal-card,
+    #th-site-feedback-overlay .th-sf-card,
+    #certificateModal > div,
+    #tv-filters-modal.tv-filters-modal--show {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: min(92%, calc(var(--th-vvh, 100vh) - 8px)) !important;
+        overflow: hidden !important;
+        padding-bottom: 0 !important;
+        box-sizing: border-box !important;
+        background: #fff !important;
+    }
+
+    #tv-nights-popup-card.th-coral-popup__panel {
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+
+    #tv-sc-date-popup.th-coral-popup:not(.hidden),
+    #tv-tourists-block.th-coral-popup:not(.hidden),
+    #tv-nights-popup.th-coral-popup:not(.hidden) {
+        align-items: flex-end !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+    #tv-sc-date-popup.th-coral-popup .th-coral-popup__panel,
+    #tv-tourists-block.th-coral-popup .th-coral-popup__panel,
+    #tv-nights-popup.th-coral-popup .th-coral-popup__panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: min(92%, calc(var(--th-vvh, 100vh) - 8px)) !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .th-search-choice-sheet.is-open .th-search-choice-sheet__panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: min(92%, calc(var(--th-vvh, 100vh) - 8px)) !important;
+        border-radius: 20px 20px 0 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+}
