@@ -11,7 +11,7 @@ session_start();
     <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
     <link rel="alternate icon" href="/frontend/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="/frontend/css/pages/turkey-vip-hotels.css?v=1">
+        <link rel="stylesheet" href="/frontend/css/pages/turkey-vip-hotels.css?v=2">
     <?php include __DIR__ . '/../../backend/components/design_system_head.php'; ?>
     </head>
 <body class="ds-page text-slate-900 antialiased">
@@ -189,18 +189,37 @@ session_start();
             });
 
             const cityNames = { Antalya: 'Анталья', Belek: 'Белек', Kemer: 'Кемер' };
-            const fallbackImg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect fill="%23e2e8f0" width="400" height="300"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="18" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo image%3C/text%3E%3C/svg%3E';
+            const fallbackImg = 'data:image/svg+xml,' + encodeURIComponent(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">'
+                + '<rect width="400" height="300" fill="#f1f5f9"/>'
+                + '<g fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">'
+                + '<path d="M145 205V105h110v100M125 205h150M165 130h20m30 0h20m-70 35h20m30 0h20"/>'
+                + '</g><text x="200" y="250" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="18">Фото скоро появится</text></svg>'
+            );
 
             container.innerHTML = unique.map(hotel => {
                 const cityName = cityNames[hotel.city] || escHtml(hotel.city);
-                const imageUrl = hotel.image || fallbackImg;
                 const slug     = hotel.slug || '';
                 const nameSafe = escHtml(hotel.name);
                 const descSafe = hotel.description ? escHtml(hotel.description) : '';
+                const photoUrls = Array.from(new Set(
+                    (Array.isArray(hotel.images) ? hotel.images : [])
+                        .concat(hotel.image ? [hotel.image] : [])
+                        .map(url => String(url || '').trim())
+                        .filter(url => Boolean(url) && !/^https?:\/\/images\.unsplash\.com\//i.test(url))
+                ));
+                const photoList = photoUrls.length ? photoUrls : [fallbackImg];
+                const photoAlt = photoUrls.length
+                    ? hotel.name
+                    : `${hotel.name || 'Отель'} — фото скоро появится`;
+                const photoHtml = photoList.map((url, index) => {
+                    const alt = photoUrls.length > 1 ? `${photoAlt} — фото ${index + 1}` : photoAlt;
+                    return `<img src="${escHtml(url)}" alt="${escHtml(alt)}" class="vip-card-photo vip-card-gallery-img" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">`;
+                }).join('');
 
-                return `<div class="hotel-card rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow" data-hotel-slug="${escHtml(slug)}">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="${escHtml(imageUrl)}" alt="${nameSafe}" class="vip-card-photo w-full h-full object-cover">
+                return `<div class="hotel-card rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow" data-hotel-slug="${escHtml(slug)}" data-tv-hotel-id="${escHtml(hotel.tourvisor_hotel_id || '')}">
+                    <div class="relative h-64 overflow-hidden vip-card-gallery" role="region" aria-label="Фотографии: ${nameSafe}" tabindex="0">
+                        <div class="vip-card-gallery-track">${photoHtml}</div>
                         <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-indigo-600">
                             ${escHtml(hotel.rating || '5*')}
                         </div>
@@ -223,8 +242,164 @@ session_start();
             }).join('');
 
             container.querySelectorAll('.vip-card-photo').forEach(img => {
-                img.addEventListener('error', () => { img.src = fallbackImg; }, { once: true });
+                img.addEventListener('error', () => {
+                    if (img.dataset.fallbackApplied) return;
+                    img.dataset.fallbackApplied = '1';
+                    img.src = fallbackImg;
+                }, { once: true });
             });
+            loadTourvisorHotelGalleries(container, fallbackImg);
+        }
+
+        async function loadTourvisorHotelGalleries(container, fallbackImg) {
+            const apiBase = String(window.TH_TV_API_BASE || window.TV_API_BASE || '').trim();
+            if (!apiBase) {
+                console.warn('[VIP отели] Tourvisor API URL не задан; оставлены фотографии из каталога.');
+                return;
+            }
+
+            const cards = Array.from(container.querySelectorAll('.hotel-card'));
+            if (!cards.length) {
+                return;
+            }
+
+            const apiUrl = new URL(apiBase, window.location.href);
+            async function requestTourvisor(params) {
+                const url = new URL(apiUrl.href);
+                Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, String(value)));
+                const response = await fetch(url.href, { cache: 'force-cache' });
+                if (!response.ok) {
+                    throw new Error('Tourvisor request failed with HTTP ' + response.status);
+                }
+                const result = await response.json();
+                if (!result || !result.success) {
+                    throw new Error((result && result.error) || 'Tourvisor request failed');
+                }
+                return result.data;
+            }
+
+            const normalizeHotelName = value => String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, ' ')
+                .trim();
+            const canonicalNames = {
+                'lara-barut-collection': ['lara barut collection'],
+                'mardan-palace': ['mardan palace'],
+                'nirvana-cosmopolitan': ['nirvana cosmopolitan'],
+                'rixos-downtown-antalya': ['rixos downtown antalya'],
+                'titanic-deluxe-lara': ['titanic deluxe lara'],
+                'voyage-kundu-hotel': ['voyage kundu'],
+                'rixos-premium-belek': ['rixos premium belek'],
+                'maxx-royal-belek': ['maxx royal belek'],
+                'cornelia-diamond-golf': ['cornelia diamond'],
+                'lykia-world-olive-village': ['lykia world olive village']
+            };
+            function namesMatch(card, catalogName) {
+                const slug = card.dataset.hotelSlug || '';
+                const catalog = normalizeHotelName(catalogName);
+                const names = canonicalNames[slug] || [];
+                return names.some(name => {
+                    const normalized = normalizeHotelName(name);
+                    return catalog === normalized
+                        || catalog.startsWith(normalized + ' ');
+                });
+            }
+
+            const unresolvedCards = cards.filter(card =>
+                !(/^\d+$/.test(card.dataset.tvHotelId || '') && Number(card.dataset.tvHotelId) > 0)
+            );
+            if (unresolvedCards.length) {
+                try {
+                    const unresolved = new Set(unresolvedCards);
+                    for (let page = 1; page <= 5 && unresolved.size; page++) {
+                        const catalog = await requestTourvisor({
+                            type: 'hotels', countryId: 4, page, limit: 100, sort: 'rating'
+                        });
+                        const entries = Array.isArray(catalog && catalog.hotels) ? catalog.hotels : [];
+                        for (const entry of entries) {
+                            if (!entry || !Number.isInteger(Number(entry.id)) || Number(entry.id) <= 0) continue;
+                            for (const card of unresolved) {
+                                if (namesMatch(card, entry.name)) {
+                                    card.dataset.tvHotelId = String(entry.id);
+                                    unresolved.delete(card);
+                                    break;
+                                }
+                            }
+                        }
+                        if (entries.length < 100) break;
+                    }
+                    unresolved.forEach(card => {
+                        console.warn('[VIP отели] Точное соответствие отеля в каталоге Tourvisor не найдено:', card.querySelector('h3')?.textContent || card.dataset.hotelSlug);
+                    });
+                } catch (error) {
+                    console.warn('[VIP отели] Не удалось сопоставить отели с каталогом Tourvisor; оставлены проверенные фото:', error);
+                }
+            }
+
+            const cardsWithIds = cards.filter(card =>
+                /^\d+$/.test(card.dataset.tvHotelId || '') && Number(card.dataset.tvHotelId) > 0
+            );
+            let nextCard = 0;
+            async function loadNextGallery() {
+                while (nextCard < cardsWithIds.length) {
+                    const card = cardsWithIds[nextCard++];
+                    const hotelId = card.dataset.tvHotelId;
+                    const track = card.querySelector('.vip-card-gallery-track');
+                    if (!track) continue;
+
+                    try {
+                        const hotelData = await requestTourvisor({ type: 'hotel', hotelId });
+                        if (!hotelData) throw new Error('Tourvisor returned no hotel details');
+                        const apiHotelId = Number(hotelData.id || hotelData.hotelId || 0);
+                        if (apiHotelId && apiHotelId !== Number(hotelId)) {
+                            throw new Error('Tourvisor returned a different hotel than requested');
+                        }
+                        const apiHotelName = hotelData.name || hotelData.hotelName || '';
+                        if (apiHotelName && !namesMatch(card, apiHotelName)) {
+                            throw new Error('Tourvisor returned a different hotel name than requested');
+                        }
+
+                        const rawUrls = window.THTourCard
+                            && typeof window.THTourCard.collectHotelPhotoRawUrls === 'function'
+                            ? window.THTourCard.collectHotelPhotoRawUrls(hotelData)
+                            : [];
+                        const proxy = window.TH_TV_IMAGE_PROXY || window.TV_IMAGE_PROXY || '';
+                        const apiImageUrls = rawUrls.map(url => {
+                            if (window.THTourCard && typeof window.THTourCard.mapTourvisorImageUrl === 'function') {
+                                return window.THTourCard.mapTourvisorImageUrl(url, proxy);
+                            }
+                            return url;
+                        }).filter(url => url && !/^https?:\/\/images\.unsplash\.com\//i.test(url));
+                        const curatedImageUrls = Array.from(track.querySelectorAll('img'))
+                            .map(img => img.getAttribute('src'))
+                            .filter(url => url && !url.startsWith('data:'));
+                        const imageUrls = Array.from(new Set(apiImageUrls.concat(curatedImageUrls)));
+
+                        if (!imageUrls.length) {
+                            console.warn('[VIP отели] Tourvisor не вернул фото отеля:', hotelId);
+                            continue;
+                        }
+
+                        const hotelName = card.querySelector('h3')?.textContent || 'Отель';
+                        track.innerHTML = imageUrls.map((url, index) =>
+                            `<img src="${escHtml(url)}" alt="${escHtml(hotelName)} — фото ${index + 1}" class="vip-card-photo vip-card-gallery-img" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">`
+                        ).join('');
+                        track.querySelectorAll('.vip-card-photo').forEach(img => {
+                            img.addEventListener('error', () => {
+                                if (img.dataset.fallbackApplied) return;
+                                img.dataset.fallbackApplied = '1';
+                                img.src = fallbackImg;
+                            }, { once: true });
+                        });
+                    } catch (error) {
+                        console.warn('[VIP отели] Не удалось загрузить галерею из Tourvisor:', hotelId, error);
+                    }
+                }
+            }
+
+            await Promise.all([loadNextGallery(), loadNextGallery()]);
         }
 
         // Фильтрация по городу

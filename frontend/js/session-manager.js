@@ -51,16 +51,6 @@
         var ok = el.tagName === 'SELECT'
             ? Array.prototype.some.call(el.options, function (o) { return String(o.value) === v; })
             : true;
-        if (!ok && el.tagName === 'SELECT') {
-            var def = normalizeStoredDepartureId((window.TH_DEPARTURE && window.TH_DEPARTURE.id) || 7);
-            ok = Array.prototype.some.call(el.options, function (o) { return String(o.value) === def; });
-            if (ok) v = def;
-            else {
-                for (var i = 0; i < el.options.length; i++) {
-                    if (el.options[i].value) { v = String(el.options[i].value); ok = true; break; }
-                }
-            }
-        }
         if (!ok) return;
         el.value = v;
         if (!silent) {
@@ -68,17 +58,32 @@
         }
     }
 
-    function waitForOptions(id, value, maxTries, silent) {
+    function waitForOptions(id, value, maxTries, silent, onDone) {
         var tries = 0;
         function attempt() {
             var el = document.getElementById(id);
-            if (!el) return;
-            if (el.options.length > 1 || tries >= maxTries) {
-                setSelectValueSafe(el, value, silent);
-            } else {
-                tries++;
-                setTimeout(attempt, 350);
+            if (!el) {
+                if (onDone) onDone(false);
+                return;
             }
+            var targetValue = id === 'tv-departure'
+                ? normalizeStoredDepartureId(value)
+                : String(value || '');
+            var ready = el.tagName !== 'SELECT'
+                || Array.prototype.some.call(el.options, function (o) {
+                    return String(o.value) === targetValue;
+                });
+            if (ready) {
+                setSelectValueSafe(el, targetValue, silent);
+                if (onDone) onDone(true);
+                return;
+            }
+            if (tries >= maxTries) {
+                if (onDone) onDone(false);
+                return;
+            }
+            tries++;
+            setTimeout(attempt, 350);
         }
         attempt();
     }
@@ -266,14 +271,66 @@
             if (s.adults) window.tvAdultsCount = s.adults;
             if (Array.isArray(s.childAges)) window.tvChildrenAges = s.childAges;
             /* Без change — иначе на главной снова запускается performTvSearch */
-            if (s.departure) waitForOptions('tv-departure', s.departure, 15, true);
-            if (s.country) waitForOptions('tv-country', s.country, 15, true);
-            if (s.meal) waitForOptions('tv-meal', s.meal, 10, true);
-            if (s.region) waitForOptions('tv-region', s.region, 10, true);
-            if (s.category) safeSet('tv-category', s.category, true);
-            if (s.datesRaw && window.tvDatePicker) {
-                try { window.tvDatePicker.setDate(s.datesRaw, true); } catch (_) {}
+            function restoreDateRange() {
+                if (s.datesRaw && window.tvDatePicker) {
+                    try { window.tvDatePicker.setDate(s.datesRaw, true); } catch (_) {}
+                }
             }
+            function restoreMealAndRegion() {
+                function restoreRegion() {
+                    if (s.region) {
+                        waitForOptions('tv-region', s.region, 15, true, restoreDateRange);
+                    } else {
+                        restoreDateRange();
+                    }
+                }
+                if (s.meal) {
+                    waitForOptions('tv-meal', s.meal, 10, true, restoreRegion);
+                } else {
+                    restoreRegion();
+                }
+            }
+            function restoreCountry() {
+                if (!s.country) {
+                    restoreMealAndRegion();
+                    return;
+                }
+                waitForOptions('tv-country', s.country, 15, true, function (found) {
+                    if (!found) {
+                        restoreMealAndRegion();
+                        return;
+                    }
+                    var country = document.getElementById('tv-country');
+                    if (country) {
+                        try { country.dispatchEvent(new Event('change', { bubbles: true })); } catch (_) {}
+                    }
+                    restoreMealAndRegion();
+                });
+            }
+            function restoreDeparture() {
+                if (!s.departure) {
+                    restoreCountry();
+                    return;
+                }
+                waitForOptions('tv-departure', s.departure, 15, true, function (found) {
+                    if (!found) {
+                        restoreCountry();
+                        return;
+                    }
+                    var reloadCountries = window.reloadTvCountriesForDeparture;
+                    if (typeof reloadCountries === 'function') {
+                        Promise.resolve(reloadCountries(s.departure)).then(restoreCountry, restoreCountry);
+                    } else {
+                        var departure = document.getElementById('tv-departure');
+                        if (departure) {
+                            try { departure.dispatchEvent(new Event('change', { bubbles: true })); } catch (_) {}
+                        }
+                        restoreCountry();
+                    }
+                });
+            }
+            if (s.category) safeSet('tv-category', s.category, true);
+            restoreDeparture();
         }
 
         if (!lastCardId && targetY <= 80) {
@@ -355,7 +412,6 @@
                 } catch (_) {}
             });
         }
-
         if (shouldRestore()) {
             window.__tvRestoringFromBack = true;
             /* На главной scroll/карточку восстанавливает index.php после tryRestoreTvMainSearchFromSnapshot */

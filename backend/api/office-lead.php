@@ -9,6 +9,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/components/security_helper.php';
 require_once dirname(__DIR__) . '/components/lead_validation.php';
+require_once dirname(__DIR__) . '/components/pd_consent_log.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -102,6 +103,16 @@ if (!$phoneCheck['ok']) {
 }
 $phone = $phoneCheck['phone'];
 
+$adsAccepted = th_lead_ads_accepted($input);
+$fullForLog = $fullName !== '' ? $fullName : trim($first . ' ' . $last);
+th_pd_consent_capture_from_request($input, [
+    'name' => $fullForLog,
+    'phone' => $phone,
+    'email' => $email,
+    'source_form' => 'office-lead',
+    'funnel_source' => 'office',
+]);
+
 $source = trim((string)(getenv('UON_SOURCE') ?: ($_ENV['UON_SOURCE'] ?? 'Сайт')));
 if ($source === '') $source = 'Сайт';
 
@@ -114,6 +125,7 @@ if ($office_city !== '' || $office_name !== '') {
 if ($comment !== '') {
     $noteParts[] = 'Комментарий: ' . $comment;
 }
+$noteParts[] = th_pd_consent_crm_note($adsAccepted);
 $note = implode("\n", $noteParts);
 
 $body = [

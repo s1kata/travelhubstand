@@ -272,10 +272,7 @@ $th_promo_page_config = [
                     <form id="promo-departures-fallback-lead" class="mt-6 text-left space-y-3" data-th-lead-source="promo_departures_fallback">
                         <input type="text" name="name" required maxlength="100" placeholder="ФИО" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900" autocomplete="name">
                         <input type="tel" name="phone" required placeholder="Телефон" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900" autocomplete="tel">
-                        <label class="flex items-start gap-2 text-sm text-slate-600">
-                            <input type="checkbox" name="agree" required class="mt-1 rounded border-slate-300">
-                            <span><?php require_once __DIR__ . '/../../backend/components/legal_consent_label.php'; echo th_legal_consent_checkbox_html(); ?></span>
-                        </label>
+                        <?php require_once __DIR__ . '/../../backend/components/legal_consent_label.php'; echo th_legal_form_consents_html(['id_prefix' => 'promo-departures-fallback']); ?>
                         <input type="text" name="website" class="absolute opacity-0 pointer-events-none w-px h-px overflow-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
                         <button type="submit" class="w-full rounded-xl bg-sky-600 text-white font-semibold py-3 hover:bg-sky-700">Отправить заявку</button>
                     </form>

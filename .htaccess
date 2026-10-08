@@ -1,0 +1,210 @@
+# Travel Hub - Оптимизация и SEO настройки
+
+# Включить RewriteEngine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Закрытый офис на Парковой: старые ссылки → список офисов Самары
+    RewriteRule ^frontend/window/offices/samara-coral-parkovaya\.php$ /frontend/window/offices/samara-offices.php [R=301,L]
+    # Бывшая страница Amex tour → офис Anex на Московском шоссе
+    RewriteRule ^frontend/window/offices/samara-amex-tour\.php$ /frontend/window/offices/office.php?slug=samara-anex-moskovskoe [R=301,L,QSA]
+
+    # Legacy auth / requisites → канонические PHP-страницы с mobile stack
+    RewriteRule ^frontend/window/login\.html$ /frontend/window/login.php [R=301,L,QSA]
+    RewriteRule ^frontend/window/registration\.html$ /frontend/window/registration-desktop.php [R=301,L,QSA]
+    RewriteRule ^frontend/login\.php$ /frontend/window/login.php [R=301,L,QSA]
+    RewriteRule ^frontend/window/hotels\.php$ /frontend/window/popular-hotels.php [R=301,L,QSA]
+    RewriteRule ^frontend/window/register\.php$ /frontend/window/registration-desktop.php [R=301,L,QSA]
+    RewriteRule ^frontend/window/cabinet\.php$ /frontend/window/profile.php [R=301,L,QSA]
+    RewriteRule ^frontend/window/passport\.php$ /frontend/window/passport-data.php [R=301,L,QSA]
+    RewriteRule ^frontend/window/bank_rekvesit\.php$ /frontend/window/banks_rekvesit.php [R=301,L]
+    # /frontend без слэша → /frontend/ (относительный Location, схема от клиента)
+    RewriteRule ^frontend$ /frontend/ [R=301,L]
+
+    # Принудительный HTTPS (учёт reverse proxy: X-Forwarded-Proto)
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+    RewriteCond %{HTTP_HOST} !^localhost(:\d+)?$ [NC]
+    RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(:\d+)?$ [NC]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+    # ТЦ «Гудок»: Anex → Fun&Sun
+    RewriteRule ^frontend/window/offices/samara-anex\.php$ /frontend/window/offices/office.php?slug=samara-funsun-gudok [R=301,L,QSA]
+    # Единая детальная страница офисов
+    RewriteRule ^frontend/window/offices/samara-funsun\.php$ /frontend/window/offices/office.php?slug=samara-funsun [R=301,L,QSA]
+    RewriteRule ^frontend/window/offices/samara-funsun-gudok\.php$ /frontend/window/offices/office.php?slug=samara-funsun-gudok [R=301,L,QSA]
+    RewriteRule ^frontend/window/offices/samara-anex-moskovskoe\.php$ /frontend/window/offices/office.php?slug=samara-anex-moskovskoe [R=301,L,QSA]
+    # ТЦ «Апельсин»: Anex Tour
+    RewriteRule ^frontend/window/offices/samara-anex-apelsin\.php$ /frontend/window/offices/office.php?slug=samara-anex-apelsin [R=301,L,QSA]
+    RewriteRule ^frontend/window/offices/samara-coral\.php$ /frontend/window/offices/office.php?slug=samara-coral [R=301,L,QSA]
+    RewriteRule ^frontend/window/offices/samara-coral-elite\.php$ /frontend/window/offices/samara-offices.php [R=301,L]
+    RewriteRule ^frontend/window/offices/moscow-coral-elite\.php$ /frontend/window/offices/office.php?slug=moscow-coral-elite [R=301,L,QSA]
+    RewriteRule ^frontend/window/offices/moscow-anex\.php$ /frontend/window/offices/office.php?slug=moscow-anex [R=301,L,QSA]
+
+    # Блокировка доступа к служебным папкам (кэш, БД, логи)
+    RewriteRule ^data/ - [F,L]
+    RewriteRule ^backend/config/ - [F,L]
+
+    # /css/* → /frontend/css/* (чтобы /css/responsive.css отдавался из frontend)
+    RewriteRule ^css/(.*)$ frontend/css/$1 [L]
+
+    # Yandex Business YML по правилам (снимок data/… + TTL, см. export/yandex_rules_feed_yml.php)
+    RewriteRule ^feed\.yml$ export/yandex_rules_feed_yml.php [L]
+    # YML по городу вылета (снимок data/yandex_feed_{slug}.yml, см. export/feed-by-departure.php и YML_FEED_DEPARTURE_ALIASES)
+    RewriteRule ^feed-(samara|moscow)\.yml$ export/feed-by-departure.php?slug=$1 [L,QSA]
+
+    # /payment → страница оплаты для мобильного приложения
+    RewriteRule ^payment$ frontend/window/payment.php [L,QSA]
+    # Редиректы после оплаты (Tinkoff и др.)
+    RewriteRule ^payment-success/?$ frontend/window/payment-success.php [L,QSA]
+    RewriteRule ^payment-fail/?$ frontend/window/payment-fail.php [L,QSA]
+    # Оплата Tinkoff: /api/create-payment, /api/payment-webhook, /api/payment-status/*
+    # обрабатываются public_html/api/ (mobile API). Сайт — клиент этого слоя.
+    # Tourvisor mobile proxy: REST-like paths -> backend passthrough
+    RewriteRule ^api/tourvisor-mobile/?$ backend/api/tourvisor-mobile.php [L,QSA]
+    RewriteRule ^api/tourvisor-mobile/(.+)$ backend/api/tourvisor-mobile.php?path=$1 [L,QSA]
+    # CRM (U-ON) mobile proxy: UON_API_KEY на сервере
+    RewriteRule ^api/crm/?$ backend/api/crm-mobile.php [L,QSA]
+    RewriteRule ^api/crm/(.+)$ backend/api/crm-mobile.php?path=$1 [L,QSA]
+
+    # Удаление trailing slash
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [R=301,L]
+    
+    # Удаление .php расширения (опционально)
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    # RewriteCond %{REQUEST_FILENAME}\.php -f
+    # RewriteRule ^(.*)\.php$ /$1 [R=301,L]
+</IfModule>
+
+# Кэширование статических файлов
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Изображения
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS и JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    
+    # Шрифты
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    
+    # HTML
+    ExpiresByType text/html "access plus 0 seconds"
+    
+    # По умолчанию
+    ExpiresDefault "access plus 1 month"
+</IfModule>
+
+# Gzip сжатие
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom+xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Заголовки безопасности и производительности
+<IfModule mod_headers.c>
+    # Скрыть версию PHP (снижает поверхность атак)
+    Header unset X-Powered-By
+    
+    # Защита от XSS
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Защита от MIME-sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Защита от clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Referrer Policy (не передавать полный URL на внешние сайты)
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Запрет передачи credentials на cross-origin
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    
+    # Кэширование только статики (PHP сам выставляет Cache-Control при отдаче из page cache)
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+</IfModule>
+
+<FilesMatch "^(\.htaccess|\.env|\.git|composer\.(json|lock)|package\.json|\.DS_Store|Thumbs\.db)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Защита конфигурационных файлов
+<FilesMatch "^(config\.php|db_remote\.php|\.env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Улучшение производительности PHP
+<IfModule mod_php7.c>
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    # Оптимизация OPcache
+    php_value opcache.enable 1
+    php_value opcache.memory_consumption 128
+    php_value opcache.interned_strings_buffer 8
+    php_value opcache.max_accelerated_files 10000
+    php_value opcache.revalidate_freq 2
+    php_value opcache.fast_shutdown 1
+</IfModule>
+
+# Браузерное кэширование для статических файлов
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# API: не кэшировать ответы поиска
+<FilesMatch "tourvisor-proxy\.php$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+</FilesMatch>
+
+# Отключение листинга директорий
+Options -Indexes
+
+# Кастомные страницы ошибок
+ErrorDocument 404 /frontend/window/404.php
+ErrorDocument 500 /frontend/window/500.php

@@ -125,7 +125,7 @@
         '<p class="th-abandon-sheet__sub">Оставьте телефон — менеджер подберёт лучшие варианты бесплатно.</p>' +
         '<form class="th-abandon-sheet__form" id="th-abandon-sheet-form">' +
           '<input type="tel" name="phone" required autocomplete="tel" placeholder="+7 (___) ___-__-__" class="th-abandon-sheet__input">' +
-          '<label class="th-abandon-sheet__agree"><input type="checkbox" name="agree" required> Согласен на <a href="/frontend/window/consent.php" target="_blank" rel="noopener">обработку персональных данных</a>, с <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="/frontend/window/terms.php" target="_blank" rel="noopener">Пользовательским соглашением</a></label>' +
+          (window.THLegal && window.THLegal.formHtml ? window.THLegal.formHtml('th-abandon') : '') +
           '<input type="text" name="website" tabindex="-1" autocomplete="off" class="th-abandon-sheet__hp">' +
           '<p class="th-abandon-sheet__msg hidden" id="th-abandon-sheet-msg"></p>' +
           '<button type="submit" class="th-abandon-sheet__submit">Подобрать тур за меня</button>' +
@@ -155,6 +155,7 @@
             name: 'Клиент сайта',
             phone: String(fd.get('phone') || '').trim(),
             agree: !!fd.get('agree'),
+            agree_ads: !!fd.get('agree_ads'),
             website: String(fd.get('website') || ''),
             source: 'abandon_sheet',
             message: 'Abandon sheet — timed popup'

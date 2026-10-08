@@ -79,6 +79,7 @@ $thc = th_contacts();
             <p>© <?php echo date('Y'); ?> Travel Hub. Все права защищены.</p>
             <div class="flex flex-wrap items-center justify-center gap-6">
                 <a href="/frontend/window/consent.php" class="transition hover:text-indigo-400">Согласие на обработку ПД</a>
+                <a href="/frontend/window/advertising.php" class="transition hover:text-indigo-400">Согласие на рекламу</a>
                 <a href="/frontend/window/privacy.php" class="transition hover:text-indigo-400">Политика конфиденциальности</a>
                 <a href="/frontend/window/terms.php" class="transition hover:text-indigo-400">Пользовательское соглашение</a>
             </div>

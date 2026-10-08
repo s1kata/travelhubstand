@@ -9,6 +9,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/components/security_helper.php';
 require_once dirname(__DIR__) . '/components/lead_validation.php';
+require_once dirname(__DIR__) . '/components/pd_consent_log.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -84,6 +85,15 @@ $source = trim((string)(getenv('UON_SOURCE') ?: ($_ENV['UON_SOURCE'] ?? 'Сай�
 if ($source === '') $source = 'Сайт';
 $funnel_source = mb_substr(trim((string) ($input['funnel_source'] ?? $input['source'] ?? $input['page_source'] ?? '')), 0, 80);
 
+$adsAccepted = th_lead_ads_accepted($input);
+th_pd_consent_capture_from_request($input, [
+    'name' => $name,
+    'phone' => $phone,
+    'email' => $email_raw,
+    'source_form' => 'uon-lead',
+    'funnel_source' => $funnel_source,
+]);
+
 $now = date('Y-m-d H:i:s');
 $note = $message !== '' ? 'Заявка с сайта. Сообщение: ' . $message : 'Заявка с сайта (форма «Оставьте заявку»)';
 if ($funnel_source !== '') {
@@ -92,6 +102,7 @@ if ($funnel_source !== '') {
 if ($email_raw !== '') {
     $note .= "\nEmail: " . $email_raw;
 }
+$note .= "\n" . th_pd_consent_crm_note($adsAccepted);
 
 $body = [
     'r_dat' => $now,

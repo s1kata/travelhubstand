@@ -31,10 +31,7 @@
                 <label for="th-sf-website">Сайт</label>
                 <input type="text" id="th-sf-website" name="website" tabindex="-1" autocomplete="off">
             </div>
-            <label class="th-sf-agree flex items-start gap-2 cursor-pointer text-sm text-slate-600">
-                <input type="checkbox" id="th-sf-agree" name="agree" required class="mt-1 rounded border-slate-300">
-                <span><?php require_once __DIR__ . '/legal_consent_label.php'; echo th_legal_consent_checkbox_html(); ?></span>
-            </label>
+            <?php require_once __DIR__ . '/legal_consent_label.php'; echo th_legal_form_consents_html(['id_prefix' => 'th-sf']); ?>
             <p id="th-sf-msg" class="th-sf-msg hidden text-sm"></p>
             <button type="submit" id="th-sf-submit" class="th-sf-submit">Отправить</button>
         </form>
@@ -149,6 +146,7 @@
             var email = ((emailEl || {}).value || '').trim();
             var message = ((document.getElementById('th-sf-comment') || {}).value || '').trim();
             var agree = !!(document.getElementById('th-sf-agree') || {}).checked;
+            var agreeAds = !!(document.getElementById('th-sf-agree-ads') || {}).checked;
             var website = ((document.getElementById('th-sf-website') || {}).value || '');
             btn.disabled = true;
             if (msg) msg.classList.add('hidden');
@@ -212,6 +210,7 @@
                     name: name,
                     phone: phone,
                     agree: agree,
+                    agree_ads: agreeAds,
                     email: email,
                     message: message,
                     website: website,

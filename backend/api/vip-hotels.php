@@ -99,7 +99,7 @@ switch ($method) {
             $city = isset($_GET['city']) ? trim((string) $_GET['city']) : '';
             
             try {
-                $query = 'SELECT id, name, slug, city, rating, description, images, display_order 
+                $query = 'SELECT id, name, slug, tourvisor_hotel_id, city, rating, description, images, display_order
                           FROM vip_hotels 
                           WHERE is_active = 1';
                 $params = [];
@@ -266,4 +266,3 @@ switch ($method) {
         echo json_encode(['error' => 'Method not allowed']);
         break;
 }
-

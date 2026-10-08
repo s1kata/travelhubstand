@@ -599,12 +599,9 @@ if ($return_url !== '' && $return_url[0] === '/') {
                                 <div>
                                     <label for="b-phone" class="block text-sm font-semibold text-slate-700 mb-1">Номер телефона <span class="text-red-500">*</span></label>
                                     <input type="tel" name="phone" id="b-phone" autocomplete="tel" inputmode="tel" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="+7 (999) 123-45-67">
-                                    <p class="text-xs text-slate-500 mt-1">Позвоним только по этой заявке — никакой рекламы.</p>
+                                    <p class="text-xs text-slate-500 mt-1">По заявке перезвоним. Рекламу отправим только если отметите согласие ниже.</p>
                                 </div>
-                                <label class="flex items-start gap-2 text-sm text-slate-600 cursor-pointer">
-                                    <input type="checkbox" id="b-agree-contact" name="agree" required class="mt-1 rounded border-slate-300 text-sky-600 focus:ring-sky-500">
-                                    <span><?php require_once __DIR__ . '/../../backend/components/legal_consent_label.php'; echo th_legal_consent_checkbox_html(); ?> и обратный звонок</span>
-                                </label>
+                                <?php require_once __DIR__ . '/../../backend/components/legal_consent_label.php'; echo th_legal_form_consents_html(['id_prefix' => 'b']); ?>
                                 <div id="booking-modal-msg" class="hidden p-2 rounded-lg text-sm"></div>
                                 <button type="submit" id="booking-submit-btn" class="th-btn-manager-request w-full">
                                     ✈ <span id="booking-submit-label">Отправить заявку менеджеру</span>
@@ -926,10 +923,12 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 setTimeout(function() {
                     var nameEl2 = document.getElementById('b-manager-name');
                     var phoneEl2 = document.getElementById('b-phone');
-                    var agreeEl2 = document.getElementById('b-agree-contact');
+                    var agreeEl2 = document.getElementById('b-agree');
                     if (nameEl2 && pr.name) nameEl2.value = pr.name;
                     if (phoneEl2 && pr.phone) phoneEl2.value = pr.phone;
                     if (agreeEl2 && pr.agree) agreeEl2.checked = true;
+                    var adsEl2 = document.getElementById('b-agree-ads');
+                    if (adsEl2 && pr.agree_ads) adsEl2.checked = true;
                     if (msgModal) {
                         msgModal.textContent = 'Сессия обновлена. Ваши данные восстановлены — нажмите «Отправить заявку менеджеру».';
                         msgModal.className = 'p-2 rounded-lg text-sm bg-green-100 text-green-800';
@@ -1080,7 +1079,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
             var phoneEl = document.getElementById('b-phone');
             var nameVal = mgrNameEl ? mgrNameEl.value.trim() : '';
             var phoneVal = phoneEl ? phoneEl.value.trim() : '';
-            var agreeEl = document.getElementById('b-agree-contact');
+            var agreeEl = document.getElementById('b-agree');
             if (window.THLeadCapture && typeof THLeadCapture.validateLeadFields === 'function') {
                 var leadCheck = THLeadCapture.validateLeadFields({
                     name: nameVal,
@@ -1163,6 +1162,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 email: emailVal || undefined,
                 phone: phoneVal,
                 agree: true,
+                agree_ads: !!(document.getElementById('b-agree-ads') || {}).checked,
                 departure_city: (typeof defaultDeparture !== 'undefined' ? defaultDeparture : '') || undefined,
                 flight_info: thTdSelectedFlightSummary || (typeof flightInfo !== 'undefined' ? flightInfo : '') || undefined,
                 search_adults: searchAdults != null ? searchAdults : undefined,
@@ -1198,7 +1198,8 @@ if ($return_url !== '' && $return_url[0] === '/') {
                         var savedForm = {
                             name:  (document.getElementById('b-manager-name') || {}).value || '',
                             phone: (document.getElementById('b-phone') || {}).value || '',
-                            agree: !!(document.getElementById('b-agree-contact') || {}).checked,
+                            agree: !!(document.getElementById('b-agree') || {}).checked,
+                            agree_ads: !!(document.getElementById('b-agree-ads') || {}).checked,
                         };
                         sessionStorage.setItem('th_csrf_restore', JSON.stringify(savedForm));
                     } catch (_) {}

@@ -77,10 +77,7 @@
       '<div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">' +
       '<label>Сайт</label><input type="text" id="th-ol-website" tabindex="-1" autocomplete="off">' +
       '</div>' +
-      '<div class="th-ol-row">' +
-      '<input type="checkbox" id="th-ol-agree" required>' +
-      '<label for="th-ol-agree" style="font-size:.82rem;color:#475569;line-height:1.35">Согласен на <a href="/frontend/window/consent.php" target="_blank" rel="noopener" style="color:#5DA9A4;font-weight:800;text-decoration:underline">обработку персональных данных</a>, с <a href="/frontend/window/privacy.php" target="_blank" rel="noopener" style="color:#5DA9A4;font-weight:800;text-decoration:underline">Политикой конфиденциальности</a> и <a href="/frontend/window/terms.php" target="_blank" rel="noopener" style="color:#5DA9A4;font-weight:800;text-decoration:underline">Пользовательским соглашением</a></label>' +
-      '</div>' +
+      '<div id="th-ol-legal"></div>' +
       '<div class="th-ol-actions">' +
       '<button type="button" class="th-ol-btn th-ol-btn-ghost" id="th-ol-cancel">Отмена</button>' +
       '<button type="button" class="th-ol-btn th-ol-btn-primary" id="th-ol-send">Жду звонка</button>' +
@@ -93,7 +90,14 @@
 
     var nameEl = document.getElementById('th-ol-name');
     var phone = document.getElementById('th-ol-phone');
+    var legalHost = document.getElementById('th-ol-legal');
+    if (legalHost) {
+      legalHost.innerHTML = (window.THLegal && window.THLegal.formHtml)
+        ? window.THLegal.formHtml('th-ol')
+        : '<div class="th-legal-consents"><label class="th-legal-consents__row"><input type="checkbox" id="th-ol-agree" name="agree" value="1" required><span>Даю <a href="/frontend/window/consent.php" target="_blank" rel="noopener">согласие на обработку персональных данных</a></span></label><label class="th-legal-consents__row"><input type="checkbox" id="th-ol-agree-ads" name="agree_ads" value="1"><span>Даю <a href="/frontend/window/advertising.php" target="_blank" rel="noopener">согласие на получение рекламы</a> (SMS, email, звонки, мессенджеры) от ИП Смахтина Антона Валерьевича (Travel Hub)</span></label><p class="th-legal-consents__hint">Необязательно. Без этой отметки рекламу не отправим.</p><p class="th-legal-consents__docs">Документы: <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политика в отношении обработки персональных данных</a></p></div>';
+    }
     var agree = document.getElementById('th-ol-agree');
+    var adsEl = document.getElementById('th-ol-agree-ads');
     var website = document.getElementById('th-ol-website');
     var msg = document.getElementById('th-ol-msg');
     var btnSend = document.getElementById('th-ol-send');
@@ -121,6 +125,7 @@
       var name = (nameEl && nameEl.value || '').trim();
       var phoneVal = (phone && phone.value || '').trim();
       var okAgree = !!(agree && agree.checked);
+      var okAds = !!(adsEl && adsEl.checked);
       var websiteVal = (website && website.value) || '';
 
       // Единая клиентская валидация (как у uon-lead / THLeadCapture)
@@ -191,6 +196,7 @@
           name: name,
           phone: phoneVal,
           agree: okAgree,
+          agree_ads: okAds,
           website: websiteVal,
           office_city: officeCity,
           office_name: officeName,

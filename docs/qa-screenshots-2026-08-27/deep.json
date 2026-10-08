@@ -1,0 +1,228 @@
+{
+  "home": {
+    "logo": {
+      "text": "Travel Hub",
+      "sw": 114,
+      "cw": 114,
+      "overflow": false,
+      "rect": {
+        "x": 38,
+        "w": 114
+      },
+      "cs": {
+        "maxW": "none",
+        "overflow": "hidden",
+        "whiteSpace": "nowrap",
+        "textOverflow": "ellipsis"
+      }
+    },
+    "authVisible": [
+      {
+        "t": "Войти",
+        "right": 1104
+      },
+      {
+        "t": "Регистрация",
+        "right": 1242
+      }
+    ],
+    "badLinks": [],
+    "pageScrollW": 1280,
+    "vw": 1280
+  },
+  "datesModal": {
+    "popup": {
+      "cls": "th-coral-popup th-coral-date-popup tv-sc-date-popup--cal-only tv-sc-date-popup--wizard-cal is-open",
+      "hidden": false,
+      "isOpen": true,
+      "display": "flex",
+      "vis": "visible",
+      "op": "1",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 800
+      }
+    },
+    "cal": {
+      "cls": "flatpickr-calendar rangeMode animate multiMonth inline tv-cal-layout-multi",
+      "hidden": false,
+      "isOpen": false,
+      "display": "block",
+      "vis": "visible",
+      "op": "1",
+      "rect": {
+        "x": 297,
+        "y": 267,
+        "w": 686,
+        "h": 326
+      }
+    }
+  },
+  "hotelsTab": {
+    "selected": [
+      "Отели"
+    ],
+    "fields": [
+      "Откуда Без перелёта",
+      "Куда Египет",
+      "Даты заезда 27.08–10.09",
+      "Ночей 6–9 ночей",
+      "Туристы 2 взрослых",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ]
+  },
+  "profile": {
+    "title": "Вход - Travel Hub",
+    "h1": "Добро пожаловать",
+    "statusText": "Travel Hub\nГлавная\nАкции\nСтраны\nОтели\nОфисы\nЕщё\n▾\n+7 (846) 254-16-56\nВойти\nРегистрация\nДобро пожаловать\n\nВойдите в ваш аккаунт Travel Hub\n\nEmail\nПароль\nЗабыли пароль?\nЗапомнить меня на 30 дней\nВойти в аккаунт\n\nНет аккаунта? Зарегистрироваться\n\nTravel Hub\n\nПодбор туров и премиум‑сервис для отдыха. Работаем с проверенными туроператорами — от заявки д",
+    "pageScrollW": 1280,
+    "vw": 1280,
+    "passportLinks": []
+  },
+  "passport": {
+    "title": "Вход - Travel Hub",
+    "h1": "Добро пожаловать",
+    "statusText": "Travel Hub\nГлавная\nАкции\nСтраны\nОтели\nОфисы\nЕщё\n▾\n+7 (846) 254-16-56\nВойти\nРегистрация\nДобро пожаловать\n\nВойдите в ваш аккаунт Travel Hub\n\nEmail\nПароль\nЗабыли пароль?\nЗапомнить меня на 30 дней\nВойти в аккаунт\n\nНет аккаунта? Зарегистрироваться\n\nTravel Hub\n\nПодбор туров и премиум‑сервис для отдыха. Работаем с проверенными туроператорами — от заявки д",
+    "pageScrollW": 1280,
+    "vw": 1280,
+    "passportLinks": []
+  },
+  "reg": {
+    "title": "Регистрация - Travel Hub",
+    "h1": "Создать аккаунт",
+    "statusText": "Travel Hub\nГлавная\nАкции\nСтраны\nОтели\nОфисы\nЕщё\n▾\n+7 (846) 254-16-56\nВойти\nРегистрация\nСоздать аккаунт\n\nПрисоединяйтесь к Travel Hub\n\nФИО *\nEmail *\nПароль *\n\nПароль должен содержать не менее 6 символов\n\nТелефон\nГород\nСогласен на обработку персональных данных, с Политикой конфиденциальности и Пользовательским соглашением\nЗарегистрироваться\n\nУже есть",
+    "pageScrollW": 1280,
+    "vw": 1280,
+    "passportLinks": []
+  },
+  "hotels": {
+    "title": "Популярные отели — Travel Hub",
+    "h1": "Популярные отели",
+    "statusText": "Travel Hub\nГлавная\nАкции\nСтраны\nОтели\nОфисы\nЕщё\n▾\n+7 (846) 254-16-56\nВойти\nРегистрация\nТОЛЬКО С ТУРАМИ\nПопулярные отели\n\nВыберите страну — откройте отель — сразу туры с ценой. Без лишних шагов.\n\nТурция\nЕгипет\nТаиланд\nОАЭ\nСочи\nАбхазия\nВьетнам\nФукуок\nШри-Ланка\nМальдивы\nВсе\n3+\n4+\n5★\nСортировка\nДешевле\nРейтинг\nЗвёзды\nВылет: Самара\nЗагрузка…\nTravel Hub\n",
+    "pageScrollW": 1280,
+    "vw": 1280,
+    "passportLinks": []
+  },
+  "calendar": {
+    "title": "Календарь выгодных дат | Travel Hub",
+    "h1": "Календарь выгодных туров",
+    "statusText": "Travel Hub\nГлавная\nАкции\nСтраны\nОтели\nОфисы\nЕщё\n▾\n+7 (846) 254-16-56\nВойти\nРегистрация\n\nTravel Hub\n\nКалендарь выгодных туров\n\nСвод лучших цен по всем направлениям. Две метки: выгодная и пониженная цена. Окно месяцев сдвигается вперёд вместе с сезоном.\n\nВЫЛЕТ\nСамара\nМосква\nСамара\nМосква\n\nСамара · все направления\n\nЛУЧШИЕ ЦЕНЫ ПО ДНЯМ\n\nСентябрь 2026\nП",
+    "pageScrollW": 1280,
+    "vw": 1280,
+    "passportLinks": []
+  },
+  "mobileHome": {
+    "pageScrollW": 390,
+    "vw": 390,
+    "logo": {
+      "sw": 114,
+      "cw": 114,
+      "overflow": false,
+      "text": "Travel Hub"
+    },
+    "toggle": {
+      "cls": "header__burger",
+      "aria": "Открыть меню",
+      "w": 50
+    },
+    "panel": {
+      "cls": "site-header-mobile-panel",
+      "vis": "hidden",
+      "x": 390,
+      "w": 320
+    },
+    "topLinks": [
+      {
+        "t": "Travel Hub",
+        "tag": "A",
+        "w": 114
+      },
+      {
+        "t": "",
+        "tag": "BUTTON",
+        "w": 50
+      },
+      {
+        "t": "×",
+        "tag": "BUTTON",
+        "w": 50
+      },
+      {
+        "t": "Главная",
+        "tag": "A",
+        "w": 287
+      }
+    ]
+  },
+  "mobileNav": {
+    "cls": "site-header-mobile-panel is-open",
+    "vis": "visible",
+    "display": "flex",
+    "op": "1",
+    "transform": "matrix(1, 0, 0, 1, 0, 0)",
+    "rect": {
+      "x": 70,
+      "w": 320,
+      "h": 844
+    },
+    "text": "×\nГлавная\nАкции\nСтраны\nОтели\nОфисы\nЕЩЁ\nО нас\nУслуги\nКалендарь выгодных дат\nVIP отели Турции\nКонтакты\nДОКУМЕНТЫ\nРеквизиты\nСогласие на обработку ПД\nПолитика конфиденциальности\nПользовательское соглашение\n+7 (846) 254-16-56\nВойти\nРегистрация",
+    "openClass": true
+  },
+  "m_reg": {
+    "h1": "Создать аккаунт",
+    "pageScrollW": 390,
+    "vw": 390,
+    "hscroll": false
+  },
+  "m_calendar": {
+    "h1": "Календарь выгодных туров",
+    "pageScrollW": 390,
+    "vw": 390,
+    "hscroll": false
+  },
+  "m_hotels": {
+    "h1": "Популярные отели",
+    "pageScrollW": 390,
+    "vw": 390,
+    "hscroll": false
+  },
+  "m_countries": {
+    "h1": "Страны для отдыха",
+    "pageScrollW": 390,
+    "vw": 390,
+    "hscroll": false
+  },
+  "wrong": {
+    "https://travel63test.ru/frontend/frontend/index.php": {
+      "status": 404,
+      "url": "https://travel63test.ru/frontend/frontend/index.php",
+      "title": "Страница не найдена — Travel Hub"
+    },
+    "https://travel63test.ru/frontend/window/hotels.php": {
+      "status": 404,
+      "url": "https://travel63test.ru/frontend/window/hotels.php",
+      "title": "Страница не найдена — Travel Hub"
+    },
+    "https://travel63test.ru/frontend/window/register.php": {
+      "status": 404,
+      "url": "https://travel63test.ru/frontend/window/register.php",
+      "title": "Страница не найдена — Travel Hub"
+    },
+    "https://travel63test.ru/frontend/window/cabinet.php": {
+      "status": 404,
+      "url": "https://travel63test.ru/frontend/window/cabinet.php",
+      "title": "Страница не найдена — Travel Hub"
+    },
+    "https://travel63test.ru/frontend/window/passport.php": {
+      "status": 404,
+      "url": "https://travel63test.ru/frontend/window/passport.php",
+      "title": "Страница не найдена — Travel Hub"
+    }
+  }
+}

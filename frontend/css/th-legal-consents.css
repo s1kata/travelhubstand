@@ -1,0 +1,91 @@
+.th-legal-consents,
+.th-legal-consents * {
+    box-sizing: border-box;
+}
+.th-legal-consents {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100%;
+    gap: 0.65rem;
+    margin: 0.25rem 0 0.35rem;
+}
+.th-legal-consents__item {
+    display: block !important;
+    width: 100%;
+    float: none;
+    clear: both;
+}
+label.th-legal-consents__row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 0.6rem;
+    width: 100% !important;
+    max-width: 100%;
+    margin: 0;
+    float: none !important;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: #475569;
+    cursor: pointer;
+}
+.th-legal-consents__row input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    margin: 3px 0 0 !important;
+    padding: 0 !important;
+    flex: 0 0 16px !important;
+    float: none !important;
+    position: static !important;
+    order: 0 !important;
+    accent-color: #FF6B6B;
+}
+.th-legal-consents__row span {
+    display: block !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+.th-legal-consents__row a {
+    color: #FF6B6B;
+    font-weight: 600;
+    text-decoration: underline;
+}
+.th-legal-consents__hint {
+    display: block;
+    margin: -0.35rem 0 0 1.6rem;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    color: #94a3b8;
+}
+.th-legal-consents__docs {
+    display: block;
+    margin: 0.1rem 0 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: #64748b;
+}
+.th-legal-consents__docs a {
+    color: #5DA9A4;
+    font-weight: 600;
+    text-decoration: underline;
+}
+.th-legal-consents--on-dark .th-legal-consents__row,
+.th-legal-consents--on-dark .th-legal-consents__docs,
+.th-legal-consents--on-dark .th-legal-consents__hint {
+    color: rgba(255, 255, 255, 0.88);
+}
+.th-legal-consents--on-dark .th-legal-consents__row a,
+.th-legal-consents--on-dark .th-legal-consents__docs a {
+    color: #fff;
+}

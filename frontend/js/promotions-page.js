@@ -4007,6 +4007,7 @@
                 phone: String(fd.get('phone') || '').trim(),
                 message: leadMessage,
                 agree: !!fd.get('agree'),
+                agree_ads: !!fd.get('agree_ads'),
                 website: String(fd.get('website') || ''),
                 source: leadSource
             };
@@ -4054,6 +4055,7 @@
                         phone: payload.phone,
                         message: payload.message,
                         agree: payload.agree,
+                        agree_ads: payload.agree_ads,
                         website: payload.website,
                         funnel_source: leadSource,
                         source: leadSource

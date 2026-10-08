@@ -164,20 +164,15 @@ $city = $formData['city'] ?? '';
                     </div>
 
                     <div class="mb-6">
-                        <label class="flex items-start gap-2 text-sm text-slate-600 cursor-pointer">
-                            <input type="checkbox"
-                                   id="agree"
-                                   name="agree"
-                                   value="1"
-                                   required
-                                   class="mt-1 rounded border-slate-300 text-sky-600 focus:ring-sky-500">
-                            <span><?php
-                                require_once __DIR__ . '/../../backend/components/legal_consent_label.php';
-                                echo th_legal_consent_checkbox_html();
-                            ?></span>
-                        </label>
+                        <?php
+                            require_once __DIR__ . '/../../backend/components/legal_consent_label.php';
+                            echo th_legal_form_consents_html(['id_prefix' => 'reg', 'include_terms' => true]);
+                        ?>
                         <?php if (isset($errors['agree'])): ?>
                             <p class="mt-1 text-sm text-red-600"><?php echo htmlspecialchars($errors['agree']); ?></p>
+                        <?php endif; ?>
+                        <?php if (isset($errors['agree_terms'])): ?>
+                            <p class="mt-1 text-sm text-red-600"><?php echo htmlspecialchars($errors['agree_terms']); ?></p>
                         <?php endif; ?>
                     </div>
 
@@ -223,7 +218,8 @@ $city = $formData['city'] ?? '';
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const phoneInput = document.getElementById('phone');
-            const agreeInput = document.getElementById('agree');
+            const agreeInput = document.getElementById('reg-agree');
+            const termsInput = document.getElementById('reg-agree-terms');
 
             const name = (nameInput.value || '').trim();
             const email = (emailInput.value || '').trim();
@@ -316,19 +312,21 @@ $city = $formData['city'] ?? '';
             if (!agreeInput || !agreeInput.checked) {
                 fieldErrors.agree = 'Нужно согласие на обработку персональных данных.';
             }
+            if (!termsInput || !termsInput.checked) {
+                fieldErrors.agree_terms = 'Нужно принять Пользовательское соглашение.';
+            }
 
             if (Object.keys(fieldErrors).length) {
                 e.preventDefault();
                 Object.keys(fieldErrors).forEach(function (k) {
                     if (k === 'password' && pwWrap) pwWrap.classList.add('is-error');
-                    if (k === 'agree') {
+                    if (k === 'agree' || k === 'agree_terms') {
                         const agreeWrap = agreeInput && agreeInput.closest('.mb-6');
                         if (agreeWrap) {
-                            agreeWrap.querySelectorAll('[data-th-reg-err]').forEach(function (n) { n.remove(); });
                             const p = document.createElement('p');
                             p.className = 'mt-1 text-sm text-red-600';
                             p.setAttribute('data-th-reg-err', '1');
-                            p.textContent = fieldErrors.agree;
+                            p.textContent = fieldErrors[k];
                             agreeWrap.appendChild(p);
                         }
                         return;
@@ -336,7 +334,7 @@ $city = $formData['city'] ?? '';
                     setFieldError(k, fieldErrors[k]);
                 });
                 const firstKey = Object.keys(fieldErrors)[0];
-                const firstEl = firstKey === 'agree' ? agreeInput : document.getElementById(firstKey);
+                const firstEl = (firstKey === 'agree') ? agreeInput : (firstKey === 'agree_terms' ? termsInput : document.getElementById(firstKey));
                 if (firstEl && firstEl.focus) firstEl.focus();
                 return false;
             }

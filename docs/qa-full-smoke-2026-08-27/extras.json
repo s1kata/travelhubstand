@@ -1,0 +1,39 @@
+[
+  {
+    "tourDetail": {
+      "status": 200,
+      "url": "https://travel63test.ru/frontend/window/tour-detail.php?tour_link=https%3A%2F%2Ftyrmarket.ru%2Fstrany%23%21%2Fhotel%3Dlamai-apartment&country=%D0%A2%D0%B0%D0%B8%D0%BB%D0%B0%D0%BD%D0%B4&hotel_name=LAMAI+APARTMENT&price=195485&nights=6&meal=RO&room_category=deluxe&region=%D0%9F%D1%85%D1%83%D0%BA%D0%B5%D1%82&departure_city=%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D0%B0&image=https%3A%2F%2Ftravel63test.ru%2Fbackend%2Fapi%2Ftourvisor-image-proxy.php%3Fpath%3Dhotel_pics%252Fmain400%252F15716.jpg&rating=3.1&category=2&adults=2&tour_id=43267624401148&departure_id=7&hotel_id=15716&return_url=%2Ffrontend%2Findex.php%3Ftv_restore%3D1&gallery_b64=WyJodHRwczovL3RyYXZlbDYzdGVzdC5ydS9iYWNrZW5kL2FwaS90b3Vydmlzb3ItaW1hZ2UtcHJveHkucGhwP3BhdGg9aG90ZWxfcGljcyUyRm1haW40MDAlMkYxNTcxNi5qcGciXQ%3D%3D",
+      "link": {
+        "href": "https://travel63test.ru/frontend/window/tour-detail.php?tour_link=https%3A%2F%2Ftyrmarket.ru%2Fstrany%23%21%2Fhotel%3Dlamai-apartment&country=%D0%A2%D0%B0%D0%B8%D0%BB%D0%B0%D0%BD%D0%B4&hotel_name=LAMAI+APARTMENT&price=195485&nights=6&meal=RO&room_category=deluxe&region=%D0%9F%D1%85%D1%83%D0%BA%D0%B5%D1%82&departure_city=%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D0%B0&image=https%3A%2F%2Ftravel63test.ru%2Fbackend%2Fapi%2Ftourvisor-image-proxy.php%3Fpath%3Dhotel_pics%252Fmain400%252F15716.jpg&rating=3.1&category=2&adults=2&tour_id=43267624401148&departure_id=7&hotel_id=15716&return_url=%2Ffrontend%2Findex.php%3Ftv_restore%3D1&gallery_b64=WyJodHRwczovL3RyYXZlbDYzdGVzdC5ydS9iYWNrZW5kL2FwaS90b3Vydmlzb3ItaW1hZ2UtcHJveHkucGhwP3BhdGg9aG90ZWxfcGljcyUyRm1haW40MDAlMkYxNTcxNi5qcGciXQ%3D%3D",
+        "t": ""
+      },
+      "seo": {
+        "canonical": "https://travelhub63.ru/frontend/window/tour-detail.php?tour_id=43267624401148",
+        "title": "LAMAI APARTMENT — Travel Hub"
+      }
+    }
+  },
+  {
+    "page": "https://travel63test.ru/frontend/window/turkey-vip-hotels.php",
+    "status": 200,
+    "final": "https://travel63test.ru/frontend/window/turkey-vip-hotels.php",
+    "title": "VIP Отели Турции - Travel Hub"
+  },
+  {
+    "page": "https://travel63test.ru/frontend/window/vip.php",
+    "status": 404,
+    "final": "https://travel63test.ru/frontend/window/vip.php",
+    "title": "Страница не найдена — Travel Hub"
+  },
+  {
+    "mobileSticky": {
+      "bar": {
+        "top": 0,
+        "bottom": 6124
+      },
+      "findOverlap": true,
+      "filtersOverlap": true,
+      "vh": 844
+    }
+  }
+]

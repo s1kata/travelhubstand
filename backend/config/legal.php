@@ -22,8 +22,38 @@ if (!function_exists('th_legal_operator')) {
             'postal_address' => '443022, г. Самара, ул. Ново-Садовая, д. 305А, офис 105',
             'email' => 'hello@travelhub63.ru',
             'phone' => '+7 (846) 254-16-56',
-            'doc_date' => '16.08.2026',
+            'doc_date' => '05.10.2026',
+            'consent_version' => '2026-10-05',
+            'advertiser_name' => 'Индивидуальный предприниматель Смахтин Антон Валерьевич',
+            'advertiser_short' => 'ИП Смахтин Антон Валерьевич (Travel Hub)',
         ];
+    }
+
+    function th_pd_consent_plain_text(): string
+    {
+        $op = th_legal_operator();
+        return 'Даю согласие на обработку персональных данных '
+            . $op['operator_name'] . ' (ОГРНИП ' . $op['ogrnip'] . ', ИНН ' . $op['inn']
+            . ', бренд Travel Hub, сайт ' . $op['site'] . '). '
+            . 'Полный текст: ' . $op['site_url'] . '/frontend/window/consent.php. '
+            . 'Редакция ' . $op['consent_version'] . ' от ' . $op['doc_date'] . '.';
+    }
+
+    function th_ad_consent_plain_text(): string
+    {
+        $op = th_legal_operator();
+        return 'Даю согласие на получение рекламы (SMS, email, телефонные звонки, сообщения в мессенджерах) '
+            . 'от рекламораспространителя ' . $op['advertiser_name']
+            . ' (ОГРНИП ' . $op['ogrnip'] . ', ИНН ' . $op['inn']
+            . ', бренд Travel Hub, сайт ' . $op['site'] . '). '
+            . 'Полный текст: ' . $op['site_url'] . '/frontend/window/advertising.php. '
+            . 'Редакция ' . $op['consent_version'] . ' от ' . $op['doc_date'] . '.';
+    }
+
+    function th_terms_consent_plain_text(): string
+    {
+        $op = th_legal_operator();
+        return 'Принимаю Пользовательское соглашение (' . $op['site_url'] . '/frontend/window/terms.php), редакция от ' . $op['doc_date'] . '.';
     }
 
     /** @return list<array{name: string, inn: string, address: string, ogrn?: string}> */

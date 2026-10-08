@@ -134,6 +134,7 @@
       name: nameVal,
       phone: phoneVal,
       agree: true,
+      agree_ads: !!(document.getElementById('th-tb-agree-ads') || {}).checked,
       departure_city: p.departure_city || 'Самара',
       search_adults: p.adults ? parseInt(String(p.adults), 10) : 2
     };

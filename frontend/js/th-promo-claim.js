@@ -87,10 +87,7 @@
           '<label class="th-promo-claim-modal__field">Телефон' +
             '<input type="tel" name="phone" required autocomplete="tel" placeholder="+7 (___) ___-__-__">' +
           '</label>' +
-          '<label class="th-promo-claim-modal__agree">' +
-            '<input type="checkbox" name="agree" required>' +
-            '<span>Согласен на <a href="/frontend/window/consent.php" target="_blank" rel="noopener">обработку персональных данных</a></span>' +
-          '</label>' +
+          (global.THLegal && global.THLegal.formHtml ? global.THLegal.formHtml('th-promo-claim') : '') +
           '<input type="text" name="website" tabindex="-1" autocomplete="off" class="th-promo-claim-modal__hp">' +
           '<p class="th-promo-claim-modal__msg hidden" id="th-promo-claim-msg"></p>' +
           '<button type="submit" class="th-promo-claim-modal__submit">Получить промокод</button>' +
@@ -145,6 +142,7 @@
     var name = String(fd.get('name') || '').trim();
     var phone = String(fd.get('phone') || '').trim();
     var agree = !!fd.get('agree');
+    var agreeAds = !!fd.get('agree_ads');
     var website = String(fd.get('website') || '');
     var offer = currentOffer();
     var submit = form.querySelector('[type="submit"]');
@@ -154,6 +152,7 @@
           name: name,
           phone: phone,
           agree: agree,
+          agree_ads: agreeAds,
           website: website,
           source: 'promo_claim',
           phoneOnly: false,

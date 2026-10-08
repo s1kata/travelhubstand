@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../components/security_helper.php';
 require_once __DIR__ . '/../components/lead_validation.php';
+require_once __DIR__ . '/../components/pd_consent_log.php';
 
 session_start();
 
@@ -97,6 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if ($agreeErr !== null) {
         $errors['agree'] = $agreeErr;
     }
+    $termsErr = th_lead_require_terms($_POST);
+    if ($termsErr !== null) {
+        $errors['agree_terms'] = $termsErr;
+    }
 
     // Если нет ошибок валидации
     if (empty($errors)) {
@@ -188,6 +193,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                             }
 
                             $userId = $pdo->lastInsertId();
+                            th_pd_consent_capture_from_request($_POST, [
+                                'name' => $name,
+                                'phone' => $phone ?? '',
+                                'email' => $email,
+                                'user_id' => $userId,
+                                'source_form' => 'registration',
+                                'funnel_source' => 'registration',
+                            ]);
                             
                             // Проверяем создание пользователя
                             $verifyStmt = $pdo->prepare('SELECT id, email, role FROM users WHERE id = :id');

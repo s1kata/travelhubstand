@@ -222,6 +222,39 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
     .flatpickr-day.inRange { background: rgba(93, 169, 164, 0.15) !important; box-shadow: none !important; }
     .flatpickr-day:hover { background: rgba(93, 169, 164, 0.2) !important; border-color: #5DA9A4 !important; }
     .flatpickr-months .flatpickr-month { background: #5DA9A4 !important; }
+    /* Месяц/год в шапке — сразу видны (не только :hover) */
+    .flatpickr-calendar .flatpickr-months,
+    .flatpickr-calendar .flatpickr-month,
+    .flatpickr-calendar .flatpickr-current-month,
+    .flatpickr-calendar .flatpickr-current-month .cur-month,
+    .flatpickr-calendar .flatpickr-monthDropdown-months,
+    .flatpickr-calendar select.flatpickr-monthDropdown-months,
+    .flatpickr-calendar .flatpickr-current-month input.cur-year {
+        color: #fff !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        z-index: 2;
+    }
+    .flatpickr-calendar .numInputWrapper span {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+    /* Список месяцев в <select>: белый текст с шапки иначе невидим на белом фоне до hover */
+    .flatpickr-calendar .flatpickr-monthDropdown-months option,
+    .flatpickr-calendar select.flatpickr-monthDropdown-months option,
+    .flatpickr-calendar .flatpickr-monthDropdown-month {
+        color: #0f172a !important;
+        background: #fff !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    .flatpickr-calendar .flatpickr-monthDropdown-months option:checked,
+    .flatpickr-calendar .flatpickr-monthDropdown-months option:hover,
+    .flatpickr-calendar .flatpickr-monthDropdown-month:hover {
+        color: #0f172a !important;
+        background: #e8f4f3 !important;
+    }
 </style>
 <script>
 (function() {

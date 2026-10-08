@@ -213,6 +213,37 @@ $ratings = ['3*', '4*', '5*', '5* Deluxe', '6*'];
             font-size: 12px;
             margin: 2px 0;
         }
+        .images-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .images-preview-item {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #fff;
+        }
+        .images-preview-item img {
+            display: block;
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            background: #f1f5f9;
+        }
+        .images-preview-item__controls {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px;
+        }
+        .images-preview-item__url {
+            overflow-wrap: anywhere;
+            color: #475569;
+            font-size: 11px;
+        }
     </style>
 </head>
 <body class="bg-transparent text-slate-900 min-h-screen">
@@ -441,6 +472,17 @@ $ratings = ['3*', '4*', '5*', '5* Deluxe', '6*'];
                                         }
                                     ?></textarea>
                                     <input type="hidden" name="images_json" id="images_hidden" value="[]">
+                                    <div class="mt-3 flex flex-wrap items-center gap-3">
+                                        <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+                                            <input type="checkbox" id="images_select_all" class="rounded">
+                                            Выбрать все фото
+                                        </label>
+                                        <button type="button" id="images_delete_selected" class="rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700">
+                                            Удалить выбранные
+                                        </button>
+                                        <span id="images_selection_status" class="text-sm text-slate-500" aria-live="polite"></span>
+                                    </div>
+                                    <div id="images_preview" class="images-preview" aria-label="Предпросмотр фотографий"></div>
                                 </div>
 
                                 <div class="flex items-center gap-3">
@@ -485,18 +527,99 @@ $ratings = ['3*', '4*', '5*', '5* Deluxe', '6*'];
             var featuresHiddenEl = document.getElementById('features_hidden');
             var imagesTextEl = document.getElementById('images_text');
             var imagesHiddenEl = document.getElementById('images_hidden');
+            var imagesPreview = document.getElementById('images_preview');
+            var imagesSelectAll = document.getElementById('images_select_all');
+            var imagesDeleteSelected = document.getElementById('images_delete_selected');
+            var imagesSelectionStatus = document.getElementById('images_selection_status');
             if (!form || !featuresTextEl || !featuresHiddenEl || !imagesTextEl || !imagesHiddenEl) return;
+
+            function readImageUrls() {
+                return imagesTextEl.value.split('\n').map(function(url) {
+                    return url.trim();
+                }).filter(Boolean);
+            }
+
+            function renderImagePreview() {
+                if (!imagesPreview) return;
+                imagesPreview.replaceChildren();
+                var imageUrls = readImageUrls();
+                imageUrls.forEach(function(url, index) {
+                    var item = document.createElement('div');
+                    item.className = 'images-preview-item';
+
+                    var image = document.createElement('img');
+                    image.src = url;
+                    image.alt = 'Фото отеля ' + (index + 1);
+                    image.loading = 'lazy';
+                    image.addEventListener('error', function() {
+                        image.removeAttribute('src');
+                        image.alt = 'Не удалось загрузить превью';
+                    }, { once: true });
+                    item.appendChild(image);
+
+                    var controls = document.createElement('label');
+                    controls.className = 'images-preview-item__controls';
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'images-preview-select rounded';
+                    checkbox.value = String(index);
+                    checkbox.addEventListener('change', updateSelectionStatus);
+                    var text = document.createElement('span');
+                    text.className = 'images-preview-item__url';
+                    text.textContent = url;
+                    controls.appendChild(checkbox);
+                    controls.appendChild(text);
+                    item.appendChild(controls);
+                    imagesPreview.appendChild(item);
+                });
+                if (imagesSelectAll) imagesSelectAll.checked = false;
+                updateSelectionStatus();
+            }
+
+            function updateSelectionStatus() {
+                if (!imagesSelectionStatus || !imagesPreview) return;
+                var selected = imagesPreview.querySelectorAll('.images-preview-select:checked').length;
+                imagesSelectionStatus.textContent = selected ? 'Выбрано: ' + selected : 'Фото удалятся из списка после нажатия; изменения применятся при сохранении отеля.';
+            }
+
+            if (imagesSelectAll && imagesPreview) {
+                imagesSelectAll.addEventListener('change', function() {
+                    imagesPreview.querySelectorAll('.images-preview-select').forEach(function(checkbox) {
+                        checkbox.checked = imagesSelectAll.checked;
+                    });
+                    updateSelectionStatus();
+                });
+            }
+
+            if (imagesDeleteSelected && imagesPreview) {
+                imagesDeleteSelected.addEventListener('click', function() {
+                    var selectedIndexes = Array.from(imagesPreview.querySelectorAll('.images-preview-select:checked'))
+                        .map(function(checkbox) { return Number(checkbox.value); });
+                    if (!selectedIndexes.length) {
+                        if (imagesSelectionStatus) imagesSelectionStatus.textContent = 'Сначала выберите фото для удаления.';
+                        return;
+                    }
+                    var selectedSet = new Set(selectedIndexes);
+                    imagesTextEl.value = readImageUrls().filter(function(url, index) {
+                        return !selectedSet.has(index);
+                    }).join('\n');
+                    renderImagePreview();
+                });
+            }
+
+            imagesTextEl.addEventListener('input', renderImagePreview);
+            renderImagePreview();
+
             form.addEventListener('submit', function(e) {
                 var featuresText = featuresTextEl.value;
-                var imagesText = imagesTextEl.value;
                 featuresHiddenEl.value = '[]';
                 imagesHiddenEl.value = '[]';
                 if (featuresText.trim()) {
                     var features = featuresText.split('\n').map(function(f) { return f.trim(); }).filter(function(f) { return f.length > 0; });
                     featuresHiddenEl.value = JSON.stringify(features);
                 }
-                if (imagesText.trim()) {
-                    var images = imagesText.split('\n').map(function(i) { return i.trim(); }).filter(function(i) { return i.length > 0; });
+                var images = readImageUrls();
+                if (images.length) {
                     imagesHiddenEl.value = JSON.stringify(images);
                 }
             });

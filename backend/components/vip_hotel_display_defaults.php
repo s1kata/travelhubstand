@@ -8,11 +8,6 @@ declare(strict_types=1);
  */
 function vip_hotel_display_defaults_by_slug(): array
 {
-    /** Стабильные превью: images.unsplash.com (picsum часто недоступен из РФ). */
-    $img = static function (string $photoId): string {
-        return 'https://images.unsplash.com/photo-' . $photoId . '?auto=format&fit=crop&w=1200&q=82';
-    };
-
     return [
         'lara-barut-collection' => [
             'name' => 'Lara Barut Collection',
@@ -29,8 +24,9 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1540541338287-41700207dee6'),
-                $img('1542314831-d07562f7a3d3'),
+                'https://imagedelivery.net/Yw_SVblNotg-H4OIK8cT8g/738c1e35-15af-4632-8adf-551b6fad6600/verticalLg',
+                'https://imagedelivery.net/Yw_SVblNotg-H4OIK8cT8g/e52fd5a9-0788-4bad-4323-0e72d8584900/verticalSm',
+                'https://imagedelivery.net/Yw_SVblNotg-H4OIK8cT8g/ffd1a7a3-8609-4f59-dbf2-aae1dc89ef00/verticalLg',
             ],
             'features' => ['СПА и wellness', 'Несколько бассейнов', 'Детский клуб', 'Анимация', 'Фитнес'],
             'detailed_info' => [
@@ -55,8 +51,7 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1566073771259-6a8506099945'),
-                $img('1571896349842-33c89424de2d'),
+                'https://framerusercontent.com/images/VoSXq8lRrpHPK9EGxTNG98HeeyM.jpg',
             ],
             'features' => ['Парк территории', 'Крупнейший бассейн', 'Премиум-сервис', 'СПА', 'Гольф рядом (по сезону)'],
             'detailed_info' => [
@@ -81,8 +76,9 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1551882547-7f02e0e61838'),
-                $img('1618773905601-09c91d2a2aeb'),
+                'https://static.kilithg.net/networks/1/properties/22/multimedia/20241022073206696_org.jpg',
+                'https://static.kilithg.net/networks/1/properties/22/multimedia/20230609123050379_org.jpg',
+                'https://static.kilithg.net/networks/1/properties/22/multimedia/20230220120920413_org.webp',
             ],
             'features' => ['Панорамный вид', 'Руфтоп-бассейны', 'СПА', 'Центр города'],
             'detailed_info' => [
@@ -107,8 +103,7 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1520250497591-112f2f40a3f4'),
-                $img('1440775970968-d067a6f205d0'),
+                'https://www.ahstatic.com/photos/b1k0_ho_00_p_1024x768.jpg',
             ],
             'features' => ['Бренд Rixos', 'Центр города', 'Бассейны', 'СПА'],
             'detailed_info' => [
@@ -133,8 +128,9 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1576678927489-39bc6a96553a'),
-                $img('1580619306748-99fe550aa754'),
+                'https://image-tc.galaxy.tf/wijpeg-1rbzk0nob4bql9ijx160rpd9i/003-titanic-deluxe-lara-exterior-view_standard.jpg?crop=108%2C0%2C1705%2C1279',
+                'https://image-tc.galaxy.tf/wijpeg-2iz81gukra2bpwcoml905xkhz/005-titanic-deluxe-lara-exterior-view_standard.jpg?crop=107%2C0%2C1707%2C1280',
+                'https://image-tc.galaxy.tf/wijpeg-293ffdam2rsd8k4tzh585rto8/007-titanic-deluxe-lara-exterior-view_standard.jpg?crop=0%2C240%2C1920%2C1440',
             ],
             'features' => ['Аквапарк', 'Семейные номера', 'Анимация', 'СПА'],
             'detailed_info' => [
@@ -158,10 +154,7 @@ function vip_hotel_display_defaults_by_slug(): array
             'distance_to_airport' => 'Около 10–15 км',
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
-            'images' => [
-                $img('1596431477882-876ec374fe37'),
-                $img('1507525428034-b723cf961d3e'),
-            ],
+            'images' => [],
             'features' => ['Аквапарк', 'Анимация', 'Детский клуб', 'Пляж'],
             'detailed_info' => [
                 'infrastructure' => 'Аквапарк, бассейны, рестораны.',
@@ -185,8 +178,8 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1582719478250-c89cae4dc85b'),
-                $img('1502301100355-f9067ac3ce0f'),
+                'https://www.ahstatic.com/photos/b1j5_ho_00_p_1024x768.jpg',
+                'https://static.tourvisor.ru/hotel_pics/verybig/4/rixos-hotel-premium-belek-102205540.jpg',
             ],
             'features' => ['Гольф рядом', 'Премиум-сервис', 'СПА', 'Пляж'],
             'detailed_info' => [
@@ -211,8 +204,9 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1578683010238-dfdefdff3c4a'),
-                $img('1615460549969-de7b9632f080'),
+                'https://www.maxxroyal.com/media/r5bnhbxf/maxx-royal-belek-hero.jpg?rxy=0.4924812030075188%2C0.6247563352826511&width=1024&height=768',
+                'https://www.maxxroyal.com/media/zdijandq/1600x900.jpg',
+                'https://www.maxxroyal.com/media/klshcv15/1600x900_3.jpg',
             ],
             'features' => ['Только для взрослых', 'Премиум-пляж', 'СПА', 'Гастрономия'],
             'detailed_info' => [
@@ -237,8 +231,8 @@ function vip_hotel_display_defaults_by_slug(): array
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
             'images' => [
-                $img('1535139262979-36761fd06b22'),
-                $img('1544551763-931ef942bc45'),
+                'https://www.corneliaresort.com/uploads/1920px/Cornelia-Diamond-Sea-View-4.jpg',
+                'https://www.corneliaresort.com/uploads/1920px/Yuksek-Standartlarda-Kalite-Anlays-3.jpg',
             ],
             'features' => ['Гольф', 'СПА', 'Пляж', 'Бассейны'],
             'detailed_info' => [
@@ -262,10 +256,7 @@ function vip_hotel_display_defaults_by_slug(): array
             'distance_to_airport' => 'Около 50–60 км до Антальи',
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
-            'images' => [
-                $img('1570011545824-10ac3764ef24'),
-                $img('1596434304485-8fc7d4dc28e1'),
-            ],
+            'images' => [],
             'features' => ['Аквапарк', 'Семейные номера', 'Анимация', 'Пляж'],
             'detailed_info' => [
                 'infrastructure' => 'Аквапарк, бассейны, рестораны, пляж.',
@@ -304,9 +295,13 @@ function vip_hotels_enrich_hotel_array(array $hotel): array
                 $needImages = true;
                 break;
             }
+            if (stripos($u, 'images.unsplash.com/') !== false) {
+                $needImages = true;
+                break;
+            }
         }
     }
-    if ($needImages && !empty($def['images']) && is_array($def['images'])) {
+    if ($needImages && isset($def['images']) && is_array($def['images'])) {
         $hotel['images'] = $def['images'];
     }
 

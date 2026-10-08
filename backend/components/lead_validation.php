@@ -238,3 +238,26 @@ if (!function_exists('th_lead_require_agree')) {
         return 'Нужно согласие на обработку персональных данных';
     }
 }
+
+if (!function_exists('th_lead_ads_accepted')) {
+    /**
+     * @param array<string, mixed> $input
+     */
+    function th_lead_ads_accepted(array $input): bool
+    {
+        return th_lead_is_agree_accepted($input['agree_ads'] ?? null);
+    }
+}
+
+if (!function_exists('th_lead_require_terms')) {
+    /**
+     * @param array<string, mixed> $input
+     */
+    function th_lead_require_terms(array $input): ?string
+    {
+        if (th_lead_is_agree_accepted($input['agree_terms'] ?? null)) {
+            return null;
+        }
+        return 'Нужно принять Пользовательское соглашение';
+    }
+}

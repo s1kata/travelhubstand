@@ -16,7 +16,7 @@ if (!defined('TRAVELHUB_DS_HEAD')) {
 <link rel="stylesheet" href="/frontend/css/responsive.css?v=17">
 <?php endif; ?>
 <link rel="stylesheet" href="/frontend/css/design-system.css?v=16">
-<link rel="stylesheet" href="/frontend/css/redesign.css?v=41">
+<link rel="stylesheet" href="/frontend/css/redesign.css?v=42">
 <link rel="stylesheet" href="/frontend/css/v2-theme.css?v=5">
 <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=2">
 <link rel="stylesheet" href="/frontend/css/th-hard-funnel.css?v=8">
@@ -31,7 +31,7 @@ if (!defined('TRAVELHUB_DS_HEAD')) {
 <?php
     if (!defined('TH_LEAD_CAPTURE_JS')) {
         define('TH_LEAD_CAPTURE_JS', true);
-        echo '<script src="/frontend/js/th-lead-capture.js?v=5" defer></script>' . "\n";
+        echo '<script src="/frontend/js/th-lead-capture.js?v=7" defer></script>' . "\n";
     }
     if (!defined('TH_SITE_LEAD_CSS')) {
         define('TH_SITE_LEAD_CSS', true);

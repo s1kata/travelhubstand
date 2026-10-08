@@ -14,7 +14,7 @@ PageCache::start();
     <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
     <link rel="alternate icon" href="/frontend/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/frontend/css/pages/about.css?v=2">
+    <link rel="stylesheet" href="/frontend/css/pages/about.css?v=3">
     <?php include __DIR__ . '/../../backend/components/design_system_head.php'; ?>
     </head>
 <body class="text-slate-900">

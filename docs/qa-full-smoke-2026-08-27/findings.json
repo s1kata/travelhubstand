@@ -1,0 +1,1118 @@
+{
+  "findings": [
+    {
+      "id": "TH-001",
+      "severity": "High",
+      "where": "desktop login",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "desktop-login.png"
+    },
+    {
+      "id": "TH-002",
+      "severity": "High",
+      "where": "desktop registration",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "desktop-registration.png"
+    },
+    {
+      "id": "TH-003",
+      "severity": "High",
+      "where": "desktop login-desktop",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "desktop-login-desktop.png"
+    },
+    {
+      "id": "TH-004",
+      "severity": "High",
+      "where": "desktop registration-desktop",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "desktop-registration-desktop.png"
+    },
+    {
+      "id": "TH-005",
+      "severity": "High",
+      "where": "desktop vip",
+      "steps": "GET https://travel63test.ru/frontend/window/vip-tours.php",
+      "expected": "HTTP 200, page content",
+      "actual": "status=404, notFound=true",
+      "screenshot": "desktop-vip.png"
+    },
+    {
+      "id": "TH-006",
+      "severity": "High",
+      "where": "mobile hamburger menu",
+      "steps": "Open burger, inspect bottom items",
+      "expected": "All nav items reachable (scroll or fit)",
+      "actual": "overflow-y=hidden; below fold: Пользовательское соглашение, +7 (846) 254-16-56, Войти, Регистрация",
+      "screenshot": "mobile-nav-open.png"
+    },
+    {
+      "id": "TH-007",
+      "severity": "High",
+      "where": "mobile login",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "mobile-login.png"
+    },
+    {
+      "id": "TH-008",
+      "severity": "High",
+      "where": "mobile registration",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "mobile-registration.png"
+    },
+    {
+      "id": "TH-009",
+      "severity": "High",
+      "where": "mobile login-desktop",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "mobile-login-desktop.png"
+    },
+    {
+      "id": "TH-010",
+      "severity": "High",
+      "where": "mobile registration-desktop",
+      "steps": "Scroll to submit",
+      "expected": "Submit visible above sticky bar",
+      "actual": "Submit overlaps sticky lead bar",
+      "screenshot": "mobile-registration-desktop.png"
+    },
+    {
+      "id": "TH-011",
+      "severity": "High",
+      "where": "mobile vip",
+      "steps": "GET https://travel63test.ru/frontend/window/vip-tours.php",
+      "expected": "HTTP 200, page content",
+      "actual": "status=404, notFound=true",
+      "screenshot": "mobile-vip.png"
+    },
+    {
+      "id": "TH-012",
+      "severity": "Med",
+      "where": "header/footer nav",
+      "steps": "Follow first 12 links",
+      "expected": "All 200/301",
+      "actual": "2 broken: MAX, ",
+      "screenshot": ""
+    }
+  ],
+  "passChecklist": [
+    "desktop: home — HTTP 200, renders",
+    "desktop: home modal departure opens",
+    "desktop: home modal destination opens",
+    "desktop: home modal dates opens",
+    "desktop: home modal nights opens",
+    "desktop: home modal tourists opens",
+    "desktop: home modal filters opens",
+    "desktop: hotels tab clickable",
+    "desktop: charter/direct toggles visible: Только чартер, Только чартер, Прямой рейс, Прямой рейс, Прямой рейс, Прямой рейс",
+    "desktop: countries-list — HTTP 200, renders",
+    "desktop: country-turkey — HTTP 200, renders",
+    "desktop: popular-hotels — HTTP 200, renders",
+    "desktop: promotions — HTTP 200, renders",
+    "desktop: tour-calendar — HTTP 200, renders",
+    "desktop: calendar — 2 month labels",
+    "desktop: services — HTTP 200, renders",
+    "desktop: about — HTTP 200, renders",
+    "desktop: offices — HTTP 200, renders",
+    "desktop: offices-samara — HTTP 200, renders",
+    "desktop: offices-moscow — HTTP 200, renders",
+    "desktop: login — HTTP 200, renders",
+    "desktop: registration — HTTP 200, renders",
+    "desktop: login-desktop — HTTP 200, renders",
+    "desktop: registration-desktop — HTTP 200, renders",
+    "desktop: contacts — HTTP 200, renders",
+    "mobile: home — HTTP 200, renders",
+    "mobile: home modal departure opens",
+    "mobile: home modal destination opens",
+    "mobile: home modal dates opens",
+    "mobile: home modal nights opens",
+    "mobile: home modal tourists opens",
+    "mobile: home modal filters opens",
+    "mobile: hotels tab clickable",
+    "mobile: charter/direct toggles visible: Только чартер, Только чартер, Прямой рейс, Прямой рейс, Прямой рейс, Прямой рейс",
+    "mobile: countries-list — HTTP 200, renders",
+    "mobile: country-turkey — HTTP 200, renders",
+    "mobile: popular-hotels — HTTP 200, renders",
+    "mobile: promotions — HTTP 200, renders",
+    "mobile: tour-calendar — HTTP 200, renders",
+    "mobile: calendar — 2 month labels",
+    "mobile: services — HTTP 200, renders",
+    "mobile: about — HTTP 200, renders",
+    "mobile: offices — HTTP 200, renders",
+    "mobile: offices-samara — HTTP 200, renders",
+    "mobile: offices-moscow — HTTP 200, renders",
+    "mobile: login — HTTP 200, renders",
+    "mobile: registration — HTTP 200, renders",
+    "mobile: login-desktop — HTTP 200, renders",
+    "mobile: registration-desktop — HTTP 200, renders",
+    "mobile: contacts — HTTP 200, renders",
+    "search: results appeared (cards=0, prices=5)",
+    "double /frontend/frontend/ returns 404 (confirms bad canonical URL)"
+  ],
+  "pageResults": [
+    {
+      "name": "home",
+      "url": "https://travel63test.ru/frontend/index.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": "https://travel63test.ru/frontend/index.php",
+        "ogUrl": "https://travel63test.ru/frontend/index.php",
+        "title": "Туры и горящие туры — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Поможем найти тур",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-home.png"
+    },
+    {
+      "name": "countries-list",
+      "url": "https://travel63test.ru/frontend/window/countries-list.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Все страны - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Страны для отдыха",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-countries-list.png"
+    },
+    {
+      "name": "country-turkey",
+      "url": "https://travel63test.ru/frontend/window/countries/turkey.php",
+      "viewport": "desktop",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 ()"
+      ],
+      "status": 200,
+      "seo": {
+        "canonical": "https://travel63test.ru/frontend/window/countries/turkey.php",
+        "ogUrl": "https://travel63test.ru/frontend/window/countries/turkey.php",
+        "title": "Турция - Travel Hub | Туры, отели, отдых",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Турция",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-country-turkey.png"
+    },
+    {
+      "name": "popular-hotels",
+      "url": "https://travel63test.ru/frontend/window/popular-hotels.php",
+      "viewport": "desktop",
+      "consoleErrors": [
+        "ReferenceError: countryTvTourStartYmd is not defined"
+      ],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Популярные отели — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Популярные отели",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-popular-hotels.png"
+    },
+    {
+      "name": "promotions",
+      "url": "https://travel63test.ru/frontend/window/promotions.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Горящие туры из Самары — выбор страны - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Горящие туры\nиз Самары",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-promotions.png"
+    },
+    {
+      "name": "tour-calendar",
+      "url": "https://travel63test.ru/frontend/window/tour-calendar.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Календарь выгодных дат | Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Календарь выгодных туров",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-tour-calendar.png",
+      "calendar": {
+        "monthNames": [
+          "Лучшие цены по дням\n                            Сентябрь 2026",
+          "Сентябрь 2026"
+        ],
+        "count": 2
+      }
+    },
+    {
+      "name": "services",
+      "url": "https://travel63test.ru/frontend/window/services.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Услуги - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Полный спектр туристических услуг",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-services.png"
+    },
+    {
+      "name": "about",
+      "url": "https://travel63test.ru/frontend/window/about.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "О нас - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Travel Hub",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-about.png"
+    },
+    {
+      "name": "offices",
+      "url": "https://travel63test.ru/frontend/window/offices.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Офисы Travel Hub — Самара и Москва",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-offices.png"
+    },
+    {
+      "name": "offices-samara",
+      "url": "https://travel63test.ru/frontend/window/offices/samara-offices.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Офисы в Самаре — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-offices-samara.png"
+    },
+    {
+      "name": "offices-moscow",
+      "url": "https://travel63test.ru/frontend/window/offices/moscow-offices.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Офисы в Москве — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-offices-moscow.png"
+    },
+    {
+      "name": "login",
+      "url": "https://travel63test.ru/frontend/window/login.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Вход - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Добро пожаловать",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-login.png"
+    },
+    {
+      "name": "registration",
+      "url": "https://travel63test.ru/frontend/window/registration.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Регистрация - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Создать аккаунт",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-registration.png"
+    },
+    {
+      "name": "login-desktop",
+      "url": "https://travel63test.ru/frontend/window/login-desktop.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Вход в аккаунт - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Добро пожаловать",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-login-desktop.png"
+    },
+    {
+      "name": "registration-desktop",
+      "url": "https://travel63test.ru/frontend/window/registration-desktop.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Регистрация - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Создать аккаунт",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-registration-desktop.png"
+    },
+    {
+      "name": "contacts",
+      "url": "https://travel63test.ru/frontend/window/contacts.php",
+      "viewport": "desktop",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "О нас - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Travel Hub",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-contacts.png"
+    },
+    {
+      "name": "vip",
+      "url": "https://travel63test.ru/frontend/window/vip-tours.php",
+      "viewport": "desktop",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "status": 404,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Страница не найдена — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 1280,
+        "winW": 1280,
+        "h1": "Страница не найдена",
+        "notFound": true,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\desktop-vip.png"
+    },
+    {
+      "name": "home",
+      "url": "https://travel63test.ru/frontend/index.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": "https://travel63test.ru/frontend/index.php",
+        "ogUrl": "https://travel63test.ru/frontend/index.php",
+        "title": "Туры и горящие туры — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Поможем найти тур",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-home.png"
+    },
+    {
+      "name": "countries-list",
+      "url": "https://travel63test.ru/frontend/window/countries-list.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Все страны - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Страны для отдыха",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-countries-list.png"
+    },
+    {
+      "name": "country-turkey",
+      "url": "https://travel63test.ru/frontend/window/countries/turkey.php",
+      "viewport": "mobile",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 ()"
+      ],
+      "status": 200,
+      "seo": {
+        "canonical": "https://travel63test.ru/frontend/window/countries/turkey.php",
+        "ogUrl": "https://travel63test.ru/frontend/window/countries/turkey.php",
+        "title": "Турция - Travel Hub | Туры, отели, отдых",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Турция",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-country-turkey.png"
+    },
+    {
+      "name": "popular-hotels",
+      "url": "https://travel63test.ru/frontend/window/popular-hotels.php",
+      "viewport": "mobile",
+      "consoleErrors": [
+        "ReferenceError: countryTvTourStartYmd is not defined"
+      ],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Популярные отели — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Популярные отели",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-popular-hotels.png"
+    },
+    {
+      "name": "promotions",
+      "url": "https://travel63test.ru/frontend/window/promotions.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Горящие туры из Самары — выбор страны - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Горящие туры\nиз Самары",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-promotions.png"
+    },
+    {
+      "name": "tour-calendar",
+      "url": "https://travel63test.ru/frontend/window/tour-calendar.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Календарь выгодных дат | Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Календарь выгодных туров",
+        "notFound": false,
+        "stickyOverlap": null
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-tour-calendar.png",
+      "calendar": {
+        "monthNames": [
+          "Лучшие цены по дням\n                            Сентябрь 2026",
+          "Сентябрь 2026"
+        ],
+        "count": 2
+      }
+    },
+    {
+      "name": "services",
+      "url": "https://travel63test.ru/frontend/window/services.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Услуги - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Полный спектр туристических услуг",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-services.png"
+    },
+    {
+      "name": "about",
+      "url": "https://travel63test.ru/frontend/window/about.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "О нас - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Travel Hub",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-about.png"
+    },
+    {
+      "name": "offices",
+      "url": "https://travel63test.ru/frontend/window/offices.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Офисы Travel Hub — Самара и Москва",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-offices.png"
+    },
+    {
+      "name": "offices-samara",
+      "url": "https://travel63test.ru/frontend/window/offices/samara-offices.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Офисы в Самаре — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-offices-samara.png"
+    },
+    {
+      "name": "offices-moscow",
+      "url": "https://travel63test.ru/frontend/window/offices/moscow-offices.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Офисы в Москве — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-offices-moscow.png"
+    },
+    {
+      "name": "login",
+      "url": "https://travel63test.ru/frontend/window/login.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Вход - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Добро пожаловать",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-login.png"
+    },
+    {
+      "name": "registration",
+      "url": "https://travel63test.ru/frontend/window/registration.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Регистрация - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Создать аккаунт",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-registration.png"
+    },
+    {
+      "name": "login-desktop",
+      "url": "https://travel63test.ru/frontend/window/login-desktop.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Вход в аккаунт - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Добро пожаловать",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-login-desktop.png"
+    },
+    {
+      "name": "registration-desktop",
+      "url": "https://travel63test.ru/frontend/window/registration-desktop.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Регистрация - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Создать аккаунт",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-registration-desktop.png"
+    },
+    {
+      "name": "contacts",
+      "url": "https://travel63test.ru/frontend/window/contacts.php",
+      "viewport": "mobile",
+      "consoleErrors": [],
+      "status": 200,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "О нас - Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Travel Hub",
+        "notFound": false,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-contacts.png"
+    },
+    {
+      "name": "vip",
+      "url": "https://travel63test.ru/frontend/window/vip-tours.php",
+      "viewport": "mobile",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "status": 404,
+      "seo": {
+        "canonical": null,
+        "ogUrl": null,
+        "title": "Страница не найдена — Travel Hub",
+        "badLinks": []
+      },
+      "health": {
+        "hscroll": false,
+        "docW": 390,
+        "winW": 390,
+        "h1": "Страница не найдена",
+        "notFound": true,
+        "stickyOverlap": true
+      },
+      "screenshot": "D:\\работа\\travelhub-v2\\docs\\qa-full-smoke-2026-08-27\\mobile-vip.png"
+    }
+  ],
+  "searchResult": {
+    "results": {
+      "cardCount": 0,
+      "priceSamples": [
+        "от 202 196 ₽",
+        "202 196 ₽",
+        "203 721 ₽",
+        "205 552 ₽",
+        "206 263 ₽"
+      ],
+      "loading": false,
+      "noResults": false,
+      "snippet": "Travel Hub\nГлавная\nАкции\nСтраны\nОфисы\nЕщё\n▾\n+7 (846) 254-16-56\nВойти\nРегистрация\n\nTRAVEL HUB\n\nПоможем найти тур\nТуры\nОтели\nОткуда\nСамара\nКуда\nТаиланд\nДаты вылета\n27.08–30.08\nНочей\n6–9 ночей\nТуристы\n2 взрослых\nНайти\nФильтры\n— Выберите город —\nМосква\nЕкатеринбург\nУфа\nС.Петербург\nСамара\nКазань\nОренбург\nУльяновск\nСочи\nАстана\nАктобе\nАктау\nУральск\nБез перелета\n— Страна —\nЕгипет\nТаиланд\nИндия\nТурция\nТунис\nГреция\nИндонезия\nМальдивы\nОАЭ\nКуба\nШри-Ланка\nКитай\nКипр\nВьетнам\nЧерногория\nМарокко\nСингапур\nФилипп"
+    },
+    "consoleErrors": []
+  },
+  "redirectResults": {
+    "login.html": {
+      "status": 200,
+      "final": "https://travel63test.ru/frontend/window/login.php"
+    },
+    "registration.html": {
+      "status": 200,
+      "final": "https://travel63test.ru/frontend/window/registration-desktop.php"
+    },
+    "double-frontend": {
+      "status": 404,
+      "final": "https://travel63test.ru/frontend/frontend/index.php"
+    }
+  },
+  "navLinks": {
+    "header": [
+      {
+        "t": "Travel Hub",
+        "href": "https://travel63test.ru/index.php"
+      },
+      {
+        "t": "Главная",
+        "href": "https://travel63test.ru/index.php"
+      },
+      {
+        "t": "Акции",
+        "href": "https://travel63test.ru/frontend/window/promotions.php"
+      },
+      {
+        "t": "Страны",
+        "href": "https://travel63test.ru/frontend/window/countries-list.php"
+      },
+      {
+        "t": "Офисы",
+        "href": "https://travel63test.ru/frontend/window/offices.php"
+      },
+      {
+        "t": "О нас",
+        "href": "https://travel63test.ru/frontend/window/about.php"
+      },
+      {
+        "t": "Услуги",
+        "href": "https://travel63test.ru/frontend/window/services.php"
+      },
+      {
+        "t": "Календарь выгодных дат",
+        "href": "https://travel63test.ru/frontend/window/tour-calendar.php"
+      },
+      {
+        "t": "VIP отели Турции",
+        "href": "https://travel63test.ru/frontend/window/turkey-vip-hotels.php"
+      },
+      {
+        "t": "Контакты",
+        "href": "https://travel63test.ru/frontend/window/contacts.php"
+      },
+      {
+        "t": "Реквизиты",
+        "href": "https://travel63test.ru/frontend/window/banks_rekvesit.php"
+      },
+      {
+        "t": "+7 (846) 254-16-56",
+        "href": "tel:+78462541656"
+      },
+      {
+        "t": "Войти",
+        "href": "https://travel63test.ru/frontend/window/login-desktop.php"
+      },
+      {
+        "t": "Регистрация",
+        "href": "https://travel63test.ru/frontend/window/registration-desktop.php"
+      }
+    ],
+    "footer": [
+      {
+        "t": "+7 (846) 254-16-56",
+        "href": "tel:+78462541656"
+      },
+      {
+        "t": "Реквизиты",
+        "href": "https://travel63test.ru/frontend/window/banks_rekvesit.php"
+      },
+      {
+        "t": "MAX",
+        "href": "https://max.ru/u/f9LHodD0cOJpBbwh-zr3lqTmDxZiZMLDP-FuyTUa8fyzWO3S2tgc4_Mirnk"
+      },
+      {
+        "t": "",
+        "href": "https://t.me/TravelHub63"
+      },
+      {
+        "t": "",
+        "href": "https://vk.ru/hubtravel"
+      },
+      {
+        "t": "О нас",
+        "href": "https://travel63test.ru/frontend/window/about.php"
+      },
+      {
+        "t": "Офисы",
+        "href": "https://travel63test.ru/frontend/window/offices.php"
+      },
+      {
+        "t": "Контакты",
+        "href": "https://travel63test.ru/frontend/window/contacts.php"
+      },
+      {
+        "t": "Акции",
+        "href": "https://travel63test.ru/frontend/window/promotions.php"
+      },
+      {
+        "t": "Страны",
+        "href": "https://travel63test.ru/frontend/window/countries-list.php"
+      },
+      {
+        "t": "Отели",
+        "href": "https://travel63test.ru/frontend/window/popular-hotels.php"
+      },
+      {
+        "t": "Офисы",
+        "href": "https://travel63test.ru/frontend/window/offices.php"
+      },
+      {
+        "t": "Услуги",
+        "href": "https://travel63test.ru/frontend/window/services.php"
+      },
+      {
+        "t": "Календарь дат",
+        "href": "https://travel63test.ru/frontend/window/tour-calendar.php"
+      },
+      {
+        "t": "Приложение iOS",
+        "href": "https://apps.apple.com/ru/app/travelhub/id6786282632"
+      },
+      {
+        "t": "Для менеджеров",
+        "href": "https://travel63test.ru/frontend/window/for-operators.php"
+      },
+      {
+        "t": "+7 (846) 254-16-56",
+        "href": "tel:+78462541656"
+      },
+      {
+        "t": "hello@travelhub63.ru",
+        "href": "mailto:hello@travelhub63.ru"
+      },
+      {
+        "t": "Согласие на обработку ПД",
+        "href": "https://travel63test.ru/frontend/window/consent.php"
+      },
+      {
+        "t": "Политика конфиденциальности",
+        "href": "https://travel63test.ru/frontend/window/privacy.php"
+      },
+      {
+        "t": "Пользовательское соглашение",
+        "href": "https://travel63test.ru/frontend/window/terms.php"
+      }
+    ]
+  }
+}

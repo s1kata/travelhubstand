@@ -206,7 +206,7 @@ if ($th_search_ui_raw === 'legacy') {
     <script src="/frontend/js/tour-search-wizard.js?v=20" defer></script>
     <script src="/frontend/js/th-coral-search.js?v=14" defer></script>
     <?php endif; ?>
-    <script src="/frontend/js/th-lead-capture.js?v=2" defer></script>
+    <script src="/frontend/js/th-lead-capture.js?v=7" defer></script>
     <script src="/frontend/js/th-mobile.js?v=16" defer></script>
     <script src="/frontend/js/th-modal.js?v=2" defer></script>
     <script src="/frontend/js/th-gallery.js?v=1" defer></script>
@@ -598,10 +598,7 @@ if ($th_search_ui_raw === 'legacy') {
                             <input type="text" name="name" required placeholder="ФИО" autocomplete="name" class="rounded-xl px-3 py-2.5 text-slate-900 text-sm border-0 shadow-inner">
                             <input type="tel" name="phone" required placeholder="Телефон" autocomplete="tel" class="rounded-xl px-3 py-2.5 text-slate-900 text-sm border-0 shadow-inner">
                         </div>
-                        <label class="flex items-start gap-2 text-xs text-white/90 cursor-pointer">
-                            <input type="checkbox" name="agree" required class="mt-0.5 rounded border-white/40">
-                            <span><?php echo th_legal_consent_checkbox_html(); ?></span>
-                        </label>
+                        <?php echo th_legal_form_consents_html(['id_prefix' => 'main-quick-lead', 'variant' => 'on-dark']); ?>
                         <input type="text" name="website" class="absolute opacity-0 pointer-events-none w-px h-px overflow-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
                         <button type="submit" class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 text-sm transition-colors">Отправить</button>
                         <p id="main-quick-lead-msg" class="hidden text-xs rounded-lg p-2"></p>
@@ -829,6 +826,17 @@ if ($th_search_ui_raw === 'legacy') {
                     </div>
                 </li>
             </ul>
+        </div>
+    </section>
+
+    <section id="yandex-reviews" class="py-10 md:py-14 bg-white" aria-labelledby="yandex-reviews-title">
+        <div class="th-container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
+            <div class="text-center mb-6">
+                <h2 id="yandex-reviews-title" class="heading-font text-2xl sm:text-3xl font-bold text-slate-900">Отзывы наших клиентов</h2>
+                <p class="mt-2 text-sm sm:text-base text-slate-600">Оценки и впечатления наших клиентов</p>
+            </div>
+            <script src="https://res.smartwidgets.ru/app.js" async></script>
+            <div class="sw-app" data-app="c8bf82eb261ead0450f68aa38e8c94f2"></div>
         </div>
     </section>
 
@@ -2777,12 +2785,13 @@ if ($th_search_ui_raw === 'legacy') {
             window.loadTvRegions = loadTvRegions;
 
             countrySel.addEventListener('change', async function() {
+                var restoringSearchState = !!window.__tvRestoringFromBack;
                 window.__tvFlyDates = { key: '', all: {}, charter: {}, direct: {} };
                 window.__tvFlyNights = { key: '', all: {}, charter: {}, direct: {}, enriched: false };
                 window.__tvCalPriceMap = {};
                 window.__tvCalPriceMapKey = '';
                 await loadTvRegions();
-                applyDefaultDateWindow();
+                if (!restoringSearchState) applyDefaultDateWindow();
                 tvSchedulePrefetchHomeSearch();
                 if (typeof window.tvLoadCalendarPriceMap === 'function') window.tvLoadCalendarPriceMap();
                 if (typeof window.tvLoadFlyAvailability === 'function') window.tvLoadFlyAvailability();
@@ -4043,7 +4052,12 @@ if ($th_search_ui_raw === 'legacy') {
             var softSearch = !!opts.soft;
             if (window.__tvRestoringFromBack && !manual && !softSearch) return;
             if (manual) window.__tvRestoringFromBack = false;
-            if (window.THLeadCapture && !softSearch) window.THLeadCapture.reachGoal('search_start');
+            if (window.THLeadCapture && !softSearch) {
+                window.THLeadCapture.reachGoal('search_start', {
+                    source: 'homepage',
+                    search_mode: window.__thSearchMode === 'hotels' ? 'hotels' : 'tours'
+                });
+            }
             const depActive = tvEffectiveSearchDeparture();
             const dep = depActive.id || document.getElementById('tv-departure')?.value || '7';
             const country = document.getElementById('tv-country')?.value;
@@ -4433,6 +4447,12 @@ if ($th_search_ui_raw === 'legacy') {
                     : rCache.data;
                 if (tvCountPlausibleHotels(finalList) <= 0) {
                     if (resultsDiv) resultsDiv.innerHTML = tvEmptyResultsHtml(origNFrom, origNTo, usedAltNights);
+                    if (window.THLeadCapture) {
+                        window.THLeadCapture.reachGoal('search_no_results', {
+                            search_mode: thIsHotelSearchMode() ? 'hotels' : 'tours',
+                            reason: 'empty_cache'
+                        });
+                    }
                     showTvResultsChrome();
                     updateTvLoadMoreButton();
                     return;
@@ -4458,6 +4478,12 @@ if ($th_search_ui_raw === 'legacy') {
             thSyncResultNoun(0);
             var isApiErr = rCache && rCache.error && String(rCache.error).length > 0;
             if (resultsDiv) resultsDiv.innerHTML = isApiErr ? tvSearchErrorHtml(rCache.error) : tvEmptyResultsHtml(origNFrom, origNTo, usedAltNights);
+            if (!isApiErr && window.THLeadCapture) {
+                window.THLeadCapture.reachGoal('search_no_results', {
+                    search_mode: thIsHotelSearchMode() ? 'hotels' : 'tours',
+                    reason: 'empty_response'
+                });
+            }
             showTvResultsChrome();
             updateTvLoadMoreButton();
             if (isApiErr && window.THLeadCapture) window.THLeadCapture.reachGoal('search_error');
@@ -4578,7 +4604,12 @@ if ($th_search_ui_raw === 'legacy') {
             if (window.THMobile && typeof window.THMobile.pinFixedBottoms === 'function') {
                 window.THMobile.pinFixedBottoms();
             }
-            if (window.THLeadCapture) window.THLeadCapture.reachGoal('search_results_shown');
+            if (window.THLeadCapture) {
+                window.THLeadCapture.reachGoal('search_results_shown', {
+                    search_mode: thIsHotelSearchMode() ? 'hotels' : 'tours',
+                    result_count: Array.isArray(tvLastResults) ? tvLastResults.length : 0
+                });
+            }
         }
         function thTrackGoal(goal) {
             try {
@@ -5885,17 +5916,22 @@ if ($th_search_ui_raw === 'legacy') {
                     name: String(fd.get('name') || '').trim(),
                     phone: String(fd.get('phone') || '').trim(),
                     agree: !!fd.get('agree'),
+                    agree_ads: !!fd.get('agree_ads'),
                     website: String(fd.get('website') || ''),
                     message: 'Главная: быстрая заявка «подберём сами».'
                 };
                 if (!payload.name || !payload.phone) {
+                    if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_validation_error', { source: 'home_quick_lead', reason: 'missing_name_or_phone' });
                     if (msg) { msg.textContent = 'Укажите имя и телефон.'; msg.className = 'text-xs rounded-lg p-2 bg-red-100 text-red-900 block'; msg.classList.remove('hidden'); }
                     return;
                 }
                 if (!payload.agree) {
+                    if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_validation_error', { source: 'home_quick_lead', reason: 'consent_required' });
                     if (msg) { msg.textContent = 'Нужно согласие на обработку данных.'; msg.className = 'text-xs rounded-lg p-2 bg-red-100 text-red-900 block'; msg.classList.remove('hidden'); }
                     return;
                 }
+                if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_submit_attempt', { source: 'home_quick_lead' });
+                else ymg('lead_submit_attempt');
                 fetch('/backend/api/uon-lead.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -5905,7 +5941,7 @@ if ($th_search_ui_raw === 'legacy') {
                     .then(function (data) {
                         if (data && data.success) {
                             ymg('main_quick_lead_ok');
-                            if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_ok');
+                            if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_ok', { source: 'home_quick_lead' });
                             else ymg('lead_ok');
                             f.reset();
                             if (msg) {
@@ -5915,6 +5951,8 @@ if ($th_search_ui_raw === 'legacy') {
                             }
                         } else {
                             ymg('main_quick_lead_err');
+                            if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_err', { source: 'home_quick_lead' });
+                            else ymg('lead_err');
                             if (msg) {
                                 msg.textContent = (data && data.error) ? data.error : 'Ошибка отправки.';
                                 msg.className = 'text-xs rounded-lg p-2 bg-red-100 text-red-900 block';
@@ -5924,6 +5962,8 @@ if ($th_search_ui_raw === 'legacy') {
                     })
                     .catch(function () {
                         ymg('main_quick_lead_err');
+                        if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_err', { source: 'home_quick_lead' });
+                        else ymg('lead_err');
                         if (msg) {
                             msg.textContent = 'Нет связи. Попробуйте позже.';
                             msg.className = 'text-xs rounded-lg p-2 bg-red-100 text-red-900 block';
@@ -5947,10 +5987,7 @@ if ($th_search_ui_raw === 'legacy') {
         <form id="qbm-form" class="th-qbm-modal__form">
             <div class="th-qbm-modal__field"><input type="text" name="name" placeholder="ФИО" required maxlength="100" class="th-qbm-modal__input" autocomplete="name"></div>
             <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required class="th-qbm-modal__input">
-                <label class="th-qbm-modal__agree">
-                    <input type="checkbox" name="agree" required>
-                    <span><?php echo th_legal_consent_checkbox_html(); ?></span>
-                </label>
+                <?php echo th_legal_form_consents_html(['id_prefix' => 'qbm']); ?>
                 <input type="text" name="website" class="th-qbm-modal__hp" tabindex="-1" autocomplete="off">
                 <div id="qbm-msg" class="th-qbm-modal__msg"></div>
                 <button type="submit" id="qbm-submit" class="th-qbm-modal__submit">Отправить заявку менеджеру</button>
@@ -6967,6 +7004,7 @@ if ($th_search_ui_raw === 'legacy') {
                             name: String(fd.get('name') || '').trim() || 'Клиент сайта',
                             phone: String(fd.get('phone') || '').trim(),
                             agree: !!fd.get('agree'),
+                            agree_ads: !!fd.get('agree_ads'),
                             website: String(fd.get('website') || ''),
                             source: (document.getElementById('quick-booking-modal') || {}).dataset?.thLeadSource || 'home_quick_modal',
                             phoneOnly: (document.getElementById('quick-booking-modal') || {}).dataset?.thPhoneOnly === '1',
@@ -7045,6 +7083,7 @@ if ($th_search_ui_raw === 'legacy') {
                         name: 'Клиент сайта',
                         phone: String(fd.get('phone') || '').trim(),
                         agree: !!fd.get('agree'),
+                        agree_ads: !!fd.get('agree_ads'),
                         website: String(fd.get('website') || ''),
                         source: 'slow_search_lead',
                         phoneOnly: true,
@@ -7253,6 +7292,7 @@ if ($th_search_ui_raw === 'legacy') {
                     var name    = String(fd.get('name')  || '').trim();
                     var phone   = String(fd.get('phone') || '').trim();
                     var agree   = !!fd.get('agree');
+                    var agreeAds = !!fd.get('agree_ads');
                     var website = String(fd.get('website') || '');
 
                     function showMsg(text, ok) {
@@ -7272,7 +7312,7 @@ if ($th_search_ui_raw === 'legacy') {
                     fetch('/backend/api/uon-lead.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: name, phone: phone, agree: true, website: website, message: 'Заявка из модального окна (главная)' })
+                        body: JSON.stringify({ name: name, phone: phone, agree: true, agree_ads: agreeAds, website: website, message: 'Заявка из модального окна (главная)' })
                     })
                     .then(function(r) { return r.json().catch(function() { return { success: false }; }); })
                     .then(function(data) {

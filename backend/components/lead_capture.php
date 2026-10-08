@@ -71,10 +71,7 @@ $agree_id = $th_lead_id . '-agree';
             <label for="<?php echo htmlspecialchars($th_lead_id, ENT_QUOTES, 'UTF-8'); ?>-website">Сайт</label>
             <input type="text" id="<?php echo htmlspecialchars($th_lead_id, ENT_QUOTES, 'UTF-8'); ?>-website" name="website" tabindex="-1" autocomplete="off">
         </div>
-        <label class="th-lead-capture__agree">
-            <input type="checkbox" id="<?php echo htmlspecialchars($agree_id, ENT_QUOTES, 'UTF-8'); ?>" name="agree" required>
-            <span><?php require_once __DIR__ . '/legal_consent_label.php'; echo th_legal_consent_checkbox_html(); ?></span>
-        </label>
+        <?php require_once __DIR__ . '/legal_consent_label.php'; echo th_legal_form_consents_html(['id_prefix' => $th_lead_id]); ?>
         <div id="<?php echo htmlspecialchars($th_lead_msg_id, ENT_QUOTES, 'UTF-8'); ?>" class="th-lead-capture__msg hidden" data-th-lead-msg hidden></div>
         <button type="submit" class="th-lead-capture__submit"><?php echo htmlspecialchars($th_lead_submit, ENT_QUOTES, 'UTF-8'); ?></button>
     </form>

@@ -22,10 +22,13 @@
     return YM_FALLBACK;
   }
 
-  function reachGoal(goal) {
+  function reachGoal(goal, params) {
     try {
       var id = ymId();
-      if (id && typeof global.ym === 'function') global.ym(id, 'reachGoal', goal);
+      if (id && typeof global.ym === 'function') {
+        if (params && typeof params === 'object') global.ym(id, 'reachGoal', goal, params);
+        else global.ym(id, 'reachGoal', goal);
+      }
     } catch (e) {}
   }
 
@@ -154,8 +157,15 @@
     if (!isValidEmailOptional(email)) {
       return { ok: false, error: 'Укажите корректный email или оставьте поле пустым' };
     }
-    if (!agree) return { ok: false, error: 'Нужно согласие на обработку данных' };
+    if (!agree) return { ok: false, error: 'Нужно согласие на обработку персональных данных' };
     return { ok: true, name: name, phone: phone, email: email };
+  }
+
+  function adsAcceptedFrom(root) {
+    var el = null;
+    if (root && root.querySelector) el = root.querySelector('[name="agree_ads"]');
+    if (!el && typeof document !== 'undefined') el = document.querySelector('[name="agree_ads"]');
+    return !!(el && el.checked);
   }
 
   /**
@@ -195,13 +205,15 @@
       name: name,
       phone: phone,
       agree: true,
+      agree_ads: !!opts.agree_ads,
       website: String(opts.website || ''),
       message: buildMessage(opts),
       email: email,
       funnel_source: String(opts.source || 'site')
     };
 
-    reachGoal('lead_submit_attempt');
+    var source = String(opts.source || 'site');
+    reachGoal('lead_submit_attempt', { source: source });
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -214,8 +226,8 @@
       })
       .then(function (data) {
         if (data && data.success) {
-          reachGoal('lead_ok');
           var src = String(opts.source || 'site');
+          reachGoal('lead_ok', { source: src });
           if (src === 'slow_search_lead') reachGoal('slow_search_lead');
           if (src === 'abandon_sheet') reachGoal('abandon_sheet_lead');
           if (src.indexOf('empty') >= 0 || src === 'empty-state') reachGoal('empty_state_lead');
@@ -225,11 +237,11 @@
             message: data.message || defaultSuccessMessage(src)
           };
         }
-        reachGoal('lead_err');
+        reachGoal('lead_err', { source: source });
         return { success: false, error: (data && data.error) ? data.error : 'Не удалось отправить заявку' };
       })
       .catch(function () {
-        reachGoal('lead_err');
+        reachGoal('lead_err', { source: source });
         return { success: false, error: 'Нет связи с сервером. Попробуйте позже или позвоните.' };
       });
   }
@@ -257,10 +269,13 @@
       var phone = String(fd.get('phone') || (phoneEl && phoneEl.value) || '').trim();
       var phoneOnly = form.getAttribute('data-th-lead-phone-only') === '1';
       if (!name && phoneOnly) name = 'Клиент сайта';
-      var agreeEl = form.querySelector('[name="agree"], input[type="checkbox"][required], #lead-agree, #b-agree-contact, #th-tb-agree');
+      var agreeEl = form.querySelector('[name="agree"]');
       var agree = agreeEl ? !!agreeEl.checked : !!fd.get('agree');
+      var adsEl = form.querySelector('[name="agree_ads"]');
+      var agreeAds = adsEl ? !!adsEl.checked : !!fd.get('agree_ads');
       var website = String(fd.get('website') || '');
       var message = String(fd.get('message') || options.message || '');
+      var email = String(fd.get('email') || '');
 
       if (submitBtn) {
         submitBtn.disabled = true;
@@ -276,8 +291,10 @@
         name: name,
         phone: phone,
         agree: agree,
+        agree_ads: agreeAds,
         website: website,
         message: message,
+        email: email,
         source: source
       }).then(function (res) {
         if (msgEl) {
@@ -322,11 +339,54 @@
     });
   }
 
-  // Track tel: clicks as secondary conversion
+  function trackPageFunnelStage() {
+    var path = String((global.location && global.location.pathname) || '');
+    if (/\/tour-detail\.php$/i.test(path)) {
+      reachGoal('tour_detail_view');
+    } else if (/\/hotels\/hotel-detail\.php$/i.test(path)) {
+      reachGoal('vip_hotel_detail_view');
+    } else if (/\/turkey-vip-hotels\.php$/i.test(path)) {
+      reachGoal('vip_hotels_view');
+    }
+  }
+
+  // Funnel stages connect search, product selection, booking intent and submitted leads.
   document.addEventListener('click', function (e) {
-    var a = e.target && e.target.closest ? e.target.closest('a[href^="tel:"]') : null;
+    var target = e.target;
+    if (!target || !target.closest) return;
+    var tourLink = target.closest('a[href*="tour-detail.php"]');
+    if (tourLink) reachGoal('tour_detail_open');
+
+    var hotelLink = target.closest('a[href*="hotel-detail.php"]');
+    if (hotelLink) reachGoal('vip_hotel_open');
+
+    var leadTrigger = target.closest('[data-open-lead-modal]');
+    if (leadTrigger) {
+      reachGoal('lead_cta_click', {
+        source: leadTrigger.getAttribute('data-open-lead-modal') || 'site'
+      });
+    }
+
+    var bookingTrigger = target.closest('#btn-booking-with, #btn-booking-without, [data-th-booking-open]');
+    if (bookingTrigger) reachGoal('booking_form_open');
+
+    var a = target.closest('a[href^="tel:"]');
     if (a) reachGoal('call_click');
   }, true);
+
+  document.addEventListener('focusin', function (e) {
+    var target = e.target;
+    var form = target && target.closest
+      ? target.closest('form[data-th-lead], #main-quick-lead-form, #quick-booking-modal form, #booking-form')
+      : null;
+    if (!form || form.__thFunnelStarted) return;
+    form.__thFunnelStarted = true;
+    reachGoal('lead_form_start', {
+      source: form.getAttribute('data-th-lead-source') || form.id || 'site'
+    });
+  }, true);
+
+  trackPageFunnelStage();
 
   global.THLeadCapture = {
     submit: submitLead,
@@ -338,6 +398,7 @@
     personNameError: personNameError,
     ruPhoneError: ruPhoneError,
     validateLeadFields: validateLeadFields,
+    adsAccepted: adsAcceptedFrom,
     SUCCESS_MSG: 'Заявка принята. Перезвоним в течение 15 минут.'
   };
 

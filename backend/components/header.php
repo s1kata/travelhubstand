@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $current_page = $current_page ?? '';
 $more_menu_active = in_array($current_page, [
     'about', 'services', 'tour-calendar', 'video-tutorials', 'contacts',
-    'privacy', 'terms', 'vip-hotels', 'banks_rekvesit',
+    'privacy', 'terms', 'consent', 'advertising', 'vip-hotels', 'banks_rekvesit',
 ], true);
 $hotels_nav_active = in_array($current_page, ['popular-hotels', 'vip-hotels'], true);
 $isLoggedIn = !empty($_SESSION['logged_in']) && !empty($_SESSION['user_id']);
@@ -658,6 +658,7 @@ $th_csrf_token = security_csrf_token();
             <span class="site-header-mobile-muted">Документы</span>
             <a href="/frontend/window/banks_rekvesit.php" class="<?php echo $current_page === 'banks_rekvesit' ? 'is-active' : ''; ?>">Реквизиты</a>
             <a href="/frontend/window/consent.php" class="<?php echo ($current_page ?? '') === 'consent' ? 'is-active' : ''; ?>">Согласие на обработку ПД</a>
+            <a href="/frontend/window/advertising.php" class="<?php echo ($current_page ?? '') === 'advertising' ? 'is-active' : ''; ?>">Согласие на рекламу</a>
             <a href="/frontend/window/privacy.php" class="<?php echo $current_page === 'privacy' ? 'is-active' : ''; ?>">Политика конфиденциальности</a>
             <a href="/frontend/window/terms.php" class="<?php echo $current_page === 'terms' ? 'is-active' : ''; ?>">Пользовательское соглашение</a>
         </nav>
@@ -795,6 +796,10 @@ $_th_sm_hdr_v = is_file($_th_sm_hdr) ? (string) filemtime($_th_sm_hdr) : '1';
 <script src="/frontend/js/session-manager.js?v=<?php echo htmlspecialchars($_th_sm_hdr_v, ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 <script src="/frontend/js/th-tour-post-filters.js?v=<?php echo htmlspecialchars($_th_tpf_hdr_v, ENT_QUOTES, 'UTF-8'); ?>" defer></script>
 <script src="/frontend/js/th-tour-booking-modal.js?v=<?php echo htmlspecialchars($_th_tbm_hdr_v, ENT_QUOTES, 'UTF-8'); ?>" defer></script>
+<?php
+require_once __DIR__ . '/legal_consent_label.php';
+th_legal_consents_assets();
+?>
 <?php
 $_th_cc_hdr = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'frontend' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'cookie-consent.js';
 $_th_cc_hdr_v = is_file($_th_cc_hdr) ? (string) filemtime($_th_cc_hdr) : '1';

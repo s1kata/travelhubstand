@@ -16,6 +16,7 @@ require_once dirname(__DIR__) . '/components/security_helper.php';
 require_once dirname(__DIR__) . '/components/lead_validation.php';
 require_once dirname(__DIR__) . '/components/tour_link_sanitize.php';
 require_once dirname(__DIR__) . '/components/tour_bookings_schema.php';
+require_once dirname(__DIR__) . '/components/pd_consent_log.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -247,6 +248,18 @@ if ($is_guest_manager) {
     }
 }
 
+$adsAccepted = th_lead_ads_accepted($input);
+if ($is_guest_manager) {
+    th_pd_consent_capture_from_request($input, [
+        'name' => trim($u_name . ' ' . $u_surname),
+        'phone' => $phone,
+        'email' => $email ?? '',
+        'source_form' => 'uon-booking',
+        'funnel_source' => 'tour_booking',
+        'user_id' => $user_id > 0 ? $user_id : null,
+    ]);
+}
+
 $source = trim((string)(getenv('UON_SOURCE') ?: ($_ENV['UON_SOURCE'] ?? 'Сайт')));
 if ($source === '') $source = 'Сайт';
 
@@ -376,6 +389,9 @@ if ($operator_tour_link !== '' && !uon_booking_should_omit_operator_link_note($t
     $note_lines[] = 'Ссылка туроператора / витрина: ' . $operator_tour_link;
 }
 $note_lines[] = 'Страница тура на сайте: ' . $tour_link;
+if ($is_guest_manager) {
+    $note_lines[] = th_pd_consent_crm_note($adsAccepted);
+}
 $note_text = implode("\n", $note_lines);
 
 // Описание тура для примечания (в lead/create нет массива services — всё в note / budget / даты пожеланий)

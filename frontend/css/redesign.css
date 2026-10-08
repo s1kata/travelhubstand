@@ -5169,6 +5169,19 @@ body.th-modal-open .th-detail__mobile-sticky,
 .th-detail__mobile-sticky[hidden] {
     display: none !important;
 }
+#booking-modal {
+    z-index: 200000 !important;
+    isolation: isolate;
+}
+body.th-page-tour-detail.th-modal-open .th-detail__gallery-arrow,
+body.th-page-tour-detail.th-modal-open .th-detail__gallery-dots,
+body.th-page-tour-detail.th-modal-open .th-detail__gallery-counter {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+}
 .th-detail__mobile-sticky-btn {
     display: flex;
     align-items: center;

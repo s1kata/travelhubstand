@@ -1,0 +1,50 @@
+# Travel Hub — правила для поисковых роботов
+# Обновлено: полная SEO оптимизация
+
+User-agent: *
+Allow: /
+Allow: /frontend/
+Allow: /backend/api/
+Allow: /frontend/window/
+Allow: /frontend/window/countries/
+Allow: /frontend/window/services.php
+Allow: /frontend/window/about.php
+Allow: /frontend/window/contacts.php
+
+# Закрыть от индексации админку и служебные скрипты
+Disallow: /backend/admin/
+Disallow: /backend/scripts/
+Disallow: /backend/config/
+Disallow: /backend/components/
+Disallow: /data/
+Disallow: /export/
+Disallow: /database/
+Disallow: /docs/
+Disallow: /scripts/
+Disallow: /*.log$
+Disallow: /*.db$
+Disallow: /*.sql$
+
+# Разрешить индексацию изображений
+Allow: /img/
+Allow: /frontend/window/img/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.webp$
+Allow: /*.svg$
+
+# Разрешить индексацию CSS и JS
+Allow: /*.css$
+Allow: /*.js$
+
+# Crawl-delay для некоторых ботов (опционально)
+User-agent: Yandex
+Crawl-delay: 1
+
+User-agent: Googlebot
+Crawl-delay: 0
+
+# Sitemap с перечнем страниц для индексации (полный абсолютный URL)
+Sitemap: https://travelhub63.ru/sitemap.php
