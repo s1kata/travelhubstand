@@ -990,6 +990,13 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
             resultsDiv.innerHTML = '<div class="tv-results-empty"><p class="text-slate-600">Выберите даты вылета и возвращения в календаре.</p></div>';
             return;
         }
+
+        if (window.THLeadCapture) {
+            window.THLeadCapture.reachGoal('country_search_start', {
+                country_id: String(effectiveCountryId),
+                departure_id: String(dep)
+            });
+        }
         
         const meal = document.getElementById('country-tv-meal').value;
         const category = document.getElementById('country-tv-category').value;
@@ -1048,6 +1055,12 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
             document.getElementById('country-tv-results-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
             console.log('[API → страна] Туров загружено:', countryTvLastResults.length);
             console.log('%c[API → сайт] Результаты с API получены и отображены на сайте', 'color: #22c55e; font-weight: bold', { туров: countryTvLastResults.length, тип: 'search-cached' });
+            if (window.THLeadCapture) {
+                window.THLeadCapture.reachGoal('country_search_results_shown', {
+                    country_id: String(effectiveCountryId),
+                    result_count: countryTvLastResults.length
+                });
+            }
             return;
         }
 
@@ -1059,11 +1072,22 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                 : 'По выбранным параметрам туры не найдены. Измените даты, курорт или фильтры и попробуйте снова.';
             resultsDiv.innerHTML = '<div class="tv-results-empty"><p class="text-slate-600 mb-2">' + emptyMsg.replace(/</g, '&lt;') + '</p></div>';
             document.getElementById('country-tv-result-count').textContent = '0';
+            if (window.THLeadCapture) {
+                window.THLeadCapture.reachGoal('country_search_no_results', {
+                    country_id: String(effectiveCountryId),
+                    result_count: 0
+                });
+            }
         } else {
             const errMsg = (rCache.error || 'Не удалось загрузить туры. Попробуйте позже.');
             resultsDiv.innerHTML = '<div class="tv-results-empty"><p class="text-slate-600 mb-2">' + (String(errMsg).replace(/</g, '&lt;')) + '</p></div>';
             console.error('[API → страна] Ошибка загрузки туров:', rCache.error || rCache);
             console.log('[API → страна] Туров загружено:', 0);
+            if (window.THLeadCapture) {
+                window.THLeadCapture.reachGoal('country_search_error', {
+                    country_id: String(effectiveCountryId)
+                });
+            }
         }
         return;
     }
@@ -1230,6 +1254,13 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                     adults: String(priceAdults), tour_id: tourId,
                     image: cardImg || ''
                 };
+                if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
+                    params.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
+                }
+                if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                    const roomOptions = window.THTourCard.getRoomOptions(h, tour);
+                    if (roomOptions.length > 1) params.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+                }
                 if (startYmd) params.date_from = startYmd;
                 if (retYmd) params.date_to = retYmd;
                 if (departureIdVal) params.departure_id = departureIdVal;
@@ -1316,6 +1347,13 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                 rating: String(h.rating || ''),
                 category: String(h.category || ''),
             };
+            if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
+                params.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
+            }
+            if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                const roomOptions = window.THTourCard.getRoomOptions(h, tour);
+                if (roomOptions.length > 1) params.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+            }
             if (tourId) params.tour_id = tourId;
             if (h.id) params.hotel_id = String(h.id);
             if (startYmd) params.date_from = startYmd;

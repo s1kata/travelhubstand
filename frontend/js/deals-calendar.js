@@ -157,6 +157,8 @@
       region: region,
       date_from: dateFrom,
       date_to: dateTo,
+      tour_id: t.id != null ? String(t.id) : '',
+      room_category: String(t.roomType || t.room || t.roomName || 'Стандарт'),
       image: hotelImg(hotel),
       description: desc,
       rating: hotel.rating || '',
@@ -164,6 +166,12 @@
       from_calendar: '1',
       adults: '2'
     };
+    var roomId = t.roomId != null ? t.roomId : (t.roomid != null ? t.roomid : t.room_id);
+    if (roomId != null && String(roomId).trim() !== '') params.room_id = String(roomId).trim();
+    if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+      var roomOptions = window.THTourCard.getRoomOptions(hotel, t);
+      if (roomOptions.length > 1) params.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+    }
     var opName = '';
     if (t.operatorName) opName = String(t.operatorName).trim();
     else if (typeof t.operator === 'string') opName = t.operator.trim();
@@ -374,6 +382,12 @@
         renderMonthHead();
         renderGrid();
         var keys = Object.keys(state.priceMap);
+        if (window.THLeadCapture) {
+          window.THLeadCapture.reachGoal(j && j.success ? 'calendar_map_loaded' : 'calendar_map_error', {
+            date_count: keys.length,
+            departure_id: String(state.departureId)
+          });
+        }
         if (!keys.length) {
           var reason = (j && j.emptyReason) || '';
           if (reason === 'no_calendar_cache') {
@@ -400,6 +414,11 @@
         state.priceMap = {};
         renderGrid();
         setResultsPlaceholder('Не удалось загрузить карту цен');
+        if (window.THLeadCapture) {
+          window.THLeadCapture.reachGoal('calendar_map_error', {
+            departure_id: String(state.departureId)
+          });
+        }
       })
       .finally(function () {
         state.loadingMap = false;
@@ -422,6 +441,13 @@
       .then(function (j) {
         var data = (j && j.success && Array.isArray(j.data)) ? j.data : [];
         renderTours(data, date);
+        if (window.THLeadCapture) {
+          window.THLeadCapture.reachGoal(data.length ? 'calendar_results_shown' : 'calendar_no_results', {
+            result_count: data.length,
+            departure_id: String(state.departureId),
+            selected_date: date
+          });
+        }
         if (window.THSafeTrace) window.THSafeTrace(j);
       })
       .catch(function () {
@@ -511,6 +537,12 @@
         if (!btn || btn.disabled) return;
         var date = btn.getAttribute('data-date');
         if (!date) return;
+        if (window.THLeadCapture) {
+          window.THLeadCapture.reachGoal('calendar_day_select', {
+            departure_id: String(state.departureId),
+            selected_date: date
+          });
+        }
         loadDay(date);
       });
     }

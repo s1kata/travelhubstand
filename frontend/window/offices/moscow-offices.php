@@ -86,7 +86,7 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
     ?>
 
     <?php include __DIR__ . '/../../../backend/components/footer.php'; ?>
-    <script src="/frontend/js/office-lead-modal.js?v=5" defer></script>
+    <script src="/frontend/js/office-lead-modal.js?v=6" defer></script>
     <script>
     (function () {
       if (typeof ymaps === 'undefined') return;

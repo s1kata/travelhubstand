@@ -5,7 +5,7 @@
 (function (global) {
   'use strict';
 
-  var YM_FALLBACK = 109291068;
+  var YM_FALLBACK = 113554694;
   var ENDPOINT = '/backend/api/uon-lead.php';
 
   function ymId() {
@@ -193,8 +193,11 @@
 
   function submitLead(opts) {
     opts = opts || {};
+    var source = String(opts.source || 'site');
+    reachGoal('lead_submit_attempt', { source: source });
     var check = validateLeadFields(opts);
     if (!check.ok) {
+      reachGoal('lead_validation_error', { source: source });
       return Promise.resolve({ success: false, error: check.error });
     }
     var name = check.name;
@@ -212,8 +215,6 @@
       funnel_source: String(opts.source || 'site')
     };
 
-    var source = String(opts.source || 'site');
-    reachGoal('lead_submit_attempt', { source: source });
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -339,15 +340,58 @@
     });
   }
 
+  var pageFunnelTracked = false;
   function trackPageFunnelStage() {
+    if (pageFunnelTracked || typeof global.ym !== 'function') return;
     var path = String((global.location && global.location.pathname) || '');
+    var normalizedPath = path.toLowerCase();
+    var pageType = 'other';
+    if (normalizedPath === '/' || /\/index\.php$/i.test(normalizedPath)) {
+      pageType = 'home';
+    } else if (/\/promotions\.php$/i.test(normalizedPath)) {
+      pageType = 'promotions';
+    } else if (/\/offices\/office\.php$/i.test(normalizedPath)) {
+      pageType = 'office_detail';
+    } else if (/\/offices(?:\/|\.php)/i.test(normalizedPath)) {
+      pageType = 'offices';
+    } else if (/\/tour-calendar\.php$/i.test(normalizedPath)) {
+      pageType = 'calendar';
+    } else if (/\/countries\/(?:country\.php|[^/]+\.php)$/i.test(normalizedPath)) {
+      pageType = 'country';
+    } else if (/\/countries-list\.php$/i.test(normalizedPath)) {
+      pageType = 'country_list';
+    } else if (/\/tour-detail\.php$/i.test(normalizedPath)) {
+      pageType = 'tour_detail';
+    }
+
+    reachGoal('site_page_view', { page_type: pageType, page_path: path });
+    try {
+      if (!sessionStorage.getItem('th_ym_entry_sent_v1')) {
+        sessionStorage.setItem('th_ym_entry_sent_v1', '1');
+        reachGoal('site_entry', { entry_page: pageType, entry_path: path });
+      }
+    } catch (e) {}
+
     if (/\/tour-detail\.php$/i.test(path)) {
       reachGoal('tour_detail_view');
     } else if (/\/hotels\/hotel-detail\.php$/i.test(path)) {
       reachGoal('vip_hotel_detail_view');
     } else if (/\/turkey-vip-hotels\.php$/i.test(path)) {
       reachGoal('vip_hotels_view');
+    } else if (/\/promotions\.php$/i.test(path)) {
+      reachGoal('promo_page_view');
+    } else if (/\/offices\/office\.php$/i.test(path)) {
+      reachGoal('office_detail_view');
+    } else if (/\/offices(?:\/|\.php)/i.test(path)) {
+      reachGoal('offices_page_view');
+    } else if (/\/tour-calendar\.php$/i.test(path)) {
+      reachGoal('calendar_page_view');
+    } else if (/\/countries\/(?:country\.php|[^/]+\.php)$/i.test(path)) {
+      reachGoal('country_page_view');
+    } else if (/\/countries-list\.php$/i.test(path)) {
+      reachGoal('country_list_view');
     }
+    pageFunnelTracked = true;
   }
 
   // Funnel stages connect search, product selection, booking intent and submitted leads.
@@ -355,7 +399,26 @@
     var target = e.target;
     if (!target || !target.closest) return;
     var tourLink = target.closest('a[href*="tour-detail.php"]');
-    if (tourLink) reachGoal('tour_detail_open');
+    if (tourLink) {
+      var currentPath = String((global.location && global.location.pathname) || '').toLowerCase();
+      var tourUrl;
+      var source = 'site';
+      try {
+        tourUrl = new URL(tourLink.href, global.location.href);
+        if (tourUrl.searchParams.get('from_calendar') === '1' || /\/tour-calendar\.php$/i.test(currentPath)) {
+          source = 'calendar';
+        } else if (/\/promotions\.php$/i.test(currentPath)) {
+          source = 'promotions';
+        } else if (/\/countries\//i.test(currentPath)) {
+          source = 'country';
+        } else if (/\/index\.php$/i.test(currentPath) || currentPath === '/') {
+          source = tourLink.closest('.th-tour-offer') ? 'home_hot_tour' : 'home_search';
+        }
+      } catch (e) {}
+      reachGoal('tour_detail_open', { source: source, page_path: currentPath });
+      if (source === 'calendar') reachGoal('calendar_tour_open');
+      if (source === 'country') reachGoal('country_tour_open');
+    }
 
     var hotelLink = target.closest('a[href*="hotel-detail.php"]');
     if (hotelLink) reachGoal('vip_hotel_open');
@@ -367,17 +430,48 @@
       });
     }
 
-    var bookingTrigger = target.closest('#btn-booking-with, #btn-booking-without, [data-th-booking-open]');
-    if (bookingTrigger) reachGoal('booking_form_open');
+    var bookingTrigger = target.closest('#btn-booking-with, #btn-booking-without, [data-th-booking-open], [data-th-book-tour]');
+    if (bookingTrigger) {
+      var bookingSource = /\/promotions\.php$/i.test(global.location.pathname) ? 'promotions'
+        : (/\/countries\//i.test(global.location.pathname) ? 'country'
+          : (/\/tour-calendar\.php$/i.test(global.location.pathname) ? 'calendar'
+            : (/\/index\.php$/i.test(global.location.pathname) || global.location.pathname === '/' ? 'homepage' : 'tour_detail')));
+      reachGoal('booking_form_open', { source: bookingSource });
+    }
+
+    var officeLeadTrigger = target.closest('[data-th-office-lead-btn="1"]');
+    if (officeLeadTrigger) {
+      reachGoal('office_lead_open', {
+        office_city: officeLeadTrigger.getAttribute('data-office-city') || ''
+      });
+    }
+
+    var officeLink = target.closest('a[href*="/offices/"]');
+    if (officeLink && !/\/offices\/office\.php/i.test(global.location.pathname)) {
+      reachGoal('office_detail_open');
+    }
+    var countryLink = target.closest('a[href*="/countries/"]');
+    if (countryLink) {
+      reachGoal('country_detail_open', {
+        source: String((global.location && global.location.pathname) || '')
+      });
+    }
 
     var a = target.closest('a[href^="tel:"]');
-    if (a) reachGoal('call_click');
+    if (a) {
+      reachGoal('call_click');
+      if (/\/offices(?:\/|\.php)/i.test(global.location.pathname) || a.closest('.th-off-card')) {
+        reachGoal('office_call_click', {
+          office_city: (a.closest('[data-city]') && a.closest('[data-city]').getAttribute('data-city')) || ''
+        });
+      }
+    }
   }, true);
 
   document.addEventListener('focusin', function (e) {
     var target = e.target;
     var form = target && target.closest
-      ? target.closest('form[data-th-lead], #main-quick-lead-form, #quick-booking-modal form, #booking-form')
+      ? target.closest('form[data-th-lead], #main-quick-lead-form, #quick-booking-modal form, #booking-form, #th-tour-booking-form')
       : null;
     if (!form || form.__thFunnelStarted) return;
     form.__thFunnelStarted = true;
@@ -386,6 +480,7 @@
     });
   }, true);
 
+  global.addEventListener('th:cookie-consent-accepted', trackPageFunnelStage);
   trackPageFunnelStage();
 
   global.THLeadCapture = {

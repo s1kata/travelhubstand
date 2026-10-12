@@ -106,6 +106,19 @@
       THLeadCapture.formatPhoneInput(phone);
     }
 
+    function trackFormStart() {
+      if (window.THLeadCapture) {
+        THLeadCapture.reachGoal('lead_form_start', {
+          source: 'office',
+          office_city: officeCity
+        });
+      }
+      if (nameEl) nameEl.removeEventListener('input', trackFormStart);
+      if (phone) phone.removeEventListener('input', trackFormStart);
+    }
+    if (nameEl) nameEl.addEventListener('input', trackFormStart);
+    if (phone) phone.addEventListener('input', trackFormStart);
+
     setTimeout(function () { try { nameEl && nameEl.focus(); } catch (e) {} }, 50);
 
     function show(text, ok) {
@@ -128,6 +141,13 @@
       var okAds = !!(adsEl && adsEl.checked);
       var websiteVal = (website && website.value) || '';
 
+      if (window.THLeadCapture) {
+        THLeadCapture.reachGoal('lead_submit_attempt', {
+          source: 'office',
+          office_city: officeCity
+        });
+      }
+
       // Единая клиентская валидация (как у uon-lead / THLeadCapture)
       if (window.THLeadCapture && typeof THLeadCapture.validateLeadFields === 'function') {
         var check = THLeadCapture.validateLeadFields({
@@ -136,6 +156,10 @@
           agree: okAgree
         });
         if (!check.ok) {
+          THLeadCapture.reachGoal('lead_validation_error', {
+            source: 'office',
+            office_city: officeCity
+          });
           show(check.error || 'Проверьте данные формы', false);
           return;
         }
@@ -207,11 +231,22 @@
           return { success: false, error: 'Ошибка ответа сервера' };
         });
       }).then(function (j) {
-        if (j && j.success && window.THLeadCapture) THLeadCapture.reachGoal('lead_ok');
+        if (window.THLeadCapture) {
+          THLeadCapture.reachGoal(j && j.success ? 'lead_ok' : 'lead_err', {
+            source: 'office',
+            office_city: officeCity
+          });
+        }
         done(j && j.success
           ? { success: true, message: j.message || 'Заявка принята.' }
           : { success: false, error: (j && j.error) || 'Ошибка' });
       }).catch(function () {
+        if (window.THLeadCapture) {
+          THLeadCapture.reachGoal('lead_err', {
+            source: 'office',
+            office_city: officeCity
+          });
+        }
         done({ success: false, error: 'Ошибка сети' });
       });
     });

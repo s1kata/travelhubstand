@@ -1,7 +1,7 @@
 <?php
 /**
  * Яндекс.Метрика: единый числовой ID и HTML/JS-сниппет для всех публичных страниц.
- * Переопределение: переменная окружения YANDEX_METRIKA_ID (только цифры). Если не задана — 109291068.
+ * Переопределение: переменная окружения YANDEX_METRIKA_ID (только цифры). Если не задана — 113554694.
  *
  * Счётчик загружается только после согласия на cookies (cookie_consent_accepted=accepted
  * или событие th:cookie-consent-accepted / window.thLoadYandexMetrika).
@@ -17,7 +17,7 @@ if (!function_exists('th_yandex_metrika_counter_id')) {
         }
         $raw = trim((string) (getenv('YANDEX_METRIKA_ID') ?: ($_ENV['YANDEX_METRIKA_ID'] ?? '')));
         $digits = preg_replace('/\D/', '', $raw) ?? '';
-        $cached = $digits !== '' ? $digits : '109291068';
+        $cached = $digits !== '' ? $digits : '113554694';
         return $cached;
     }
 }
@@ -55,6 +55,7 @@ if (!function_exists('th_yandex_metrika_print_snippet')) {
         if (window.__thYmLoaded) {
             return;
         }
+        window.__TH_YM_ID = YM_ID;
         window.__thYmLoaded = true;
         (function (m, e, t, r, i, k, a) {
             m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };

@@ -796,6 +796,34 @@ select.flatpickr-monthDropdown-months {
     box-shadow: none;
     border: 1px solid rgba(26, 26, 64, 0.06);
 }
+.th-results-package-loading {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 12px 16px;
+    color: #457F7B;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-align: center;
+}
+.th-results-package-loading__spinner {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border: 3px solid rgba(93, 169, 164, 0.2);
+    border-top-color: #5DA9A4;
+    border-radius: 50%;
+    animation: th-results-package-spin 0.8s linear infinite;
+}
+@keyframes th-results-package-spin {
+    to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .th-results-package-loading__spinner { animation: none; }
+}
 .th-tour-card--skeleton .th-tour-card__body {
     padding: 14px 16px 16px;
     gap: 10px;
@@ -3483,9 +3511,28 @@ select.flatpickr-monthDropdown-months {
     color: #94a3b8;
 }
 .th-tour-card__flight-sub--loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-weight: 500;
     font-style: italic;
     color: #5DA9A4;
+}
+.th-tour-card__flight-sub--loading::before {
+    content: "";
+    width: 11px;
+    height: 11px;
+    flex: 0 0 11px;
+    border: 2px solid rgba(93, 169, 164, 0.25);
+    border-top-color: #5DA9A4;
+    border-radius: 50%;
+    animation: th-flight-loading-spin 0.8s linear infinite;
+}
+@keyframes th-flight-loading-spin {
+    to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .th-tour-card__flight-sub--loading::before { animation: none; }
 }
 
 /* Город вылета, если нет данных рейса */

@@ -3,6 +3,7 @@
  * Прокси Tourvisor. СВЕЖЕСТЬ > СКОРОСТЬ (как в TravelHubNew).
  * — Справочники: из файлов tourvisor_cache (до 7 дней), при ошибке API — устаревший до 30 дней.
  * — Поиск: type=search — старт live, сразу searchId (клиент поллит status/results).
+ * — type=tour-package объединяет недостающие данные тура, перелёта и номеров; кэш деталей — 30 дней.
  *   type=search-cached без live=1 — exact → cover → live; live=1 — принудительный bypass кэша.
  *   Persist кэша/cover/Firestore — после ответа клиенту (fastcgi_finish_request).
  *   Poll: early ~55% / soft ~16с; results?persist=0 — early paint без записи кэша.
@@ -221,7 +222,7 @@ function tv_enrich_hotel_pictures(array $hotels): array
 
 /**
  * Урезанная выдача для списка карточек (SpaceWeb / PHP-only):
- * без description и лишних туров — меньше JSON и быстрее parse/paint.
+ * без description; сохраняет первый тур для текущих карточек и компактные варианты номеров.
  *
  * @param array<int, mixed> $hotels
  * @return array<int, mixed>
@@ -263,11 +264,13 @@ function tv_slim_hotels_for_list(array $hotels): array
             $addPic('hotel_pics/main400/' . $hid . '.jpg');
         }
 
-        $tourSlim = null;
+        $tourSlims = [];
         if (!empty($hotel['tours']) && is_array($hotel['tours'])) {
-            $t0 = $hotel['tours'][0] ?? null;
-            if (is_array($t0)) {
-                $meal = $t0['meal'] ?? null;
+            foreach (array_slice($hotel['tours'], 0, 20) as $tour) {
+                if (!is_array($tour)) {
+                    continue;
+                }
+                $meal = $tour['meal'] ?? null;
                 if (is_array($meal)) {
                     $meal = array_filter([
                         'name' => $meal['name'] ?? null,
@@ -276,24 +279,30 @@ function tv_slim_hotels_for_list(array $hotels): array
                     ], static fn($v) => $v !== null && $v !== '');
                 }
                 $tourSlim = array_filter([
-                    'id' => $t0['id'] ?? $t0['tourId'] ?? null,
-                    'price' => $t0['price'] ?? null,
-                    'totalPrice' => $t0['totalPrice'] ?? null,
-                    'priceRub' => $t0['priceRub'] ?? null,
-                    'cost' => $t0['cost'] ?? null,
-                    'fuelCharge' => $t0['fuelCharge'] ?? null,
-                    'nights' => $t0['nights'] ?? null,
-                    'date' => $t0['date'] ?? $t0['flydate'] ?? null,
+                    'id' => $tour['id'] ?? $tour['tourId'] ?? null,
+                    'price' => $tour['price'] ?? null,
+                    'totalPrice' => $tour['totalPrice'] ?? null,
+                    'priceRub' => $tour['priceRub'] ?? null,
+                    'cost' => $tour['cost'] ?? null,
+                    'fuelCharge' => $tour['fuelCharge'] ?? null,
+                    'nights' => $tour['nights'] ?? null,
+                    'date' => $tour['date'] ?? $tour['flydate'] ?? null,
                     'meal' => $meal ?: null,
-                    'roomType' => $t0['roomType'] ?? null,
-                    'flydate' => $t0['flydate'] ?? null,
-                    'datefrom' => $t0['datefrom'] ?? $t0['dateFrom'] ?? null,
-                    'dateto' => $t0['dateto'] ?? $t0['dateTo'] ?? null,
-                    'adults' => $t0['adults'] ?? null,
-                    'childs' => $t0['childs'] ?? null,
-                    'operator' => $t0['operator'] ?? ($t0['operatorName'] ?? null),
-                    'operatorName' => $t0['operatorName'] ?? null,
+                    'roomId' => $tour['roomId'] ?? $tour['roomid'] ?? $tour['room_id'] ?? null,
+                    'roomType' => $tour['roomType'] ?? null,
+                    'room' => $tour['room'] ?? null,
+                    'roomName' => $tour['roomName'] ?? null,
+                    'flydate' => $tour['flydate'] ?? null,
+                    'datefrom' => $tour['datefrom'] ?? $tour['dateFrom'] ?? null,
+                    'dateto' => $tour['dateto'] ?? $tour['dateTo'] ?? null,
+                    'adults' => $tour['adults'] ?? null,
+                    'childs' => $tour['childs'] ?? null,
+                    'operator' => $tour['operator'] ?? ($tour['operatorName'] ?? null),
+                    'operatorName' => $tour['operatorName'] ?? null,
                 ], static fn($v) => $v !== null && $v !== '');
+                if ($tourSlim !== []) {
+                    $tourSlims[] = $tourSlim;
+                }
             }
         }
 
@@ -323,7 +332,8 @@ function tv_slim_hotels_for_list(array $hotels): array
             'pictures' => $pics,
             'hotelDescriptionLink' => $hotel['hotelDescriptionLink'] ?? $hotel['hoteldescriptionlink'] ?? null,
             'link' => $hotel['link'] ?? null,
-            'tours' => $tourSlim ? [$tourSlim] : [],
+            'tours' => isset($tourSlims[0]) ? [$tourSlims[0]] : [],
+            'roomOptions' => count($tourSlims) > 1 ? $tourSlims : [],
         ];
         $out[] = array_filter($row, static function ($v) {
             if ($v === null || $v === '') {
@@ -495,28 +505,39 @@ function tvParseChildAges(mixed $childs): array
 function tvCachedShort(string $type, array $params, int $ttlSeconds, callable $fetchFn, bool $staleOnError = false): array {
     $cacheKey = tvCacheKey($type, $params);
     if (!$GLOBALS['tv_bypass_cache']) {
-        $cached = tvCacheGet($cacheKey, $ttlSeconds);
+        $cached = tvCacheGet($cacheKey, max($ttlSeconds, 30 * 86400));
         if (is_array($cached)) {
-            $GLOBALS['tv_cache_hit'] = true;
-            return $cached;
+            $cachedTtl = max(1, (int) ($cached['_cacheTtlSeconds'] ?? $ttlSeconds));
+            $cacheFile = tvCacheDir() . DIRECTORY_SEPARATOR . $cacheKey . '.json';
+            if (is_file($cacheFile) && (time() - (int) filemtime($cacheFile)) < $cachedTtl) {
+                unset($cached['_cacheTtlSeconds']);
+                $GLOBALS['tv_cache_hit'] = true;
+                return $cached;
+            }
         }
     }
     $GLOBALS['tv_cache_hit'] = false;
     $res = $fetchFn();
     if (is_array($res) && !empty($res['success'])) {
-        tvCacheSet($cacheKey, $res);
+        $cacheValue = $res;
+        $cacheValue['_cacheTtlSeconds'] = max(1, $ttlSeconds);
+        tvCacheSet($cacheKey, $cacheValue);
         return $res;
     }
     if (is_array($res) && $type === 'tour-flights') {
         if (!empty($res['operatorNoFlights'])) {
-            tvCacheSet($cacheKey, $res);
+            $cacheValue = $res;
+            $cacheValue['_cacheTtlSeconds'] = min(max(1, $ttlSeconds), 300);
+            tvCacheSet($cacheKey, $cacheValue);
 
             return $res;
         }
         $errLow = strtolower(trim((string) ($res['error'] ?? '')));
         if ($errLow !== '' && (str_contains($errLow, 'not found') || str_contains($errLow, 'не найден'))) {
             $gone = array_merge($res, ['success' => false, 'tourGone' => true]);
-            tvCacheSet($cacheKey, $gone);
+            $cacheValue = $gone;
+            $cacheValue['_cacheTtlSeconds'] = min(max(1, $ttlSeconds), 300);
+            tvCacheSet($cacheKey, $cacheValue);
 
             return $gone;
         }
@@ -531,6 +552,104 @@ function tvCachedShort(string $type, array $params, int $ttlSeconds, callable $f
     }
 
     return $res;
+}
+
+function tvFetchTourFlightsCached(string $tourId, string $currency, int $ttlSeconds): array {
+    return tvCachedShort('tour-flights', ['tourId' => $tourId, 'currency' => $currency], $ttlSeconds, function () use ($tourId, $currency) {
+        $res = tvRequest('/tours/' . $tourId . '/flights', ['currency' => $currency]);
+        if (!$res['success'] || !isset($res['data'])) {
+            return ['success' => false, 'error' => $res['error'] ?? 'Ошибка запроса авиарейсов', 'data' => null];
+        }
+
+        $flights = $res['data']['flights'] ?? [];
+        $error = $res['data']['error'] ?? null;
+        if ((!is_array($flights) || $flights === []) && $error !== null && $error !== '') {
+            $reason = is_array($error)
+                ? trim((string) ($error['reason'] ?? $error['message'] ?? $error['code'] ?? 'no flights'))
+                : trim((string) $error);
+            return [
+                'success' => false,
+                'error' => $reason !== '' ? $reason : 'no flights',
+                'flights' => [],
+                'operatorNoFlights' => true,
+                'data' => $res['data'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'flights' => is_array($flights) ? $flights : [],
+            'info' => $res['data']['info'] ?? null,
+            'error' => $error,
+            'data' => $res['data'],
+        ];
+    }, true);
+}
+
+function tvFetchRoomDescriptionsCached(array $roomIds, int $ttlSeconds): array {
+    $roomsById = [];
+    $missingIds = [];
+    foreach ($roomIds as $roomId) {
+        $roomId = (int) $roomId;
+        if ($roomId <= 0) {
+            continue;
+        }
+        $key = tvCacheKey('room-description', ['roomId' => $roomId]);
+        $cached = empty($GLOBALS['tv_bypass_cache']) ? tvCacheGet($key, $ttlSeconds) : null;
+        if (is_array($cached) && !empty($cached['success']) && is_array($cached['data'] ?? null)) {
+            $roomsById[(string) $roomId] = $cached['data'];
+        } else {
+            $missingIds[] = $roomId;
+        }
+    }
+
+    if ($missingIds === []) {
+        return ['success' => true, 'data' => array_values($roomsById)];
+    }
+
+    $batch = tvCachedShort(
+        'room-descriptions',
+        ['idsHash' => hash('sha256', implode(',', $missingIds))],
+        $ttlSeconds,
+        static function () use ($missingIds) {
+            $res = tvRequest('/rooms', ['ids' => $missingIds]);
+            if ($res['success'] && isset($res['data'])) {
+                return ['success' => true, 'data' => $res['data']];
+            }
+            return ['success' => false, 'error' => $res['error'] ?? 'Ошибка запроса описаний номеров', 'data' => null];
+        },
+        true
+    );
+
+    if (!empty($batch['success'])) {
+        $roomRows = $batch['data'] ?? [];
+        if (is_array($roomRows) && is_array($roomRows['data'] ?? null)) {
+            $roomRows = $roomRows['data'];
+        }
+        if (!is_array($roomRows)) {
+            $roomRows = [];
+        }
+        foreach ($roomRows as $room) {
+            if (!is_array($room) || empty($room['id'])) {
+                continue;
+            }
+            $roomId = (int) $room['id'];
+            if (!in_array($roomId, $missingIds, true)) {
+                continue;
+            }
+            $roomsById[(string) $roomId] = $room;
+            tvCacheSet(tvCacheKey('room-description', ['roomId' => $roomId]), [
+                'success' => true,
+                'data' => $room,
+            ]);
+        }
+    }
+
+    return [
+        'success' => !empty($batch['success']),
+        'data' => array_values($roomsById),
+        'error' => $batch['error'] ?? null,
+    ];
 }
 
 /** Порядок полей как в TravelHubNew (worker/cacheKey + tourSearchCache) для совместимости ключа с Firestore searchCache */
@@ -1987,43 +2106,99 @@ function tourvisor_proxy_dispatch(): array
         } else {
             $ttl = (int)(getenv('TOURVISOR_TOUR_LIVE_CACHE_TTL_SECONDS') ?: ($_ENV['TOURVISOR_TOUR_LIVE_CACHE_TTL_SECONDS'] ?? 300));
             $ttl = min(max($ttl, 60), 900);
-            $r = tvCachedShort('tour-flights', ['tourId' => $tourId, 'currency' => $currency], $ttl, function () use ($tourId, $currency) {
-                $res = tvRequest('/tours/' . $tourId . '/flights', ['currency' => $currency]);
+            $r = tvFetchTourFlightsCached($tourId, $currency, $ttl);
+        }
+        break;
+    case 'tour-package':
+        $tourId = trim((string) ($_GET['tourId'] ?? ''));
+        $currency = trim((string) ($_GET['currency'] ?? 'RUB')) ?: 'RUB';
+        if ($tourId === '' || !preg_match('/^\d{1,24}$/', $tourId)) {
+            $r = ['success' => false, 'error' => 'Valid tourId required', 'data' => null];
+            break;
+        }
+
+        $roomIdsRaw = trim((string) ($_GET['roomIds'] ?? ''));
+        $roomIds = [];
+        foreach (explode(',', $roomIdsRaw) as $roomIdRaw) {
+            $roomIdRaw = trim($roomIdRaw);
+            if ($roomIdRaw !== '' && preg_match('/^\d{1,12}$/', $roomIdRaw)) {
+                $roomIds[] = (int) $roomIdRaw;
+            }
+        }
+        $roomIds = array_slice(array_values(array_unique(array_filter($roomIds))), 0, 30);
+        sort($roomIds);
+
+        $includeFlights = !isset($_GET['includeFlights']) || $_GET['includeFlights'] !== '0';
+        $includeTour = !isset($_GET['includeTour']) || $_GET['includeTour'] !== '0';
+        $packageTtl = 30 * 86400;
+        $package = ['success' => true, 'tourId' => $tourId];
+
+        if ($includeFlights) {
+            $flightResult = tvFetchTourFlightsCached($tourId, $currency, $packageTtl);
+            $package['flightSuccess'] = !empty($flightResult['success']);
+            $package['flights'] = is_array($flightResult['flights'] ?? null) ? $flightResult['flights'] : [];
+            $package['info'] = $flightResult['info'] ?? null;
+            if (empty($flightResult['success'])) {
+                $package['flightError'] = $flightResult['error'] ?? 'Ошибка запроса авиарейсов';
+                $package['operatorNoFlights'] = !empty($flightResult['operatorNoFlights']);
+                $package['tourGone'] = !empty($flightResult['tourGone']);
+            }
+        }
+
+        if ($includeTour) {
+            $tourResult = tvCachedShort('tour', ['tourId' => $tourId, 'currency' => $currency], $packageTtl, function () use ($tourId, $currency) {
+                $res = tvRequest('/tours/' . $tourId, ['currency' => $currency]);
                 if ($res['success'] && isset($res['data'])) {
-                    $flights = $res['data']['flights'] ?? [];
-                    $err = $res['data']['error'] ?? null;
-                    /* success + пустые flights + error.code=3 — ТО не ответил (часто Paks/SL).
-                       Кладём как failure, иначе клиент вечно «Загружаем перелёт…». */
-                    if ((!is_array($flights) || $flights === []) && $err !== null && $err !== '') {
-                        $reason = 'no flights';
-                        if (is_array($err)) {
-                            $reason = trim((string) ($err['reason'] ?? $err['message'] ?? $err['code'] ?? $reason));
-                        } else {
-                            $reason = trim((string) $err);
-                        }
-                        if ($reason === '') {
-                            $reason = 'no flights';
-                        }
-
-                        return [
-                            'success' => false,
-                            'error' => $reason,
-                            'flights' => [],
-                            'operatorNoFlights' => true,
-                            'data' => $res['data'],
-                        ];
-                    }
-
-                    return [
-                        'success' => true,
-                        'flights' => is_array($flights) ? $flights : [],
-                        'info' => $res['data']['info'] ?? null,
-                        'error' => $err,
-                        'data' => $res['data'],
-                    ];
+                    return ['success' => true, 'data' => $res['data']];
                 }
-                return ['success' => false, 'error' => $res['error'] ?? 'Ошибка запроса авиарейсов', 'data' => null];
+                return ['success' => false, 'error' => $res['error'] ?? 'Ошибка запроса тура', 'data' => null];
             }, true);
+            $package['tourSuccess'] = !empty($tourResult['success']);
+            $package['tour'] = $tourResult['data'] ?? null;
+            if (empty($tourResult['success'])) {
+                $package['tourError'] = $tourResult['error'] ?? 'Ошибка запроса тура';
+            } else {
+                $tourForRoomLookup = $tourResult['data'] ?? null;
+                if (is_array($tourForRoomLookup) && isset($tourForRoomLookup[0]) && is_array($tourForRoomLookup[0])) {
+                    $tourForRoomLookup = $tourForRoomLookup[0];
+                }
+                if (is_array($tourForRoomLookup) && is_array($tourForRoomLookup['tour'] ?? null)) {
+                    $tourForRoomLookup = $tourForRoomLookup['tour'];
+                }
+                $detailRoomId = $tourForRoomLookup['roomId'] ?? $tourForRoomLookup['roomid'] ?? $tourForRoomLookup['room_id'] ?? null;
+                if ($detailRoomId !== null && preg_match('/^\d{1,12}$/', (string) $detailRoomId)) {
+                    $detailRoomId = (int) $detailRoomId;
+                    if (!in_array($detailRoomId, $roomIds, true) && count($roomIds) < 30) {
+                        $roomIds[] = $detailRoomId;
+                        sort($roomIds);
+                    }
+                }
+            }
+        }
+
+        if ($roomIds !== []) {
+            $roomResult = tvFetchRoomDescriptionsCached($roomIds, $packageTtl);
+            $package['roomsSuccess'] = !empty($roomResult['success']);
+            $package['rooms'] = is_array($roomResult['data'] ?? null) ? $roomResult['data'] : [];
+            if (empty($roomResult['success'])) {
+                $package['roomsError'] = $roomResult['error'] ?? 'Ошибка запроса описаний номеров';
+            }
+        } else {
+            $package['roomsSuccess'] = true;
+            $package['rooms'] = [];
+        }
+
+        $hasPackageData = !empty($package['flightSuccess'])
+            || !empty($package['tourSuccess'])
+            || ($roomIds !== [] && !empty($package['roomsSuccess']));
+        if (!$hasPackageData) {
+            $r = [
+                'success' => false,
+                'error' => $package['flightError'] ?? $package['tourError'] ?? $package['roomsError'] ?? 'Не удалось получить данные тура',
+                'data' => $package,
+            ];
+        } else {
+            $r = $package;
         }
         break;
     case 'tour':
@@ -2928,7 +3103,7 @@ function tourvisor_proxy_dispatch(): array
         ];
         break;
 default:
-        $r = ['success' => false, 'error' => 'Unknown type. Use: departures, countries, regions, arrivals, meals, hotel-services, hotel-types, hotel, dates, tour, tour-flights, tours, search, status, results'];
+        $r = ['success' => false, 'error' => 'Unknown type. Use: departures, countries, regions, arrivals, meals, hotel-services, hotel-types, hotel, dates, tour, tour-flights, tour-package, tours, search, status, results'];
 }
 
     // Гибрид YML: подпитка yandex_feed_offers из ответов акционного поиска (onlyPromo=1); выключается YANDEX_LEGACY_OFFERS_TABLE_SYNC=0

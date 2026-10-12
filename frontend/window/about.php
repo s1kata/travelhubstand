@@ -4,6 +4,8 @@ if (PageCache::get()) exit;
 require_once __DIR__ . '/../../backend/config/config.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 PageCache::start();
+$_th_about_css = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'about.css';
+$_th_about_css_version = is_file($_th_about_css) ? (string) filemtime($_th_about_css) : '1';
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -14,7 +16,7 @@ PageCache::start();
     <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
     <link rel="alternate icon" href="/frontend/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/frontend/css/pages/about.css?v=3">
+    <link rel="stylesheet" href="/frontend/css/pages/about.css?v=<?php echo htmlspecialchars($_th_about_css_version, ENT_QUOTES, 'UTF-8'); ?>">
     <?php include __DIR__ . '/../../backend/components/design_system_head.php'; ?>
     </head>
 <body class="text-slate-900">
@@ -203,7 +205,7 @@ PageCache::start();
     </section>
 
     <!-- Partners Section -->
-    <section id="partners" class="py-16 sm:py-20 md:py-24 bg-white">
+    <section id="partners" class="pt-16 pb-8 sm:pt-20 sm:pb-10 md:pt-24 md:pb-12 bg-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-10">
@@ -217,9 +219,13 @@ PageCache::start();
                         ? require __DIR__ . '/../../backend/config/tour_operators_partners.php'
                         : [];
                     foreach ($thTourOperatorsPartners as $thPartner):
+                        $_th_partner_logo_relative = ltrim(str_replace('/', DIRECTORY_SEPARATOR, (string) ($thPartner['logo'] ?? '')), DIRECTORY_SEPARATOR);
+                        $_th_partner_logo_file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_th_partner_logo_relative;
+                        $_th_partner_logo_version = is_file($_th_partner_logo_file) ? (string) filemtime($_th_partner_logo_file) : '1';
+                        $_th_partner_logo_url = (string) ($thPartner['logo'] ?? '') . '?v=' . rawurlencode($_th_partner_logo_version);
                     ?>
                     <a class="partner-logo-card" href="<?php echo htmlspecialchars($thPartner['href'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" aria-label="<?php echo htmlspecialchars($thPartner['name'], ENT_QUOTES, 'UTF-8'); ?>">
-                        <img src="<?php echo htmlspecialchars($thPartner['logo'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($thPartner['name'], ENT_QUOTES, 'UTF-8'); ?>" width="160" height="48" loading="lazy" decoding="async">
+                        <img src="<?php echo htmlspecialchars($_th_partner_logo_url, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($thPartner['name'], ENT_QUOTES, 'UTF-8'); ?>" width="160" height="48" loading="lazy" decoding="async">
                     </a>
                     <?php endforeach; ?>
                 </div>
@@ -228,7 +234,7 @@ PageCache::start();
     </section>
 
     <!-- Values Section -->
-    <section class="py-16 sm:py-20 md:py-28 relative overflow-hidden">
+    <section class="pt-8 pb-16 sm:pt-10 sm:pb-20 md:pt-12 md:pb-28 relative overflow-hidden">
         <div class="absolute inset-0 z-0">
             <img src="/frontend/window/img/таиланд/91ab2281edaad46dd43d245fccc3d9a0.jpg" 
                  alt="Таиланд" 

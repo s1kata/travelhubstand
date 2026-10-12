@@ -100,6 +100,12 @@ function th_home_showcase_pick_tour(array $hotel, array $meta, int $departureId,
     }
 
     $tourId = trim((string) ($best['id'] ?? $best['tourId'] ?? ''));
+    $roomId = trim((string) ($best['roomId'] ?? $best['roomid'] ?? $best['room_id'] ?? ''));
+    $roomCategoryValue = $best['roomType'] ?? $best['room'] ?? $best['roomName'] ?? 'Стандарт';
+    if (is_array($roomCategoryValue)) {
+        $roomCategoryValue = $roomCategoryValue['russianName'] ?? $roomCategoryValue['name'] ?? $roomCategoryValue['title'] ?? 'Стандарт';
+    }
+    $roomCategory = trim((string) $roomCategoryValue);
     $link = trim((string) ($hotel['hotelDescriptionLink'] ?? $hotel['hoteldescriptionlink'] ?? $hotel['link'] ?? ''));
     $image = th_home_showcase_hotel_image($hotel);
     if ($image === '') {
@@ -112,6 +118,7 @@ function th_home_showcase_pick_tour(array $hotel, array $meta, int $departureId,
         'price' => (string) $bestPrice,
         'nights' => (string) $nights,
         'meal' => $meal,
+        'room_category' => $roomCategory,
         'region' => $region,
         'departure_city' => $departureName,
         'departure_id' => (string) $departureId,
@@ -123,6 +130,80 @@ function th_home_showcase_pick_tour(array $hotel, array $meta, int $departureId,
     ];
     if ($tourId !== '') {
         $params['tour_id'] = $tourId;
+    }
+    if ($roomId !== '') {
+        $params['room_id'] = $roomId;
+    }
+    $bestMealKey = is_array($best['meal'] ?? null)
+        ? trim((string) ($best['meal']['code'] ?? $best['meal']['name'] ?? $best['meal']['russianName'] ?? ''))
+        : trim((string) ($best['meal'] ?? ''));
+    $bestOperator = $best['operator'] ?? ($best['operatorName'] ?? '');
+    if (is_array($bestOperator)) {
+        $bestOperator = $bestOperator['id'] ?? $bestOperator['name'] ?? $bestOperator['russianName'] ?? '';
+    }
+    $roomOptions = [];
+    $seenRoomIds = [];
+    foreach ($tours as $candidate) {
+        if (!is_array($candidate)
+            || th_promo_tour_start_ymd($candidate) !== $dateFrom
+            || (int) ($candidate['nights'] ?? 0) !== $nights) {
+            continue;
+        }
+        $candidateMeal = is_array($candidate['meal'] ?? null)
+            ? trim((string) ($candidate['meal']['code'] ?? $candidate['meal']['name'] ?? $candidate['meal']['russianName'] ?? ''))
+            : trim((string) ($candidate['meal'] ?? ''));
+        $candidateOperator = $candidate['operator'] ?? ($candidate['operatorName'] ?? '');
+        if (is_array($candidateOperator)) {
+            $candidateOperator = $candidateOperator['id'] ?? $candidateOperator['name'] ?? $candidateOperator['russianName'] ?? '';
+        }
+        if (strcasecmp($bestMealKey, $candidateMeal) !== 0
+            || strcasecmp((string) $bestOperator, (string) $candidateOperator) !== 0) {
+            continue;
+        }
+        foreach (['adults', 'childs'] as $partyField) {
+            if ((string) ($best[$partyField] ?? '') !== (string) ($candidate[$partyField] ?? '')) {
+                continue 2;
+            }
+        }
+        $candidateTourId = trim((string) ($candidate['id'] ?? $candidate['tourId'] ?? ''));
+        $candidateRoomId = trim((string) ($candidate['roomId'] ?? $candidate['roomid'] ?? $candidate['room_id'] ?? ''));
+        $candidatePrice = (int) ($candidate['totalPrice'] ?? $candidate['price'] ?? $candidate['priceRub'] ?? $candidate['cost'] ?? 0);
+        if ($candidateTourId === '' || $candidatePrice <= 0 || ($candidate !== $best && $candidateRoomId === '')) {
+            continue;
+        }
+        $roomKey = $candidateRoomId !== '' ? $candidateRoomId : 'tour:' . $candidateTourId;
+        if (isset($seenRoomIds[$roomKey])) {
+            continue;
+        }
+        $seenRoomIds[$roomKey] = true;
+        $candidateRoomType = $candidate['roomType'] ?? $candidate['room'] ?? $candidate['roomName'] ?? 'Вариант номера';
+        if (is_array($candidateRoomType)) {
+            $candidateRoomType = $candidateRoomType['russianName'] ?? $candidateRoomType['name'] ?? $candidateRoomType['title'] ?? 'Вариант номера';
+        }
+        $roomOptions[] = [
+            'roomId' => $candidateRoomId,
+            'roomType' => function_exists('mb_substr')
+                ? mb_substr(trim((string) $candidateRoomType), 0, 80, 'UTF-8')
+                : substr(trim((string) $candidateRoomType), 0, 80),
+            'tourId' => $candidateTourId,
+            'price' => $candidatePrice,
+        ];
+        if (count($roomOptions) >= 20) {
+            break;
+        }
+    }
+    if (count($roomOptions) > 1) {
+        for ($roomOptionsCount = count($roomOptions); $roomOptionsCount > 1; $roomOptionsCount--) {
+            $roomOptionsJson = json_encode(array_slice($roomOptions, 0, $roomOptionsCount), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($roomOptionsJson === false) {
+                break;
+            }
+            $roomOptionsEncoded = rtrim(strtr(base64_encode($roomOptionsJson), '+/', '-_'), '=');
+            if (strlen($roomOptionsEncoded) <= 3500) {
+                $params['room_options'] = $roomOptionsEncoded;
+                break;
+            }
+        }
     }
     if ($link !== '') {
         $params['tour_link'] = $link;

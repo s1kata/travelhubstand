@@ -202,6 +202,7 @@ function admin_booking_source_label(array $row): string
                                     <th class="py-2 pr-3">Отель, страна</th>
                                     <th class="py-2 pr-2 whitespace-nowrap">Цена</th>
                                     <th class="py-2 pr-2">Ночи / питание</th>
+                                    <th class="py-2 pr-2">Номер / ID предложения</th>
                                     <th class="py-2 pr-2">Тип</th>
                                     <th class="py-2 pr-2">Статус</th>
                                     <th class="py-2 pr-2">U-ON / user</th>
@@ -247,6 +248,15 @@ function admin_booking_source_label(array $row): string
                                             <?php echo htmlspecialchars((string) ($b['nights'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?: '—'; ?>
                                             <?php if (!empty($b['meal'])): ?>
                                                 <br><span class="text-slate-500"><?php echo htmlspecialchars((string) $b['meal'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="py-2.5 pr-2 text-xs">
+                                            <?php echo htmlspecialchars((string) ($b['room_category'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?: '—'; ?>
+                                            <?php if (!empty($b['room_id'])): ?>
+                                                <br><span class="text-slate-500">Room: <?php echo htmlspecialchars((string) $b['room_id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span>
+                                            <?php endif; ?>
+                                            <?php if (!empty($b['tour_id'])): ?>
+                                                <br><span class="text-slate-500">Tour: <?php echo htmlspecialchars((string) $b['tour_id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span>
                                             <?php endif; ?>
                                         </td>
                                         <td class="py-2.5 pr-2 text-xs font-mono"><?php echo htmlspecialchars((string) ($b['booking_type'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?: '—'; ?></td>

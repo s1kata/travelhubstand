@@ -521,6 +521,13 @@ $_th_fp_cp_v = is_file($_th_fp_cp) ? (string) filemtime($_th_fp_cp) : '1';
                     category: strClip(String(h.category || ''), 80),
                     room_category: roomCategory, tour_id: tourId, adults: String(adultsN)
                 };
+                if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
+                    tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
+                }
+                if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                    var roomOptions = window.THTourCard.getRoomOptions(h, tour);
+                    if (roomOptions.length > 1) tourDetailParams.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+                }
                 if (h.id) tourDetailParams.hotel_id = String(h.id);
                 if (PROMO_DEPARTURE_ID) tourDetailParams.departure_id = String(PROMO_DEPARTURE_ID);
             try {

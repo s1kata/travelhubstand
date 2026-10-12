@@ -19,11 +19,9 @@
             if (YM_ID && typeof ym === 'function') ym(YM_ID, 'reachGoal', goalName);
         } catch (eYm) {}
     }
-    /** Хелпер с резервным ID 109291068 (дефолтный счётчик; дублирует в YM_ID из конфига, если отличается). */
+    /** Все события акций отправляются в ID счётчика, заданный PHP-конфигурацией. */
     function promoYm(goalName) {
-        try { if (typeof ym === 'function') ym(109291068, 'reachGoal', goalName); } catch (_) {}
-        /* Дублируем и в основной счётчик, если он задан и отличается */
-        if (YM_ID && YM_ID !== 109291068) thYmReachGoal(goalName);
+        thYmReachGoal(goalName);
     }
 
     /** Абхазия/Россия: без UI и без отсечения по звёздам (см. promotions.php). */
@@ -2732,6 +2730,13 @@
                 rating: String(h.rating || ''), category: String(h.category || ''), from_promo: '1',
                 room_category: roomCategory, flight_info: flightInfo, tour_id: tourId
             };
+            if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
+                tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
+            }
+            if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                var roomOptions = window.THTourCard.getRoomOptions(h, tour);
+                if (roomOptions.length > 1) tourDetailParams.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+            }
             if (depIdPromo) tourDetailParams.departure_id = String(depIdPromo);
             if (h.id) tourDetailParams.hotel_id = String(h.id);
             tourDetailParams.adults = String(adultsLabel);
@@ -2857,6 +2862,13 @@
                 rating: String(h.rating || ''), category: String(h.category || ''), from_promo: '1',
                 room_category: roomCategory, flight_info: flightInfo, tour_id: tourId
             };
+            if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
+                tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
+            }
+            if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                var roomOptions = window.THTourCard.getRoomOptions(h, tour);
+                if (roomOptions.length > 1) tourDetailParams.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+            }
             var depIdPromo = DEPARTURE_ID || DEFAULT_DEPARTURE_ID;
             if (depIdPromo) tourDetailParams.departure_id = String(depIdPromo);
             if (h.id) tourDetailParams.hotel_id = String(h.id);

@@ -20,10 +20,13 @@
     if (!url || url === '#' || !slides || !slides.length) return url;
     if (url.indexOf('tour-detail') < 0) return url;
     try {
-      var payload = slides.slice(0, PHOTO_SLIDE_MAX);
-      var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       var sep = url.indexOf('?') >= 0 ? '&' : '?';
-      return url + sep + 'gallery_b64=' + encodeURIComponent(b64);
+      for (var count = Math.min(slides.length, PHOTO_SLIDE_MAX); count > 0; count--) {
+        var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(slides.slice(0, count)))));
+        var galleryUrl = url + sep + 'gallery_b64=' + encodeURIComponent(b64);
+        if (galleryUrl.length <= 7800) return galleryUrl;
+      }
+      return url;
     } catch (e) {
       return url;
     }
@@ -53,6 +56,110 @@
     var num = parseInt(String(n), 10) || 0;
     if (!num) return '—';
     return num.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  function tourRoomId(tour) {
+    if (!tour || typeof tour !== 'object') return '';
+    var value = tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id);
+    return value == null ? '' : String(value).trim();
+  }
+
+  function tourMealKey(tour) {
+    var meal = tour && tour.meal;
+    if (meal && typeof meal === 'object') return String(meal.code || meal.name || meal.russianName || '').trim().toLowerCase();
+    return String(meal || '').trim().toLowerCase();
+  }
+
+  function tourOperatorKey(tour) {
+    var operator = tour && tour.operator;
+    if (operator && typeof operator === 'object') operator = operator.russianName || operator.name || operator.id || '';
+    return String(operator || (tour && tour.operatorName) || '').trim().toLowerCase();
+  }
+
+  function tourDateKey(tour) {
+    var date = tour && (tour.date || tour.flydate || tour.flyDate || tour.datefrom || tour.dateFrom || tour.checkIn);
+    var match = String(date || '').match(/\d{4}-\d{2}-\d{2}/);
+    return match ? match[0] : '';
+  }
+
+  function getRoomOptions(hotel, selectedTour) {
+    var tours = hotel && Array.isArray(hotel.roomOptions)
+      ? hotel.roomOptions
+      : (hotel && Array.isArray(hotel.tours) ? hotel.tours : []);
+    if (!selectedTour || typeof selectedTour !== 'object') selectedTour = tours[0] || {};
+    var selectedTourId = String(selectedTour.id != null ? selectedTour.id : (selectedTour.tourId || '')).trim();
+    var selectedMeal = tourMealKey(selectedTour);
+    var selectedOperator = tourOperatorKey(selectedTour);
+    var selectedDate = tourDateKey(selectedTour);
+    var selectedNights = String(selectedTour.nights == null ? '' : selectedTour.nights).trim();
+    var selectedAdults = String(selectedTour.adults == null ? '' : selectedTour.adults).trim();
+    var selectedChilds = String(selectedTour.childs == null ? '' : selectedTour.childs).trim();
+    var options = [];
+
+    function add(tour, isSelected) {
+      var tourId = String(tour && (tour.id != null ? tour.id : (tour.tourId || ''))).trim();
+      var roomId = tourRoomId(tour).slice(0, 64);
+      var roomDetails = roomId && global.__thRoomDetailsById
+        ? global.__thRoomDetailsById[roomId]
+        : null;
+      var roomTypeValue = tour && (tour.roomType || tour.room || tour.roomName);
+      if (!roomTypeValue && roomDetails) {
+        roomTypeValue = roomDetails.russianName || roomDetails.name || roomDetails.title || '';
+      }
+      var roomType = roomTypeValue && typeof roomTypeValue === 'object'
+        ? String(roomTypeValue.russianName || roomTypeValue.name || roomTypeValue.title || '').trim()
+        : String(roomTypeValue || '').trim();
+      if (!roomType && isSelected && hotel) roomType = String(hotel.roomCategory || '').trim();
+      roomType = roomType.slice(0, 80);
+      var price = 0;
+      ['totalPrice', 'price', 'priceRub', 'cost'].some(function (key) {
+        var value = Number(tour && tour[key]);
+        if (Number.isFinite(value) && value > 0) {
+          price = Math.round(value);
+          return true;
+        }
+        return false;
+      });
+      if (!isSelected && (!roomId || !tourId || !price || options.some(function (option) { return option.roomId === roomId; }))) return;
+      options.push({
+        roomId: roomId,
+        roomType: roomType || 'Вариант номера',
+        tourId: tourId.slice(0, 24),
+        price: price
+      });
+    }
+
+    add(selectedTour, true);
+    tours.forEach(function (tour) {
+      if (!tour || typeof tour !== 'object' || tour === selectedTour) return;
+      var candidateTourId = String(tour.id != null ? tour.id : (tour.tourId || '')).trim();
+      if (selectedTourId && candidateTourId === selectedTourId) return;
+      if (tourDateKey(tour) !== selectedDate) return;
+      if (String(tour.nights == null ? '' : tour.nights).trim() !== selectedNights) return;
+      if (tourMealKey(tour) !== selectedMeal) return;
+      if (tourOperatorKey(tour) !== selectedOperator) return;
+      if (String(tour.adults == null ? '' : tour.adults).trim() !== selectedAdults) return;
+      if (String(tour.childs == null ? '' : tour.childs).trim() !== selectedChilds) return;
+      add(tour, false);
+    });
+
+    return options.slice(0, 20);
+  }
+
+  function encodeRoomOptions(options) {
+    if (!Array.isArray(options) || options.length < 2) return '';
+    try {
+      for (var count = Math.min(options.length, 20); count > 1; count--) {
+        var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(options.slice(0, count)))))
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/g, '');
+        if (encoded.length <= 3500) return encoded;
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
   }
 
   function expandMeal(raw) {
@@ -1251,6 +1358,27 @@
     });
   }
 
+  function syncRoomOptionsForHotel(hotel, tourId) {
+    if (!hotel || !tourId || !hotel.tours || !hotel.tours.length) return;
+    var selectedTour = null;
+    hotel.tours.some(function (tour) {
+      var id = String(tour && (tour.id != null ? tour.id : (tour.tourId || tour.tourid)) || '');
+      if (id !== String(tourId)) return false;
+      selectedTour = tour;
+      return true;
+    });
+    if (!selectedTour) return;
+    var encoded = encodeRoomOptions(getRoomOptions(hotel, selectedTour));
+    if (!encoded) return;
+    var cards = document.querySelectorAll('.th-tour-card[data-th-tour-id]');
+    cards.forEach(function (card) {
+      if (card.getAttribute('data-th-tour-id') !== String(tourId)) return;
+      var cardHotelId = card.getAttribute('data-th-hotel-id');
+      if (cardHotelId && hotel.id != null && cardHotelId !== String(hotel.id)) return;
+      updateCardDetailLinks(card, { room_options: encoded });
+    });
+  }
+
   function flightSummaryFromMeta(meta) {
     if (!meta) return '';
     if (typeof global.thFlightPackageSummary === 'function' && meta.pkg) {
@@ -1329,18 +1457,52 @@
   }
 
   var thFlightPickLastTouchAt = 0;
+  var thFlightPickTouchStart = null;
 
   function ensureFlightPickDelegation() {
     if (global.__thFlightPickDelegation) return;
     global.__thFlightPickDelegation = true;
+    document.addEventListener('touchstart', function (e) {
+      var touch = e.changedTouches && e.changedTouches[0];
+      var target = e.target && e.target.closest ? e.target : null;
+      var btn = target && target.closest('[data-th-flight-pick]');
+      if (!touch || !btn || (e.touches && e.touches.length !== 1)) {
+        thFlightPickTouchStart = null;
+        return;
+      }
+      thFlightPickTouchStart = {
+        button: btn,
+        x: touch.clientX,
+        y: touch.clientY,
+        moved: false
+      };
+    }, { capture: true, passive: true });
+    document.addEventListener('touchmove', function (e) {
+      if (!thFlightPickTouchStart || !e.changedTouches || !e.changedTouches.length) return;
+      var touch = e.changedTouches[0];
+      if (Math.abs(touch.clientX - thFlightPickTouchStart.x) > 10
+          || Math.abs(touch.clientY - thFlightPickTouchStart.y) > 10) {
+        thFlightPickTouchStart.moved = true;
+      }
+    }, { capture: true, passive: true });
     document.addEventListener('touchend', function (e) {
-      var btn = e.target.closest('[data-th-flight-pick]');
-      if (!btn) return;
+      var start = thFlightPickTouchStart;
+      thFlightPickTouchStart = null;
+      if (!start || start.moved) return;
+      var target = e.target && e.target.closest ? e.target : null;
+      var btn = target && target.closest('[data-th-flight-pick]');
+      var touch = e.changedTouches && e.changedTouches[0];
+      if (btn !== start.button || !touch
+          || Math.abs(touch.clientX - start.x) > 10
+          || Math.abs(touch.clientY - start.y) > 10) return;
       e.preventDefault();
       e.stopPropagation();
       thFlightPickLastTouchAt = Date.now();
       openFlightPickFromBtn(btn);
     }, { capture: true, passive: false });
+    document.addEventListener('touchcancel', function () {
+      thFlightPickTouchStart = null;
+    }, { capture: true, passive: true });
     document.addEventListener('click', function (e) {
       var btn = e.target.closest('[data-th-flight-pick]');
       if (!btn) return;
@@ -1428,6 +1590,9 @@
   global.THTourCard = {
     DETAIL_BTN_LABEL: DETAIL_BTN_LABEL,
     PHOTO_SLIDE_MAX: PHOTO_SLIDE_MAX,
+    getRoomOptions: getRoomOptions,
+    encodeRoomOptions: encodeRoomOptions,
+    syncRoomOptionsForHotel: syncRoomOptionsForHotel,
     render: render,
     renderList: renderList,
     appendGalleryToDetailUrl: appendGalleryToDetailUrl,

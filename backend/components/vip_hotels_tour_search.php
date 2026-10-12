@@ -1102,6 +1102,13 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
                     tour_id: t.id || '',
                     adults: String(paVip)
                 };
+                if (t.roomId != null || t.roomid != null || t.room_id != null) {
+                    tourDetailParams.room_id = String(t.roomId != null ? t.roomId : (t.roomid != null ? t.roomid : t.room_id));
+                }
+                if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                    var hotelRoomOptions = window.THTourCard.getRoomOptions(h, t);
+                    if (hotelRoomOptions.length > 1) tourDetailParams.room_options = window.THTourCard.encodeRoomOptions(hotelRoomOptions);
+                }
                 if (h.id) tourDetailParams.hotel_id = String(h.id);
                 if (departureIdVip) tourDetailParams.departure_id = departureIdVip;
                 try {
@@ -1196,6 +1203,13 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
                 rating: String(h.rating || ''),
                 category: String(h.category || ''),
             };
+            if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
+                tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
+            }
+            if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+                const roomOptions = window.THTourCard.getRoomOptions(h, tour);
+                if (roomOptions.length > 1) tourDetailParams.room_options = window.THTourCard.encodeRoomOptions(roomOptions);
+            }
             if (startYmd) tourDetailParams.date_from = startYmd;
             if (retYmd) tourDetailParams.date_to = retYmd;
             if (tidGrid) tourDetailParams.tour_id = tidGrid;

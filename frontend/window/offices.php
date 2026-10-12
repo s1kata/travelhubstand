@@ -137,7 +137,7 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
     ?>
 
     <?php include __DIR__ . '/../../backend/components/footer.php'; ?>
-    <script src="/frontend/js/office-lead-modal.js?v=5" defer></script>
+    <script src="/frontend/js/office-lead-modal.js?v=6" defer></script>
     <script>
     (function () {
       var filters = document.querySelectorAll('.th-off-filter');
@@ -146,6 +146,9 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
       filters.forEach(function (btn) {
         btn.addEventListener('click', function () {
           var city = btn.getAttribute('data-city') || 'all';
+          if (window.THLeadCapture) {
+            window.THLeadCapture.reachGoal('office_city_filter', { city: city });
+          }
           filters.forEach(function (b) {
             b.classList.toggle('is-active', b === btn);
             b.setAttribute('aria-selected', b === btn ? 'true' : 'false');

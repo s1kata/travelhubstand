@@ -111,6 +111,8 @@ if (function_exists('mb_substr')) {
 } elseif (strlen($room_category) > 200) {
     $room_category = substr($room_category, 0, 200);
 }
+$room_id = preg_replace('/[^a-zA-Z0-9_-]/', '', trim((string) ($input['room_id'] ?? '')));
+$room_id = substr((string) $room_id, 0, 64);
 $note = trim((string) ($input['note'] ?? ''));
 $form_name = trim((string) ($input['name'] ?? ''));
 $form_email = trim((string) ($input['email'] ?? ''));
@@ -318,7 +320,7 @@ try {
     $gl = $is_guest_manager ? '' : null;
     $ge = $is_guest_manager ? $email : null;
     $gp = $is_guest_manager ? $phone_raw : null;
-    $ins = $pdo->prepare('INSERT INTO tour_bookings (user_id, tour_link, hotel_name, country, price, nights, meal, uon_lead_id, booking_type, status, guest_first_name, guest_last_name, guest_email, guest_phone, request_source, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $ins = $pdo->prepare('INSERT INTO tour_bookings (user_id, tour_link, hotel_name, country, price, nights, meal, tour_id, room_id, room_category, uon_lead_id, booking_type, status, guest_first_name, guest_last_name, guest_email, guest_phone, request_source, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)');
     $ins->execute([
         $guestUid,
         $tour_link,
@@ -327,6 +329,9 @@ try {
         $price_str,
         $nights_str,
         $meal,
+        $tour_id_crm !== '' ? $tour_id_crm : null,
+        $room_id !== '' ? $room_id : null,
+        $room_category !== '' ? $room_category : null,
         $booking_type,
         'booked',
         $gf,
@@ -362,6 +367,7 @@ if ($date_from !== '' || $date_to !== '') $note_lines[] = 'Даты поездк
 if ($nights > 0) $note_lines[] = 'Ночей: ' . $nights;
 if ($meal !== '') $note_lines[] = 'Питание: ' . $meal;
 if ($room_category !== '') $note_lines[] = 'Тип номера: ' . $room_category;
+if ($room_id !== '') $note_lines[] = 'ID номера (Tourvisor): ' . $room_id;
 if ($placement_text !== '') $note_lines[] = 'Размещение: ' . $placement_text;
 if ($tour_operator !== '') $note_lines[] = 'Туроператор: ' . $tour_operator;
 if ($hotel_name !== '') $note_lines[] = 'Отель: ' . $hotel_name;

@@ -555,6 +555,12 @@ $_th_fpick_v = is_file($_th_fpick) ? (string) filemtime($_th_fpick) : '1';
             departure_id: String(CFG.departureId),
             return_url: window.location.pathname + window.location.search
         });
+        var roomId = t.roomId != null ? t.roomId : (t.roomid != null ? t.roomid : t.room_id);
+        if (roomId != null && String(roomId).trim() !== '') params.set('room_id', String(roomId).trim());
+        if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {
+            var roomOptions = window.THTourCard.getRoomOptions(h, t);
+            if (roomOptions.length > 1) params.set('room_options', window.THTourCard.encodeRoomOptions(roomOptions));
+        }
         if (op) params.set('tour_operator', op);
         return '/frontend/window/tour-detail.php?' + params.toString();
     }

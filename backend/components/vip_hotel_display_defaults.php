@@ -154,7 +154,8 @@ function vip_hotel_display_defaults_by_slug(): array
             'distance_to_airport' => 'Около 10–15 км',
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
-            'images' => [],
+            'images' => ['/frontend/window/img/hotels/antalya/voyage-kundu-hotel/user-provided-main.jpg'],
+            'primary_image' => '/frontend/window/img/hotels/antalya/voyage-kundu-hotel/user-provided-main.jpg',
             'features' => ['Аквапарк', 'Анимация', 'Детский клуб', 'Пляж'],
             'detailed_info' => [
                 'infrastructure' => 'Аквапарк, бассейны, рестораны.',
@@ -256,7 +257,8 @@ function vip_hotel_display_defaults_by_slug(): array
             'distance_to_airport' => 'Около 50–60 км до Антальи',
             'check_in_time' => '14:00',
             'check_out_time' => '12:00',
-            'images' => [],
+            'images' => ['/frontend/window/img/hotels/antalya/lykia-world-olive-village/user-provided-main.jpg'],
+            'primary_image' => '/frontend/window/img/hotels/antalya/lykia-world-olive-village/user-provided-main.jpg',
             'features' => ['Аквапарк', 'Семейные номера', 'Анимация', 'Пляж'],
             'detailed_info' => [
                 'infrastructure' => 'Аквапарк, бассейны, рестораны, пляж.',
@@ -303,6 +305,15 @@ function vip_hotels_enrich_hotel_array(array $hotel): array
     }
     if ($needImages && isset($def['images']) && is_array($def['images'])) {
         $hotel['images'] = $def['images'];
+    }
+    if (!empty($def['primary_image'])) {
+        $hotelImages = isset($hotel['images']) && is_array($hotel['images']) ? $hotel['images'] : [];
+        $hotel['images'] = array_values(array_merge(
+            [(string) $def['primary_image']],
+            array_filter($hotelImages, static function ($image) use ($def): bool {
+                return is_string($image) && trim($image) !== '' && trim($image) !== (string) $def['primary_image'];
+            })
+        ));
     }
 
     foreach (['cuisine', 'meal_plan', 'location', 'beach_type', 'distance_to_airport', 'check_in_time', 'check_out_time'] as $key) {

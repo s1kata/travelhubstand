@@ -31,6 +31,9 @@ function ensureTourBookingsTable(PDO $pdo): void
                 price TEXT,
                 nights TEXT,
                 meal TEXT,
+                tour_id VARCHAR(24),
+                room_id VARCHAR(64),
+                room_category VARCHAR(200),
                 uon_lead_id VARCHAR(64),
                 booking_type VARCHAR(32),
                 status VARCHAR(32) DEFAULT 'booked',
@@ -52,6 +55,9 @@ function ensureTourBookingsTable(PDO $pdo): void
                 price VARCHAR(64),
                 nights VARCHAR(32),
                 meal VARCHAR(64),
+                tour_id VARCHAR(24) NULL,
+                room_id VARCHAR(64) NULL,
+                room_category VARCHAR(200) NULL,
                 uon_lead_id VARCHAR(64),
                 booking_type VARCHAR(32),
                 status VARCHAR(32) DEFAULT 'booked',
@@ -68,6 +74,7 @@ function ensureTourBookingsTable(PDO $pdo): void
     tourBookingsMigrateGuestSupport($pdo);
     tourBookingsMigrateRequestSource($pdo);
     tourBookingsMigrateIdempotencyKey($pdo);
+    tourBookingsMigrateRoomSelection($pdo);
 }
 
 /**
@@ -215,6 +222,43 @@ function tourBookingsMigrateIdempotencyKey(PDO $pdo): void
 }
 
 /**
+ * Сохраняет выбранное предложение и ID номера Tourvisor отдельно от ссылки заявки.
+ */
+function tourBookingsMigrateRoomSelection(PDO $pdo): void
+{
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    try {
+        if ($driver === 'sqlite') {
+            $cols = $pdo->query('PRAGMA table_info(tour_bookings)')->fetchAll(PDO::FETCH_ASSOC);
+            $names = [];
+            foreach ($cols as $c) {
+                $names[strtolower((string) ($c['name'] ?? ''))] = true;
+            }
+            foreach (['tour_id' => 'VARCHAR(24)', 'room_id' => 'VARCHAR(64)', 'room_category' => 'VARCHAR(200)'] as $name => $type) {
+                if (empty($names[$name])) {
+                    $pdo->exec('ALTER TABLE tour_bookings ADD COLUMN ' . $name . ' ' . $type);
+                }
+            }
+
+            return;
+        }
+        $stmt = $pdo->query('SHOW COLUMNS FROM tour_bookings');
+        $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        $names = [];
+        foreach ($rows as $r) {
+            $names[strtolower((string) ($r['Field'] ?? ''))] = true;
+        }
+        foreach (['tour_id' => 'VARCHAR(24) NULL', 'room_id' => 'VARCHAR(64) NULL', 'room_category' => 'VARCHAR(200) NULL'] as $name => $type) {
+            if (empty($names[$name])) {
+                $pdo->exec('ALTER TABLE tour_bookings ADD COLUMN ' . $name . ' ' . $type);
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('[tour_bookings_schema] migrate room selection: ' . $e->getMessage());
+    }
+}
+
+/**
  * Лог заявки из мобильного приложения (после успеха U-ON), user_id = NULL, гость в guest_*.
  *
  * @param array<string, mixed> $payload полная нагрузка с idempotencyKey
@@ -247,6 +291,9 @@ function tourBookingsInsertAppSubmission(PDO $pdo, array $payload, ?string $uonL
 
     $hotel = trim((string) ($ts['hotelName'] ?? ''));
     $country = trim((string) ($ts['countryName'] ?? ''));
+    $tourId = preg_replace('/\D+/', '', trim((string) ($ts['tourId'] ?? '')));
+    $roomId = preg_replace('/[^a-zA-Z0-9_-]/', '', trim((string) ($ts['roomId'] ?? '')));
+    $roomCategory = trim((string) ($ts['roomCategory'] ?? $ts['roomType'] ?? ''));
     $priceStr = (string) (int) ($payload['totalPrice'] ?? 0);
     $nightsStr = (string) (int) ($payload['nights'] ?? 0);
     $meal = '';
@@ -256,7 +303,7 @@ function tourBookingsInsertAppSubmission(PDO $pdo, array $payload, ?string $uonL
     $idemDb = $idem !== '' ? (function_exists('mb_substr') ? mb_substr($idem, 0, 120, 'UTF-8') : substr($idem, 0, 120)) : null;
 
     $ins = $pdo->prepare(
-        'INSERT INTO tour_bookings (user_id, tour_link, hotel_name, country, price, nights, meal, uon_lead_id, booking_type, status, guest_first_name, guest_last_name, guest_email, guest_phone, request_source, idempotency_key) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO tour_bookings (user_id, tour_link, hotel_name, country, price, nights, meal, tour_id, room_id, room_category, uon_lead_id, booking_type, status, guest_first_name, guest_last_name, guest_email, guest_phone, request_source, idempotency_key) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $ins->execute([
         $tourLink,
@@ -265,6 +312,9 @@ function tourBookingsInsertAppSubmission(PDO $pdo, array $payload, ?string $uonL
         $priceStr,
         $nightsStr,
         $meal,
+        $tourId !== '' ? substr($tourId, 0, 24) : null,
+        $roomId !== '' ? substr($roomId, 0, 64) : null,
+        $roomCategory !== '' ? (function_exists('mb_substr') ? mb_substr($roomCategory, 0, 200, 'UTF-8') : substr($roomCategory, 0, 200)) : null,
         $uonLeadId !== null && $uonLeadId !== '' ? $uonLeadId : null,
         $bookingType,
         $status,

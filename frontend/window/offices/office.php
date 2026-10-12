@@ -233,6 +233,6 @@ $yandex_map_open_url = th_map_widget_url_for_geo((string) ($office['geo'] ?? $of
     include __DIR__ . '/../../../backend/components/page_cta_band.php';
     include __DIR__ . '/../../../backend/components/footer.php';
     ?>
-    <script src="/frontend/js/office-lead-modal.js?v=5" defer></script>
+    <script src="/frontend/js/office-lead-modal.js?v=6" defer></script>
 </body>
 </html>

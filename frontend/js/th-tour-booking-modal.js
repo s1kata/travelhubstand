@@ -57,6 +57,12 @@
   function submitForm(e) {
     e.preventDefault();
     if (!currentPayload) return;
+    function trackBookingGoal(goal) {
+      if (window.THLeadCapture && window.THLeadCapture.reachGoal) {
+        window.THLeadCapture.reachGoal(goal, { source: 'card_booking' });
+      }
+    }
+    trackBookingGoal('lead_submit_attempt');
     var nameInp = document.getElementById('th-tb-name');
     var phoneInp = document.getElementById('th-tb-phone');
     var agreeInp = document.getElementById('th-tb-agree');
@@ -70,6 +76,7 @@
         agree: !!(agreeInp && agreeInp.checked)
       });
       if (!check.ok) {
+        trackBookingGoal('lead_validation_error');
         if (msgEl) {
           msgEl.textContent = check.error || 'Проверьте данные формы';
           msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
@@ -81,6 +88,7 @@
       phoneVal = check.phone;
     } else {
       if (!nameVal || nameVal.length < 2 || !/^[\p{L}\s\-'.]+$/u.test(nameVal)) {
+        trackBookingGoal('lead_validation_error');
         if (msgEl) {
           msgEl.textContent = 'Укажите корректные ФИО';
           msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
@@ -90,6 +98,7 @@
       }
       var cyr = nameVal.match(/\p{Script=Cyrillic}/gu);
       if (!cyr || cyr.length < 2) {
+        trackBookingGoal('lead_validation_error');
         if (msgEl) {
           msgEl.textContent = 'Укажите ФИО русскими буквами';
           msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
@@ -101,6 +110,7 @@
       if (phoneDigits.length === 11 && phoneDigits[0] === '8') phoneDigits = '7' + phoneDigits.slice(1);
       var rest = phoneDigits.slice(1);
       if (phoneDigits.length !== 11 || phoneDigits[0] !== '7' || !rest || rest[0] !== '9' || /^(\d)\1{9}$/.test(rest)) {
+        trackBookingGoal('lead_validation_error');
         if (msgEl) {
           msgEl.textContent = 'Укажите корректный мобильный телефон РФ (+7 9XX…)';
           msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
@@ -109,6 +119,7 @@
         return;
       }
       if (!agreeInp || !agreeInp.checked) {
+        trackBookingGoal('lead_validation_error');
         if (msgEl) {
           msgEl.textContent = 'Нужно согласие на обработку данных';
           msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
@@ -155,7 +166,7 @@
       .then(function (res) {
         if (res.data && res.data.success) {
           if (window.THLeadCapture && window.THLeadCapture.reachGoal) {
-            window.THLeadCapture.reachGoal('lead_ok');
+            window.THLeadCapture.reachGoal('lead_ok', { source: 'card_booking' });
             window.THLeadCapture.reachGoal('card_booking_lead_ok');
           }
           if (msgEl) {
@@ -166,6 +177,7 @@
           if (form) form.reset();
           setTimeout(closeModal, 2500);
         } else {
+          trackBookingGoal('lead_err');
           if (msgEl) {
             msgEl.textContent = (res.data && res.data.error) ? res.data.error : 'Не удалось отправить заявку';
             msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
@@ -174,6 +186,7 @@
         }
       })
       .catch(function () {
+        trackBookingGoal('lead_err');
         if (msgEl) {
           msgEl.textContent = 'Ошибка сети. Попробуйте ещё раз.';
           msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';

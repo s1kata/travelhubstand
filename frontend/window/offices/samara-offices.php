@@ -9,7 +9,6 @@ $offices = th_offices_by_city('samara');
 $page_title = 'Офисы в Самаре';
 $current_page = 'offices';
 $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc778596c86b2b54f3%201.png';
-require_once __DIR__ . '/../../../backend/config/maps.php';
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -22,7 +21,6 @@ require_once __DIR__ . '/../../../backend/config/maps.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/th-offices.css?v=4">
     <?php include __DIR__ . '/../../../backend/components/design_system_head.php'; ?>
-    <script src="<?php echo htmlspecialchars(th_maps()['api_js'], ENT_QUOTES, 'UTF-8'); ?>" type="text/javascript"></script>
 </head>
 <body class="th-off-page text-slate-900">
     <?php include __DIR__ . '/../../../backend/components/header.php'; ?>
@@ -77,15 +75,15 @@ require_once __DIR__ . '/../../../backend/config/maps.php';
             <?php endforeach; ?>
         </div>
 
-        <?php
-        $yandex_offices_map_id = 'samara-offices-map';
-        $yandex_offices_map_points = th_offices_map_points('samara');
-        $yandex_offices_map_title = 'Расположение офисов на карте';
-        $yandex_offices_map_subtitle = 'Интерактивная карта Яндекс — все офисы в Самаре';
-        $yandex_offices_map_center = [53.2335, 50.2010];
-        $yandex_offices_map_zoom = 12;
-        include __DIR__ . '/../../../backend/components/yandex_offices_map.php';
-        ?>
+        <section class="th-off-map mt-10 rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+            <div class="px-4 py-4 sm:px-6 border-b border-slate-100 text-center sm:text-left">
+                <h2 class="heading-font text-xl sm:text-2xl font-bold text-slate-900 m-0">Расположение офисов на карте</h2>
+                <p class="text-slate-600 mt-1 mb-0">Интерактивная карта Яндекс — все офисы в Самаре</p>
+            </div>
+            <div class="w-full overflow-hidden" style="min-height:400px;background:#e2e8f0;">
+                <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A8213e282803a43d65a6bde78739168745d15923adc63aab6cfe415f560d0e703&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
+            </div>
+        </section>
     </main>
 
     <?php
@@ -97,6 +95,6 @@ require_once __DIR__ . '/../../../backend/config/maps.php';
     ?>
 
     <?php include __DIR__ . '/../../../backend/components/footer.php'; ?>
-    <script src="/frontend/js/office-lead-modal.js?v=5" defer></script>
+    <script src="/frontend/js/office-lead-modal.js?v=6" defer></script>
 </body>
 </html>
