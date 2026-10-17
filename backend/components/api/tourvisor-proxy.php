@@ -45,6 +45,8 @@ try {
     exit;
 }
 
+require_once __DIR__ . '/../prometheus_metrics.php';
+
 if (!TH_TOURVISOR_PROXY_EMBED) {
     header('Content-Type: application/json; charset=utf-8');
     header('Access-Control-Allow-Origin: *');
@@ -1375,7 +1377,7 @@ function tvMaybeContinueSearch(int $searchId, int $hotelsSoFar = 0): int
     return $done;
 }
 
-function tvRequest(string $endpoint, array $params = []): array {
+function tvRequestRaw(string $endpoint, array $params = []): array {
     $jwt = getTvToken();
     if (empty($jwt)) {
         return ['success' => false, 'error' => 'TOURVISOR_TOKEN or TOURVISOR_JWT_TOKEN not configured'];
@@ -1413,6 +1415,7 @@ function tvRequest(string $endpoint, array $params = []): array {
         ]);
         $response = curl_exec($ch);
         $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $GLOBALS['tv_upstream_last_attempt_seconds'] = (float) curl_getinfo($ch, CURLINFO_TOTAL_TIME);
         $errNo = curl_errno($ch);
         $errMsg = curl_error($ch);
         curl_close($ch);
@@ -1454,6 +1457,52 @@ function tvRequest(string $endpoint, array $params = []): array {
         return ['success' => false, 'error' => 'Invalid JSON response', 'raw' => substr((string)$response, 0, 200)];
     }
     return ['success' => true, 'data' => $data];
+}
+
+function tvRequest(string $endpoint, array $params = []): array
+{
+    $startedAt = microtime(true);
+    $result = [];
+    $operation = 'tourvisor_other_http';
+    if (strpos($endpoint, '/tours/search') !== false) {
+        if (strpos($endpoint, '/status') !== false) {
+            $operation = 'tourvisor_status_http';
+        } elseif (!empty($params['onlyPromo']) || !empty($_GET['onlyPromo']) || ($_GET['type'] ?? '') === 'promo-search') {
+            $operation = 'tourvisor_promo_http';
+        } else {
+            $operation = 'tourvisor_search_http';
+        }
+        if (preg_match('#^/tours/search/[^/]+$#', $endpoint)) {
+            $operation = !empty($params['onlyPromo']) || !empty($_GET['onlyPromo'])
+                ? 'tourvisor_promo_http'
+                : 'tourvisor_results_http';
+        }
+    }
+
+    unset($GLOBALS['tv_upstream_last_attempt_seconds']);
+    try {
+        $result = tvRequestRaw($endpoint, $params);
+        return $result;
+    } finally {
+        $success = !empty($result['success']);
+        th_metrics_observe(
+            'travelhub_request_duration_seconds',
+            $operation,
+            'live',
+            $success ? 'success' : 'error',
+            max(0.0, microtime(true) - $startedAt)
+        );
+        $attemptDuration = $GLOBALS['tv_upstream_last_attempt_seconds'] ?? null;
+        if (is_numeric($attemptDuration)) {
+            th_metrics_observe(
+                'travelhub_upstream_attempt_duration_seconds',
+                $operation,
+                'live',
+                $success ? 'success' : 'error',
+                (float) $attemptDuration
+            );
+        }
+    }
 }
 
 function tvCountriesFallbackPath(): string {
@@ -3488,6 +3537,34 @@ function tourvisor_proxy_emit(array $r): void
             'fromCache' => $GLOBALS['tv_cache_hit'] === true,
             'firestore' => (string)($GLOBALS['tv_firestore_used'] ?? 'off'),
         ];
+    }
+    $metricOperation = null;
+    if ($type === 'search') {
+        $metricOperation = 'search_start';
+    } elseif ($type === 'status') {
+        $metricOperation = 'search_poll';
+    } elseif ($type === 'results') {
+        $metricOperation = 'search_results';
+    } elseif ($type === 'search-cached') {
+        $metricOperation = isset($_GET['onlyPromo']) && $_GET['onlyPromo'] === '1'
+            ? 'promotions'
+            : 'search_cache';
+    } elseif (in_array($type, ['promo-search', 'tour-hots', 'promo-cache-index'], true)) {
+        $metricOperation = 'promotions';
+    }
+    if ($metricOperation !== null && !empty($GLOBALS['tv_req_started_at'])) {
+        $cacheHit = $GLOBALS['tv_cache_hit'] ?? null;
+        $metricSource = $cacheHit === true ? 'cache' : ($cacheHit === false ? 'live' : 'unknown');
+        if (in_array($type, ['status', 'results'], true)) {
+            $metricSource = 'live';
+        }
+        th_metrics_observe(
+            'travelhub_request_duration_seconds',
+            $metricOperation,
+            $metricSource,
+            !empty($r['success']) ? 'success' : 'error',
+            max(0.0, microtime(true) - (float) $GLOBALS['tv_req_started_at'])
+        );
     }
     echo json_encode($r, JSON_UNESCAPED_UNICODE);
     if (!empty($GLOBALS['tv_persist_after']) && is_array($GLOBALS['tv_persist_after'])) {

@@ -41,6 +41,60 @@
 Если на SpaceWeb нет `flock`, уберите только `flock -n data/*.lock`, остальную
 команду оставьте. Важно не ставить search warm и promo warm на одно время.
 
+## Метрики поиска и акций в Grafana Cloud (OTLP push)
+
+На shared-хостинге не запускается постоянно работающий Prometheus/Alloy. Вместо
+scrape PHP сохраняет агрегированные гистограммные buckets в MySQL, а этот cron
+раз в минуту отправляет накопительные OTLP-метрики напрямую в Grafana Cloud.
+Это push через OTLP, а не Prometheus text endpoint и не классический Prometheus
+scrape. В Grafana Cloud метрики доступны для запросов и дашбордов после
+настройки приёма OTLP и источника метрик.
+
+Перед первым запуском добавьте в корневой `.env` данные OTLP metrics endpoint,
+Instance ID и токен Grafana Cloud с правом записи метрик. Endpoint должен быть
+полным HTTPS URL, заканчивающимся на `/otlp/v1/metrics`:
+
+```env
+GRAFANA_OTLP_METRICS_ENDPOINT=https://<ваш-otlp-host>/otlp/v1/metrics
+GRAFANA_CLOUD_INSTANCE_ID=<ваш-instance-id>
+GRAFANA_CLOUD_API_TOKEN=<токен-с-правом-записи-метрик>
+DEPLOYMENT_ENVIRONMENT=production
+```
+
+Не добавляйте реальные значения в Git и не передавайте токен в командной строке.
+После загрузки изменений на хостинг один раз создайте таблицу агрегатов:
+
+```sh
+cd /path/to/travelhub-v2
+php8.3 backend/cron/prometheus_metrics_export.php --init
+```
+
+Добавьте в cron SpaceWeb:
+
+```cron
+* * * * * cd /path/to/travelhub-v2 && php8.3 backend/cron/prometheus_metrics_export.php >> data/logs/prometheus_metrics_cron.log 2>&1
+```
+
+PHP API записывает длительности поиска, опроса статуса, получения результатов,
+поиска по кэшу и запросов акций. Также отдельно записываются длительности
+вызовов Tourvisor целиком (включая повторы/ограничение частоты) и последней
+cURL-попытки. Метрики имеют ограниченные labels `operation`, `source`, `result`;
+данные пользователей, ID поиска, URL и параметры запроса не записываются.
+Buckets: 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60, 120, 180 секунд и
+`+Inf`.
+
+Это серверные задержки: PHP-обработчик и HTTP-запрос от сервера к Tourvisor
+(cURL time включает сеть и обработку на стороне API). Они не измеряют RTT до
+браузера/телефона, полное время от нажатия до отрисовки, клиентское CPU/память
+или загрузку пула PHP-FPM.
+
+Проверяйте результат cron в `data/logs/prometheus_metrics_cron.log`.
+Ошибки записи агрегатов из веб-запросов попадают в
+`data/logs/prometheus_metrics.log`. Таблица содержит только накопительные
+агрегаты и имеет ограниченное число рядов; отправка повторяет их как
+cumulative histograms, поэтому временный сбой cron не удаляет уже собранные
+наблюдения.
+
 ## Что обслуживает сайт
 
 - `warm_home_search_cache.sh` — обычный поиск на главной, страницах стран и VIP.

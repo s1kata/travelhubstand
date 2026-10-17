@@ -68,6 +68,7 @@ if ($th_search_ui_raw === 'legacy') {
 <html lang="<?php echo $lang; ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="zen-verification" content="HR4VeXPudwG9yZ0b4kgbkMejPtSqkheQLGT9Vvw6BVdWyk4SdT6TWsZfzKhrKzm7">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
