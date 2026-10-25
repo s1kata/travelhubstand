@@ -19,7 +19,7 @@ $yandex_map_open_url = isset($yandex_map_open_url) && is_string($yandex_map_open
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-8">
             <div class="space-y-4">
                 <h2 class="heading-font text-2xl sm:text-3xl font-bold text-slate-900">Свяжитесь с Travel Hub</h2>
-                <p class="text-slate-600 leading-relaxed">Подберём тур по этой стране за 15 минут — в офисе или по телефону.</p>
+                <p class="text-slate-600 leading-relaxed">Подберём тур по этой стране — в офисе, по телефону или в рабочие часы онлайн.</p>
                 <div class="rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 space-y-3 shadow-sm">
                     <p class="text-slate-800"><strong>Телефон:</strong>
                         <a class="text-[#5DA9A4] font-semibold hover:underline" href="tel:<?php echo htmlspecialchars($thc['phone_tel'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -62,7 +62,7 @@ $yandex_map_open_url = isset($yandex_map_open_url) && is_string($yandex_map_open
             $th_lead_id = 'country-lead-' . preg_replace('/[^a-z0-9\-]/i', '', $th_country_cta_source);
             $th_lead_source = $th_country_cta_source;
             $th_lead_title = 'Заявка по этой стране';
-            $th_lead_sub = 'Перезвоним за 15 минут. Без спама.';
+            $th_lead_sub = 'Оставьте контакты — менеджер ответит в рабочее время (9:00–21:00 МСК).';
             $th_lead_submit = 'Жду звонка';
             $th_lead_show_msg = false;
             include __DIR__ . '/lead_capture.php';

@@ -580,9 +580,9 @@ if ($return_url !== '' && $return_url[0] === '/') {
                         <?php else: ?>
                         <div id="booking-buttons-wrap" class="th-detail__cta-wrap th-detail__cta-wrap--sidebar">
                             <button type="button" id="btn-booking-without" class="th-detail__cta-btn">
-                                <i class="fas fa-plane mr-2"></i> Забронировать
+                                <i class="fas fa-plane mr-2"></i> Оставить заявку
                             </button>
-                            <p class="text-xs text-slate-500 mt-1 mb-1 text-center">ФИО и телефон — перезвоним за 15 минут. Ни к чему не обязывает.</p>
+                            <p class="text-xs text-slate-500 mt-1 mb-1 text-center">Позвоним с +7 (846) 254-16-56 — сохраните номер. Перелёт и номер подберём, если не успели загрузиться на сайте.</p>
                             <?php if ($online_payment_enabled): ?>
                             <button type="button" id="btn-booking-with" class="th-detail__cta-btn th-detail__cta-btn--pay-primary"
                                     title="Забронировать тур и оплатить картой онлайн (Т-Банк)">
@@ -630,8 +630,8 @@ if ($return_url !== '' && $return_url[0] === '/') {
 
         <!-- Мобильная липкая кнопка -->
         <div class="th-detail__mobile-sticky" id="th-detail-mobile-sticky">
-            <button type="button" class="th-detail__mobile-sticky-btn" id="th-detail-mobile-sticky-btn">
-                <i class="fas fa-plane mr-2"></i> Забронировать
+            <button type="button" class="th-detail__mobile-sticky-btn" id="th-detail-mobile-sticky-btn" data-th-booking-open="1">
+                <i class="fas fa-headset mr-2"></i> Оставить заявку
             </button>
         </div>
 
@@ -645,7 +645,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                             <div id="booking-form-step">
                             <form id="booking-form" class="p-4 space-y-3">
                                 <input type="hidden" name="booking_type" id="booking-type" value="without_payment">
-                                <p class="text-xs text-slate-500 -mt-1 mb-1" id="booking-modal-subtitle">Перезвоним за 15 минут. Без спама.</p>
+                                <p class="text-xs text-slate-500 -mt-1 mb-1" id="booking-modal-subtitle">Звонок с +7 (846) 254-16-56 (9:00–21:00 МСК). Добавьте номер в контакты, чтобы не пропустить.</p>
                                 <div>
                                     <label for="b-manager-name" class="block text-sm font-semibold text-slate-700 mb-1">ФИО <span class="text-red-500">*</span></label>
                                     <input type="text" id="b-manager-name" autocomplete="name" maxlength="100" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="Иванов Иван Иванович">
@@ -653,7 +653,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                                 <div>
                                     <label for="b-phone" class="block text-sm font-semibold text-slate-700 mb-1">Номер телефона <span class="text-red-500">*</span></label>
                                     <input type="tel" name="phone" id="b-phone" autocomplete="tel" inputmode="tel" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="+7 (999) 123-45-67">
-                                    <p class="text-xs text-slate-500 mt-1">По заявке перезвоним. Рекламу отправим только если отметите согласие ниже.</p>
+                                    <p class="text-xs text-slate-500 mt-1">Связь по заявке — с менеджером. Рекламу отправим только если отметите согласие ниже.</p>
                                 </div>
                                 <?php require_once __DIR__ . '/../../backend/components/legal_consent_label.php'; echo th_legal_form_consents_html(['id_prefix' => 'b']); ?>
                                 <div id="booking-modal-msg" class="hidden p-2 rounded-lg text-sm"></div>
@@ -758,6 +758,12 @@ if ($return_url !== '' && $return_url[0] === '/') {
         var roomOptions = Array.isArray(cfg.roomOptions) ? cfg.roomOptions : [];
         var hotelId = (typeof cfg.hotelId === 'string') ? cfg.hotelId : '';
         var tvApiBase = (typeof cfg.tvApiBase === 'string') ? cfg.tvApiBase : '';
+        if (tvApiBase) {
+            try {
+                window.TH_TV_API_BASE = tvApiBase;
+                window.TV_API_BASE = tvApiBase;
+            } catch (eTvBase) {}
+        }
         var tvImageProxy = (typeof cfg.tvImageProxy === 'string') ? cfg.tvImageProxy : '';
         var searchAdults = cfg.searchAdults != null ? Number(cfg.searchAdults) : null;
         if (!Number.isFinite(searchAdults) || searchAdults < 1) searchAdults = null;
@@ -890,7 +896,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
         var submitBtn = document.getElementById('booking-submit-btn');
         var bookingFormMode = 'short';
         /** Текст после успешной отправки заявки без оплаты (без автосабмита). */
-        var BOOKING_SUCCESS_MSG_SHORT = 'Заявка принята. Перезвоним в течение 15 минут.';
+        var BOOKING_SUCCESS_MSG_SHORT = 'Заявка принята. Ждите звонок с +7 (846) 254-16-56. Не смогли ответить — напишите в MAX.';
 
         function tourYmGoal(goal, params) {
             try {
@@ -918,14 +924,14 @@ if ($return_url !== '' && $return_url[0] === '/') {
         }
 
         function bookingModalSubtitleFor(type) {
-            if (type === 'quick_pick') return 'Перезвоним за 15 минут. Без спама.';
+            if (type === 'quick_pick') return 'Звонок с +7 (846) 254-16-56. Сохраните номер в телефоне.';
             if (type === 'with_payment') return 'Заполните контакты — после заявки откроется оплата картой (Т-Банк).';
             if (type === 'book') return 'Заполните контакты — оформим бронирование тура.';
-            return 'Перезвоним за 15 минут. Без спама.';
+            return 'Звонок с +7 (846) 254-16-56 (9:00–21:00 МСК). Неудобно говорить — MAX внизу экрана.';
         }
 
         function bookingModalTitleFor(type) {
-            if (type === 'quick_pick') return 'Подберём тур за 15 минут';
+            if (type === 'quick_pick') return 'Заявка менеджеру';
             if (type === 'with_payment') return 'Забронировать и оплатить картой';
             if (type === 'book') return 'Забронировать тур';
             if (fromPromo) return 'Заявка на акционный тур';
@@ -979,6 +985,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
             if (modalSub) modalSub.textContent = bookingModalSubtitleFor(effectiveType);
             fillForm();
             tourYmGoal('tour_booking_modal_open');
+            tourYmGoal('booking_form_open', { source: 'tour_detail' });
             if (msgModal) { msgModal.classList.add('hidden'); msgModal.textContent = ''; }
             /* Восстановление полей после CSRF-релоада — только при явном открытии модалки */
             var pr = window.__thPendingBookingRestore;
@@ -1586,7 +1593,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 var listEl = document.getElementById('th-flight-packages-list');
                 if (listEl) listEl.innerHTML = '';
                 thTdSetFlightPackagesStatus(
-                    opts.errorText || 'Не удалось загрузить рейсы. Попробуйте ещё раз или уточните у менеджера.',
+                    opts.errorText || 'Не удалось загрузить рейсы. Нажмите «Повторить» или оставьте заявку — подберём перелёт менеджером.',
                     true
                 );
             } else {
@@ -1793,6 +1800,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
             var requestToken = ++thTdFlightRequestToken;
             var requestedTourId = tourId;
             var fetchOpts = {
+                apiBase: tvApiBase,
                 departureCity: defaultDeparture,
                 departureId: departureId,
                 force: !!force

@@ -172,7 +172,7 @@ function getServiceIcon($name, $iconMap, $default) {
     <?php
     $th_cta_source = 'services_page';
     $th_cta_title = 'Нужна услуга под ключ? Оставьте телефон';
-    $th_cta_sub = 'Визы, страховки, трансферы, подбор тура — перезвоним за 15 минут.';
+    $th_cta_sub = 'Визы, страховки, трансферы, подбор тура — ответ менеджера в рабочее время.';
     $th_cta_id = 'th-services-cta';
     include __DIR__ . '/../../backend/components/page_cta_band.php';
     ?>

@@ -11,6 +11,10 @@ require_once dirname(__DIR__) . '/components/security_helper.php';
 require_once dirname(__DIR__) . '/components/lead_validation.php';
 require_once dirname(__DIR__) . '/components/pd_consent_log.php';
 
+/** @var array{success_message: string} $_th_lead_copy */
+$_th_lead_copy = require dirname(__DIR__) . '/config/lead_copy.php';
+$_th_lead_success_msg = (string) ($_th_lead_copy['success_message'] ?? 'Заявка принята. Менеджер свяжется с вами в рабочее время.');
+
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 // CORS не задаём — форма на том же сайте, cross-origin запросы блокируются
@@ -123,7 +127,7 @@ if ($api_key === '') {
     error_log('[uon-lead] UON_API_KEY (и SOTA_API_KEY) не заданы в .env');
     echo json_encode([
         'success' => true,
-        'message' => 'Заявка принята. Мы свяжемся с вами в течение 15 минут.',
+        'message' => $_th_lead_success_msg,
         'crm_sent' => false,
     ]);
     exit;
@@ -160,14 +164,14 @@ if ($curl_err !== '') {
 if ($http_code >= 200 && $http_code < 300) {
     echo json_encode([
         'success' => true,
-        'message' => 'Заявка принята. Мы свяжемся с вами в течение 15 минут.',
+        'message' => $_th_lead_success_msg,
         'crm_sent' => true,
     ]);
 } else {
     error_log('[uon-lead] U-ON HTTP ' . $http_code . ': ' . substr((string)$response, 0, 500));
     echo json_encode([
         'success' => true,
-        'message' => 'Заявка принята. Мы свяжемся с вами в течение 15 минут.',
+        'message' => $_th_lead_success_msg,
         'crm_sent' => false,
     ]);
 }

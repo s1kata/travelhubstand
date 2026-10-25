@@ -59,7 +59,7 @@
     var officeCity = opts.officeCity || '';
     var officeName = opts.officeName || '';
     var title = officeName ? ('Заявка: ' + officeName) : 'Заявка в офис';
-    var sub = 'Перезвоним за 15 минут' + (officeCity ? (' · ' + officeCity) : '') + '. Без спама.';
+    var sub = 'Менеджер ответит в рабочее время (9:00–21:00 МСК)' + (officeCity ? (' · ' + officeCity) : '') + '.';
 
     var ov = document.createElement('div');
     ov.id = 'th-office-lead-ov';

@@ -956,15 +956,23 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
     function loadVipFlightsForTours(hotels, callback) {
         const base = typeof TV_API_BASE !== 'undefined' ? TV_API_BASE : '';
         const depCity = (window.TH_DEPARTURE && window.TH_DEPARTURE.name) || 'Самара';
+        const container = document.getElementById('vip-tv-search-results') || document.getElementById('country-tv-search-results');
+        const flightOpts = {
+            apiBase: base,
+            departureCity: depCity,
+            maxConcurrent: 4,
+            waveSize: 12,
+            patchEvery: 1,
+            getTourId: getVipTourId,
+            patchContainer: container,
+            onDone: callback
+        };
+        if (typeof thLoadFlightsVisibleThenAll === 'function' && base) {
+            thLoadFlightsVisibleThenAll(hotels, Object.assign({}, flightOpts, { maxTours: 0 }));
+            return;
+        }
         if (typeof thLoadTourFlightsForHotels === 'function' && base) {
-            thLoadTourFlightsForHotels(hotels, {
-                apiBase: base,
-                departureCity: depCity,
-                maxTours: hotels.length,
-                maxConcurrent: 6,
-                getTourId: getVipTourId,
-                onDone: callback
-            });
+            thLoadTourFlightsForHotels(hotels, Object.assign({}, flightOpts, { maxTours: hotels.length }));
             return;
         }
         if (callback) callback();

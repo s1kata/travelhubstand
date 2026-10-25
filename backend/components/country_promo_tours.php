@@ -587,18 +587,20 @@ $_th_fp_cp_v = is_file($_th_fp_cp) ? (string) filemtime($_th_fp_cp) : '1';
             }).join('');
             results.classList.remove('hidden');
             window.__countryFlightsByTourId = window.__countryFlightsByTourId || {};
-            if (typeof thLoadTourFlightsForHotels === 'function' && TV_BASE) {
-                thLoadTourFlightsForHotels(filtered, {
-                    apiBase: TV_BASE.replace(/\/$/, ''),
-                    departureCity: PROMO_DEPARTURE_NAME,
-                    maxTours: filtered.length,
-                    maxConcurrent: 6,
-                    getTourId: function (h) {
-                        var t = (h.tours && h.tours[0]) ? h.tours[0] : {};
-                        return (t.id != null && t.id !== '') ? String(t.id) : '';
-                    },
-                    patchContainer: results
-                });
+            var promoFlightOpts = {
+                apiBase: TV_BASE.replace(/\/$/, ''),
+                departureCity: PROMO_DEPARTURE_NAME,
+                maxConcurrent: 6,
+                getTourId: function (h) {
+                    var t = (h.tours && h.tours[0]) ? h.tours[0] : {};
+                    return (t.id != null && t.id !== '') ? String(t.id) : '';
+                },
+                patchContainer: results
+            };
+            if (typeof thLoadFlightsVisibleThenAll === 'function' && TV_BASE) {
+                thLoadFlightsVisibleThenAll(filtered, Object.assign({}, promoFlightOpts, { maxTours: 0 }));
+            } else if (typeof thLoadTourFlightsForHotels === 'function' && TV_BASE) {
+                thLoadTourFlightsForHotels(filtered, Object.assign({}, promoFlightOpts, { maxTours: filtered.length }));
             } else if (window.THTourCard && typeof window.THTourCard.patchFlightsInContainer === 'function') {
                 window.THTourCard.patchFlightsInContainer(results);
             }

@@ -372,7 +372,7 @@ $_th_about_css_version = is_file($_th_about_css) ? (string) filemtime($_th_about
                         Готовы начать <span class="gradient-text">ваше путешествие?</span>
                     </h2>
                     <p class="text-xl text-slate-700 max-w-2xl mx-auto">
-                        Свяжитесь с нами любым удобным способом. Мы ответим в течение 15 минут
+                        Свяжитесь с нами любым удобным способом. Ответим в рабочее время (9:00–21:00 МСК)
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
@@ -426,7 +426,7 @@ $_th_about_css_version = is_file($_th_about_css) ? (string) filemtime($_th_about
                         Свяжитесь с нами
                     </h2>
                     <p class="text-xl text-slate-700 max-w-2xl mx-auto">
-                        Оставьте контакты, и мы свяжемся с вами в течение 15 минут. Подготовим 2-3 концепции путешествия с расчётом бюджета.
+                        Оставьте контакты — менеджер свяжется в рабочее время. Подготовим 2–3 концепции путешествия с расчётом бюджета.
                     </p>
                 </div>
                 <div class="surface-card p-6 md:p-10">
@@ -448,7 +448,7 @@ $_th_about_css_version = is_file($_th_about_css) ? (string) filemtime($_th_about
                     Начните планировать ваше идеальное путешествие сегодня
                 </h2>
                 <p class="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                    Оставьте заявку, и наш консьерж свяжется с вами в течение 15 минут. Мы подготовим несколько уникальных вариантов путешествия специально для вас.
+                    Оставьте заявку — консьерж свяжется в рабочее время. Подготовим несколько вариантов путешествия под ваш запрос.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="tel:+78462541656" class="inline-flex items-center justify-center gap-3 bg-white text-sky-600 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition transform hover:-translate-y-1">

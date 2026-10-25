@@ -228,7 +228,7 @@ $yandex_map_open_url = th_map_widget_url_for_geo((string) ($office['geo'] ?? $of
     <?php
     $th_cta_source = 'office_detail_' . $slug;
     $th_cta_title = 'Хотите, подберём тур из этого офиса?';
-    $th_cta_sub = 'Оставьте телефон — менеджер ' . $office['brand'] . ' перезвонит за 15 минут.';
+    $th_cta_sub = 'Оставьте заявку — менеджер ' . $office['brand'] . ' ответит в рабочее время.';
     $th_cta_id = 'th-office-detail-cta';
     include __DIR__ . '/../../../backend/components/page_cta_band.php';
     include __DIR__ . '/../../../backend/components/footer.php';

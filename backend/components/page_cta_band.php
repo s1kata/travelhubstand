@@ -13,9 +13,12 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/contacts.php';
 $thc = th_contacts();
 
+/** @var array{cta_title: string, form_sub: string, worktime_hint: string} $_th_cta_copy */
+$_th_cta_copy = require dirname(__DIR__) . '/config/lead_copy.php';
+
 $th_cta_source = isset($th_cta_source) ? (string) $th_cta_source : 'page_cta';
-$th_cta_title = isset($th_cta_title) ? (string) $th_cta_title : 'Подберём тур под ваш бюджет за 15 минут';
-$th_cta_sub = isset($th_cta_sub) ? (string) $th_cta_sub : 'Оставьте телефон — менеджер перезвонит и пришлёт 2–3 варианта без спама.';
+$th_cta_title = isset($th_cta_title) ? (string) $th_cta_title : (string) ($_th_cta_copy['cta_title'] ?? '');
+$th_cta_sub = isset($th_cta_sub) ? (string) $th_cta_sub : (string) ($_th_cta_copy['form_sub'] ?? '');
 $th_cta_id = isset($th_cta_id) ? (string) $th_cta_id : 'th-page-cta';
 
 if (!defined('TH_SITE_LEAD_CSS')) {
@@ -46,8 +49,7 @@ if (!defined('TH_SITE_LEAD_CSS')) {
                 </a>
             </div>
             <div class="th-page-cta__trust">
-                <span><i class="fas fa-check-circle" aria-hidden="true"></i> Ответ за 15 минут</span>
-                <span><i class="fas fa-shield-alt" aria-hidden="true"></i> Без спама</span>
+                <span><i class="fas fa-clock" aria-hidden="true"></i> <?php echo htmlspecialchars((string) ($_th_cta_copy['worktime_hint'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
                 <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <?php echo htmlspecialchars($thc['address_short'], ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
         </div>

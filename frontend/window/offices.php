@@ -20,7 +20,7 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Офисы Travel Hub — Самара и Москва</title>
-    <meta name="description" content="Офисы Travel Hub в Самаре и Москве: адреса, фото, телефоны. Позвоните или оставьте заявку — подберём тур за 15 минут.">
+    <meta name="description" content="Офисы Travel Hub в Самаре и Москве: адреса, фото, телефоны. Позвоните или оставьте заявку — менеджер поможет с подбором тура.">
     <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/th-offices.css?v=4">
@@ -38,7 +38,7 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
         <div class="th-off-hero__shade" aria-hidden="true"></div>
         <div class="th-off-hero__inner">
             <p class="th-off-hero__brand">Travel Hub</p>
-            <p class="th-off-hero__lead">Офисы в Самаре и Москве — заходите или оставьте заявку, менеджер перезвонит за 15 минут.</p>
+            <p class="th-off-hero__lead">Офисы в Самаре и Москве — заходите, позвоните или оставьте заявку онлайн.</p>
             <div class="th-off-hero__cta">
                 <a class="th-off-hero__cta-primary" href="#th-offices-cta-form">Оставить заявку</a>
                 <a class="th-off-hero__cta-ghost" href="tel:<?php echo htmlspecialchars($thc['phone_tel'], ENT_QUOTES, 'UTF-8'); ?>">

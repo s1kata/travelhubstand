@@ -767,6 +767,19 @@ select.flatpickr-monthDropdown-months {
     margin-bottom: 24px;
     max-width: 360px;
 }
+.tv-empty-state__trust {
+    font-size: 0.875rem;
+    color: #374151;
+    margin: -8px auto 20px;
+    max-width: 360px;
+    line-height: 1.45;
+}
+.tv-empty-state__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
 .tv-empty-state__btn {
     display: inline-flex;
     align-items: center;
@@ -788,6 +801,17 @@ select.flatpickr-monthDropdown-months {
     box-shadow: 0 6px 24px rgba(255, 107, 107, 0.50);
     transform: translateY(-1px);
     color: #fff;
+}
+.tv-empty-state__btn--secondary {
+    background: #fff;
+    color: #1A1A40;
+    border: 2px solid rgba(26, 26, 64, 0.12);
+    box-shadow: none;
+}
+.tv-empty-state__btn--secondary:hover {
+    background: #F8FAFC;
+    color: #1A1A40;
+    box-shadow: 0 2px 12px rgba(26, 26, 64, 0.08);
 }
 
 /* Скелетоны выдачи (PHP-only perceived speed) */
@@ -3624,11 +3648,40 @@ select.flatpickr-monthDropdown-months {
 }
 .th-tour-card__btn--lead {
     margin-top: 0;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: #fff;
+    border: none;
+    font-weight: 600;
 }
-/* CTA «Оставить заявку» на карточках отключён (модалка — только с tour-detail и т.п.) */
-.th-tour-card .th-tour-card__actions .th-tour-card__btn--lead,
+.th-tour-card__btn--lead:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35);
+}
+.th-tour-card__actions--dual {
+    flex-direction: column;
+    gap: 8px;
+}
+.th-tour-card__actions--dual .th-tour-card__btn--detail {
+    order: 2;
+}
+.th-tour-card__actions--dual .th-tour-card__btn--lead {
+    order: 1;
+}
 .th-tour-card .th-tour-card__actions [data-th-book-tour] {
-    display: none !important;
+    display: flex !important;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.th-tour-card__flight-sub--stub {
+    color: #64748b;
+}
+.th-tour-card__flight-lead-hint {
+    display: block;
+    margin: 6px 16px 0;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #64748b;
 }
 .tv-sc-field--departure-fixed,
 .th-departure-field-hidden {

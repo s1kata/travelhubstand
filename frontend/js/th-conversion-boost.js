@@ -120,17 +120,18 @@
       '<div class="th-abandon-sheet__backdrop" data-th-abandon-close></div>' +
       '<div class="th-abandon-sheet__panel">' +
         '<button type="button" class="th-abandon-sheet__x" data-th-abandon-close aria-label="Закрыть">&times;</button>' +
-        '<p class="th-abandon-sheet__badge">Ответ за 15 минут</p>' +
+        '<p class="th-abandon-sheet__badge">Связь с менеджером</p>' +
         '<h3 class="th-abandon-sheet__title">Не нашли тур?</h3>' +
-        '<p class="th-abandon-sheet__sub">Оставьте телефон — менеджер подберёт лучшие варианты бесплатно.</p>' +
+        '<p class="th-abandon-sheet__sub">Оставьте телефон — позвоним с +7 (846) 254-16-56. Укажите, когда удобнее ответить.</p>' +
         '<form class="th-abandon-sheet__form" id="th-abandon-sheet-form">' +
           '<input type="tel" name="phone" required autocomplete="tel" placeholder="+7 (___) ___-__-__" class="th-abandon-sheet__input">' +
+          '<input type="text" name="callback_note" maxlength="120" autocomplete="off" placeholder="Когда удобно звонить? (необязательно)" class="th-abandon-sheet__input th-abandon-sheet__input--note">' +
           (window.THLegal && window.THLegal.formHtml ? window.THLegal.formHtml('th-abandon') : '') +
           '<input type="text" name="website" tabindex="-1" autocomplete="off" class="th-abandon-sheet__hp">' +
           '<p class="th-abandon-sheet__msg hidden" id="th-abandon-sheet-msg"></p>' +
           '<button type="submit" class="th-abandon-sheet__submit">Подобрать тур за меня</button>' +
         '</form>' +
-        '<p class="th-abandon-sheet__proof"><i class="fas fa-shield-alt"></i> Без спама · только по вашему запросу</p>' +
+        '<p class="th-abandon-sheet__proof"><i class="fas fa-comment-dots"></i> Не берёте трубку? Напишите в MAX — кнопка внизу экрана</p>' +
       '</div>';
     document.body.appendChild(sheetEl);
 
@@ -158,14 +159,16 @@
             agree_ads: !!fd.get('agree_ads'),
             website: String(fd.get('website') || ''),
             source: 'abandon_sheet',
-            message: 'Abandon sheet — timed popup'
+            message: 'Abandon sheet' + (String(fd.get('callback_note') || '').trim()
+              ? ('\nУдобное время: ' + String(fd.get('callback_note') || '').trim())
+              : '')
           })
           : Promise.resolve({ success: false, error: 'Форма недоступна' });
         submit.then(function (res) {
           if (msg) {
             msg.classList.remove('hidden');
             if (res.success) {
-              msg.textContent = res.message || 'Заявка принята! Перезвоним за 15 минут.';
+              msg.textContent = res.message || 'Заявка принята. Менеджер свяжется с вами в рабочее время.';
               msg.className = 'th-abandon-sheet__msg th-abandon-sheet__msg--ok';
               markAbandonDone();
               closeWasSubmit = true;
@@ -317,13 +320,15 @@
 
   /** Intent copy for quick lead modal */
   var INTENT = {
-    'slow-search': { title: 'Подберём тур за вас', sub: 'Поиск идёт — пока ждёте, оставьте телефон. Перезвоним за 15 минут.', submit: 'Подобрать за меня', phoneOnly: true },
-    'empty-state': { title: 'Не нашли подходящий тур?', sub: 'Менеджер подберёт варианты вручную — бесплатно.', submit: 'Получить подбор', phoneOnly: true },
-    'search-error': { title: 'Не удалось загрузить туры', sub: 'Оставьте телефон — подберём варианты и перезвоним за 15 минут.', submit: 'Помочь с подбором', phoneOnly: true },
-    'results-toolbar': { title: 'Помочь с выбором?', sub: 'Перезвоним за 15 минут с лучшими вариантами.', submit: 'Перезвоните мне', phoneOnly: true },
-    'results-sticky': { title: 'Нужна помощь с туром?', sub: 'Без спама · ответ за 15 минут.', submit: 'Оставить телефон', phoneOnly: true },
-    'home_quick_modal': { title: 'Подберём тур для вас', sub: 'Перезвоним за 15 минут. Без спама.', submit: 'Отправить заявку', phoneOnly: false },
-    'promo_country_callback': { title: 'Перезвонить с акциями', sub: 'Подберём горящие туры по выбранной стране.', submit: 'Жду звонка', phoneOnly: true }
+    'slow-search': { title: 'Подберём тур за вас', sub: 'Позвоним с +7 (846) 254-16-56 — сохраните номер. Укажите удобное время, если нужно.', submit: 'Оставить заявку', phoneOnly: true },
+    'slow_search_lead': { title: 'Подберём тур за вас', sub: 'Позвоним с +7 (846) 254-16-56. Ответьте на звонок или напишите в MAX.', submit: 'Оставить заявку', phoneOnly: true },
+    'empty-state': { title: 'Не нашли подходящий тур?', sub: 'Оставьте телефон — подберём варианты. Звонок с нашего номера, можно указать удобное время.', submit: 'Оставить заявку', phoneOnly: true },
+    'search-error': { title: 'Не удалось загрузить туры', sub: 'Оставьте телефон — поможем с подбором. Звонок с +7 (846) 254-16-56.', submit: 'Оставить заявку', phoneOnly: true },
+    'results-toolbar': { title: 'Помочь с выбором?', sub: 'Позвоним с +7 (846) 254-16-56 в рабочее время. Неудобно — MAX внизу экрана.', submit: 'Оставить заявку', phoneOnly: true },
+    'results-sticky': { title: 'Нужна помощь с туром?', sub: 'Оставьте телефон и удобное время для звонка.', submit: 'Оставить заявку', phoneOnly: true },
+    'home_quick_modal': { title: 'Подберём тур для вас', sub: 'Звонок с +7 (846) 254-16-56. Сохраните номер — так чаще удаётся дозвониться.', submit: 'Отправить заявку', phoneOnly: false },
+    'promo_country_callback': { title: 'Заявка по акциям', sub: 'Подберём горящие туры по выбранной стране.', submit: 'Оставить заявку', phoneOnly: true },
+    'flight-stub-lead': { title: 'Подберём перелёт', sub: 'Рейс не успел загрузиться — оставьте телефон, менеджер уточнит варианты вылета.', submit: 'Жду звонка', phoneOnly: true }
   };
 
   function applyIntent(source) {
@@ -373,12 +378,12 @@
       e.preventDefault();
       e.stopPropagation();
       var country = btn.getAttribute('data-country-name') || '';
-      var msg = country ? ('Страна: ' + country + '. Перезвонить с горящими акциями.') : 'Перезвонить с горящими акциями.';
+      var msg = country ? ('Страна: ' + country + '. Заявка по горящим акциям.') : 'Заявка по горящим акциям.';
       if (typeof global.openSiteFeedbackModal === 'function') {
         global.openSiteFeedbackModal({
           source: 'promo_country_callback',
-          title: 'Перезвонить с акциями',
-          sub: 'Перезвоним за 15 минут · ' + (country || 'выбранное направление'),
+          title: 'Заявка по акциям',
+          sub: 'Менеджер ответит в рабочее время · ' + (country || 'выбранное направление'),
           message: msg,
           focusPhone: true,
           phoneOnly: true

@@ -13,10 +13,13 @@
  */
 declare(strict_types=1);
 
+/** @var array{form_sub: string, worktime_hint: string, pickup_hint: string, phone_display: string} $_th_lead_copy_defaults */
+$_th_lead_copy_defaults = require dirname(__DIR__) . '/config/lead_copy.php';
+
 $th_lead_id = isset($th_lead_id) ? (string) $th_lead_id : 'th-lead-form';
 $th_lead_source = isset($th_lead_source) ? (string) $th_lead_source : 'site';
 $th_lead_title = isset($th_lead_title) ? (string) $th_lead_title : '';
-$th_lead_sub = isset($th_lead_sub) ? (string) $th_lead_sub : 'Перезвоним в течение 15 минут. Без спама.';
+$th_lead_sub = isset($th_lead_sub) ? (string) $th_lead_sub : (string) ($_th_lead_copy_defaults['form_sub'] ?? '');
 $th_lead_submit = isset($th_lead_submit) ? (string) $th_lead_submit : 'Отправить заявку';
 $th_lead_show_msg = !empty($th_lead_show_msg);
 $th_lead_compact = !empty($th_lead_compact);
@@ -35,9 +38,9 @@ $agree_id = $th_lead_id . '-agree';
     <p class="th-lead-capture__sub"><?php echo htmlspecialchars($th_lead_sub, ENT_QUOTES, 'UTF-8'); ?></p>
     <?php endif; ?>
     <?php if ($th_lead_social_proof): ?>
-    <ul class="th-lead-capture__proof" aria-label="Гарантии">
-        <li><i class="fas fa-clock" aria-hidden="true"></i> Ответ за 15 минут</li>
-        <li><i class="fas fa-shield-alt" aria-hidden="true"></i> Без спама</li>
+    <ul class="th-lead-capture__proof" aria-label="Как связаться">
+        <li><i class="fas fa-phone" aria-hidden="true"></i> Звонок с <?php echo htmlspecialchars((string) ($_th_lead_copy_defaults['phone_display'] ?? ''), ENT_QUOTES, 'UTF-8'); ?> — сохраните номер</li>
+        <li><i class="fas fa-comment-dots" aria-hidden="true"></i> <?php echo htmlspecialchars((string) ($_th_lead_copy_defaults['pickup_hint'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></li>
     </ul>
     <?php endif; ?>
     <form id="<?php echo htmlspecialchars($th_lead_id, ENT_QUOTES, 'UTF-8'); ?>"

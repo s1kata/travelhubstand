@@ -6,7 +6,8 @@
 $th_lead_id = isset($th_lead_id) ? (string) $th_lead_id : 'lead-form';
 $th_lead_source = isset($th_lead_source) ? (string) $th_lead_source : 'home_bottom_lead';
 $th_lead_title = isset($th_lead_title) ? (string) $th_lead_title : '';
-$th_lead_sub = isset($th_lead_sub) ? (string) $th_lead_sub : 'Перезвоним в течение 15 минут. Без спама.';
+$_th_lf_copy = require dirname(__DIR__) . '/config/lead_copy.php';
+$th_lead_sub = isset($th_lead_sub) ? (string) $th_lead_sub : (string) ($_th_lf_copy['form_sub'] ?? '');
 $th_lead_submit = isset($th_lead_submit) ? (string) $th_lead_submit : 'Отправить заявку';
 $th_lead_show_msg = !empty($th_lead_show_msg);
 include __DIR__ . '/lead_capture.php';

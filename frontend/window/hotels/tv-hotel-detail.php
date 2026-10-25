@@ -666,22 +666,25 @@ $_th_fpick_v = is_file($_th_fpick) ? (string) filemtime($_th_fpick) : '1';
         var hotels = items.map(function (it) {
             return Object.assign({}, it.hotel || {}, { _tour: it.tour, tours: [it.tour] });
         });
-        thLoadTourFlightsForHotels(hotels, {
+        var flightOpts = {
             apiBase: CFG.apiBase,
             departureCity: CFG.departureName,
             departureId: CFG.departureId,
-            maxTours: items.length,
             maxConcurrent: 4,
             waveSize: 12,
             patchEvery: 2,
             loadGen: gen,
-            patchContainer: null,
+            patchContainer: document.getElementById('thh-tours-list') || document,
             onDone: patchThhFlights,
             getTourId: function (h) {
                 var t = (h && h._tour) || (h && h.tours && h.tours[0]) || {};
                 return t.id != null ? String(t.id) : '';
             }
-        }).then(function () {
+        };
+        var loadPromise = (typeof thLoadFlightsVisibleThenAll === 'function')
+            ? thLoadFlightsVisibleThenAll(hotels, Object.assign({}, flightOpts, { maxTours: 0 }))
+            : thLoadTourFlightsForHotels(hotels, Object.assign({}, flightOpts, { maxTours: items.length }));
+        loadPromise.then(function () {
             patchThhFlights();
         }).catch(function () {});
         /* промежуточные патчи: thLoad не вызывает наш onDone до конца — дублируем таймером редко */

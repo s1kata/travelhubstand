@@ -82,7 +82,7 @@ if ($th_search_ui_raw === 'legacy') {
     <?php
     // SEO настройки для главной страницы
     $page_title = 'Туры и горящие туры — Travel Hub';
-    $page_description = 'Туры и горящие туры от Travel Hub: подбор отелей, перелётов, виз, страхования и трансферов. Путешествия по всему миру с персональным консьержем. Ответим за 15 минут.';
+    $page_description = 'Туры и горящие туры от Travel Hub: подбор отелей, перелётов, виз, страхования и трансферов. Путешествия по всему миру с персональным консьержем.';
     $page_keywords = 'туры, путешествия, горящие туры, премиум туры, эксклюзивные туры, отели, перелёты, визы, страхование, трансферы, турагентство, Travel Hub, отдых, туризм';
     // Путь от корня домена; seo_head превратит в абсолютный URL для Open Graph
     $page_image = '/frontend/window/img/hero/home-hero-1280.webp';
@@ -161,7 +161,7 @@ if ($th_search_ui_raw === 'legacy') {
     <link rel="stylesheet" href="/frontend/css/responsive.css?v=17" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="/frontend/css/responsive.css?v=17"></noscript>
     <link rel="stylesheet" href="/frontend/css/design-system.css?v=14">
-    <link rel="stylesheet" href="/frontend/css/redesign.css?v=43">
+    <link rel="stylesheet" href="/frontend/css/redesign.css?v=44">
     <link rel="stylesheet" href="/frontend/css/v2-theme.css?v=5">
     <?php if ($th_search_ui === 'legacy'): ?>
     <link rel="stylesheet" href="/frontend/search-legacy/css/tour-search-wizard.css?v=legacy1">
@@ -242,6 +242,12 @@ if ($th_search_ui_raw === 'legacy') {
             <p id="tv-loader-msg" class="tv-search-loader-msg">Проверяем кэш...</p>
             <p id="tv-loader-sub" class="tv-search-loader-sub tv-search-loader-sub--sla">Обычно быстро · при необходимости уточняем у операторов</p>
             <p id="tv-loader-instant" aria-live="polite"></p>
+            <div id="tv-loader-slow-lead" class="tv-search-loader-slow hidden" aria-hidden="true">
+                <p class="tv-search-loader-slow__hint">Поиск затянулся? Оставьте телефон — позвоним с +7 (846) 254-16-56. Сохраните номер, чтобы ответить.</p>
+                <button type="button" class="tv-search-loader-slow__submit" data-open-lead-modal="slow_search_lead">
+                    <i class="fas fa-headset" aria-hidden="true"></i> Оставить заявку
+                </button>
+            </div>
         </div>
     </div>
     <!-- Баннер геолокации: только по кнопке «Определить» в форме, не показываем при загрузке -->
@@ -878,7 +884,7 @@ if ($th_search_ui_raw === 'legacy') {
                     data-open-lead-modal="results-sticky"
                     data-th-track="lead_bar" aria-label="Заявка">
                 <i class="fas fa-comment-dots" aria-hidden="true"></i>
-                <span class="th-rsd__label">Заявка</span>
+                <span class="th-rsd__label">Подбор</span>
             </button>
         </div>
     </nav>
@@ -1730,13 +1736,12 @@ if ($th_search_ui_raw === 'legacy') {
                 return thFlightsCacheGet(String(tourId), depCity);
             }
             function homeShowcaseLoadFlights(list, depCity, depId, gridEl) {
-                if (!list.length || typeof thLoadTourFlightsForHotels !== 'function' || !TV_API_BASE) return;
+                if (!list.length || !TV_API_BASE) return;
                 var hotels = list.map(homeShowcaseItemToHotel);
-                thLoadTourFlightsForHotels(hotels, {
+                var flightOpts = {
                     apiBase: TV_API_BASE,
                     departureCity: depCity,
                     departureId: depId,
-                    maxTours: hotels.length,
                     maxConcurrent: 3,
                     patchEvery: 1,
                     patchContainer: gridEl,
@@ -1749,7 +1754,12 @@ if ($th_search_ui_raw === 'legacy') {
                             window.THTourCard.mountInContainer(gridEl);
                         }
                     }
-                });
+                };
+                if (typeof thLoadFlightsVisibleThenAll === 'function') {
+                    thLoadFlightsVisibleThenAll(hotels, Object.assign({}, flightOpts, { maxTours: 0 }));
+                } else if (typeof thLoadTourFlightsForHotels === 'function') {
+                    thLoadTourFlightsForHotels(hotels, Object.assign({}, flightOpts, { maxTours: hotels.length }));
+                }
             }
             function renderTourOffers(items) {
                 if (!homeToursGrid) return;
@@ -1781,7 +1791,6 @@ if ($th_search_ui_raw === 'legacy') {
                         return window.THTourCard.render(h, {
                             tour: tour,
                             promo: true,
-                            promoLead: false,
                             getImageUrl: (typeof getTourvisorImageUrl === 'function') ? getTourvisorImageUrl : undefined,
                             imageProxy: (typeof TV_IMAGE_PROXY !== 'undefined') ? TV_IMAGE_PROXY : '',
                             image: it.image || '',
@@ -2092,7 +2101,11 @@ if ($th_search_ui_raw === 'legacy') {
                         try {
                             var j;
                             if (typeof thFetchTourFlightsJson === 'function') {
-                                j = await thFetchTourFlightsJson(tourId, { departureCity: depName });
+                                j = await thFetchTourFlightsJson(tourId, {
+                                    departureCity: depName,
+                                    departureId: depId,
+                                    apiBase: (typeof TV_API_BASE !== 'undefined' ? TV_API_BASE : '')
+                                });
                             } else if (typeof tvFetch === 'function') {
                                 j = await tvFetch('tour-flights', { tourId: String(tourId), currency: 'RUB' }, {});
                             } else {
@@ -3733,6 +3746,22 @@ if ($th_search_ui_raw === 'legacy') {
             'Ещё секунду — уточняем детали...'
         ];
         let tvLoaderSlowTimer = null;
+        const TV_LOADER_SLOW_LEAD_MS = 12000;
+        function tvLoaderHideSlowLead() {
+            var slow = document.getElementById('tv-loader-slow-lead');
+            if (slow) {
+                slow.classList.add('hidden');
+                slow.setAttribute('aria-hidden', 'true');
+            }
+        }
+        function tvLoaderMaybeShowSlowLead() {
+            var loader = document.getElementById('tv-search-loader');
+            if (!loader || !loader.classList.contains('active')) return;
+            var slow = document.getElementById('tv-loader-slow-lead');
+            if (!slow || !slow.classList.contains('hidden')) return;
+            slow.classList.remove('hidden');
+            slow.setAttribute('aria-hidden', 'false');
+        }
         function tvLoaderShow() {
             const el = document.getElementById('tv-search-loader');
             const msg = document.getElementById('tv-loader-msg');
@@ -3740,9 +3769,14 @@ if ($th_search_ui_raw === 'legacy') {
             if (msg) msg.classList.remove('done');
             if (tvLoaderRotateInterval) { clearInterval(tvLoaderRotateInterval); tvLoaderRotateInterval = null; }
             if (tvLoaderSlowTimer) { clearTimeout(tvLoaderSlowTimer); tvLoaderSlowTimer = null; }
+            tvLoaderHideSlowLead();
             const instant = document.getElementById('tv-loader-instant');
             if (instant) instant.textContent = '';
             tvLoaderSetStage('cache');
+            tvLoaderSlowTimer = setTimeout(function () {
+                tvLoaderSlowTimer = null;
+                tvLoaderMaybeShowSlowLead();
+            }, TV_LOADER_SLOW_LEAD_MS);
         }
         function tvLoaderSetStage(stage) {
             const conf = TV_LOADER_STAGES[stage] || TV_LOADER_STAGES.cache;
@@ -3792,6 +3826,7 @@ if ($th_search_ui_raw === 'legacy') {
             const el = document.getElementById('tv-search-loader');
             if (tvLoaderRotateInterval) { clearInterval(tvLoaderRotateInterval); tvLoaderRotateInterval = null; }
             if (tvLoaderSlowTimer) { clearTimeout(tvLoaderSlowTimer); tvLoaderSlowTimer = null; }
+            tvLoaderHideSlowLead();
             if (el) { el.classList.remove('active'); el.setAttribute('aria-hidden', 'true'); }
         }
 
@@ -4521,9 +4556,11 @@ if ($th_search_ui_raw === 'legacy') {
             showTvResultsChrome();
             updateTvLoadMoreButton();
             if (isApiErr && window.THLeadCapture) {
+                var errSnippet = String(rCache.error || '').slice(0, 120);
                 window.THLeadCapture.reachGoal('search_error', {
                     source: 'homepage',
-                    search_mode: thIsHotelSearchMode() ? 'hotels' : 'tours'
+                    search_mode: thIsHotelSearchMode() ? 'hotels' : 'tours',
+                    error_snippet: errSnippet
                 });
             }
             console.warn('[Главная · Поиск] Нет результатов по выбранным параметрам.', rCache.error || '');
@@ -4548,7 +4585,7 @@ if ($th_search_ui_raw === 'legacy') {
         }
         function tvSearchErrorHtml(errMsg) {
             var sub = String(errMsg || 'Сервис временно недоступен').replace(/</g, '&lt;');
-            return '<div class="tv-empty-state tv-empty-state--error"><div class="tv-empty-state__icon">⚠️</div><div class="tv-empty-state__title">Не удалось загрузить туры</div><div class="tv-empty-state__sub">' + sub + '</div><button type="button" class="tv-empty-state__btn" data-open-lead-modal="search-error"><i class="fas fa-headset"></i>Помочь с подбором</button></div>';
+            return '<div class="tv-empty-state tv-empty-state--error"><div class="tv-empty-state__icon">⚠️</div><div class="tv-empty-state__title">Не удалось загрузить туры</div><div class="tv-empty-state__sub">' + sub + '</div><p class="tv-empty-state__trust">Или оставьте телефон — позвоним с +7 (846) 254-16-56 (сохраните номер).</p><div class="tv-empty-state__actions"><button type="button" class="tv-empty-state__btn" data-open-lead-modal="search-error"><i class="fas fa-headset"></i>Оставить заявку</button><button type="button" class="tv-empty-state__btn tv-empty-state__btn--secondary" data-tv-search-retry><i class="fas fa-redo"></i>Повторить поиск</button></div></div>';
         }
 
                 /** Как promoHotelListPrice / страница акций: totalPrice ближе к деталям тура, чем поле price из поиска. */
@@ -5187,12 +5224,12 @@ if ($th_search_ui_raw === 'legacy') {
         }
         function tvEmptyResultsHtml(nFrom, nTo, triedAlt) {
             if (thIsHotelSearchMode()) {
-                return '<div class="tv-empty-state"><div class="tv-empty-state__icon">🏨</div><div class="tv-empty-state__title">Отелей не найдено</div><div class="tv-empty-state__sub">Попробуйте другую страну, даты или снимите фильтры — звёзды и курорт.</div><button type="button" class="tv-empty-state__btn" data-open-lead-modal="empty-state"><i class="fas fa-headset"></i>Подобрать отель с менеджером</button></div>';
+                return '<div class="tv-empty-state"><div class="tv-empty-state__icon">🏨</div><div class="tv-empty-state__title">Отелей не найдено</div><div class="tv-empty-state__sub">Попробуйте другую страну, даты или снимите фильтры — звёзды и курорт.</div><p class="tv-empty-state__trust">Или оставьте заявку — менеджер подберёт отель в рабочее время.</p><button type="button" class="tv-empty-state__btn" data-open-lead-modal="empty-state"><i class="fas fa-headset"></i>Заявка менеджеру</button></div>';
             }
             var sub = (nFrom === 6 && nTo === 9 && !triedAlt)
                 ? 'Нет туров на 6–9 ночей. Попробуйте другой диапазон'
                 : 'Попробуйте изменить даты, страну или город вылета — и мы найдём подходящий вариант.';
-            return '<div class="tv-empty-state"><div class="tv-empty-state__icon">🔍</div><div class="tv-empty-state__title">Туров не найдено</div><div class="tv-empty-state__sub">' + sub.replace(/</g, '&lt;') + '</div><button type="button" class="tv-empty-state__btn" data-open-lead-modal="empty-state"><i class="fas fa-headset"></i>Получить подбор от менеджера</button></div>';
+            return '<div class="tv-empty-state"><div class="tv-empty-state__icon">🔍</div><div class="tv-empty-state__title">Туров не найдено</div><div class="tv-empty-state__sub">' + sub.replace(/</g, '&lt;') + '</div><p class="tv-empty-state__trust">Менеджер подберёт варианты вручную — ответ в рабочее время.</p><button type="button" class="tv-empty-state__btn" data-open-lead-modal="empty-state"><i class="fas fa-headset"></i>Заявка менеджеру</button></div>';
         }
         function applyBudgetFilterToHotels(arr) {
             if (!Array.isArray(arr)) return [];
@@ -5337,45 +5374,47 @@ if ($th_search_ui_raw === 'legacy') {
                         var tid = getMainTourId(h);
                         if (tid) priorityIds[tid] = true;
                     });
-                    thLoadTourFlightsForHotels(allHotels, {
+                    var flightOptsBase = {
                         apiBase: base,
                         departureCity: depCityMainFl,
                         departureId: depActiveFl.id,
-                        maxTours: 0,
                         maxConcurrent: 4,
                         waveSize: 12,
                         patchEvery: 1,
                         loadGen: loadGen,
                         priorityTourIds: priorityIds,
                         getTourId: getMainTourId,
-                        patchContainer: container,
-                        onDone: function () {
-                            if (loadGen !== window.__thFlightsLoadGen) {
+                        patchContainer: container
+                    };
+                    function loadAllFlightsThenFinish() {
+                        thLoadTourFlightsForHotels(allHotels, Object.assign({}, flightOptsBase, {
+                            maxTours: 0,
+                            onDone: function () {
+                                if (loadGen !== window.__thFlightsLoadGen) {
+                                    if (opts.onDone) opts.onDone();
+                                    resolve();
+                                    return;
+                                }
                                 if (opts.onDone) opts.onDone();
                                 resolve();
-                                return;
                             }
-                            if (container && typeof thLoadFlightsForVisibleCards === 'function') {
-                                thLoadFlightsForVisibleCards(container, {
-                                    apiBase: base,
-                                    departureCity: depCityMainFl,
-                                    departureId: depActiveFl.id,
-                                    maxConcurrent: 4,
-                                    waveSize: 12,
-                                    patchEvery: 1,
-                                    loadGen: loadGen,
-                                    patchContainer: container,
-                                    onDone: function () {
-                                        if (opts.onDone) opts.onDone();
-                                        resolve();
-                                    }
-                                });
-                                return;
+                        }));
+                    }
+                    if (container && typeof thLoadFlightsForVisibleCards === 'function') {
+                        thLoadFlightsForVisibleCards(container, Object.assign({}, flightOptsBase, {
+                            maxTours: 0,
+                            onDone: function () {
+                                if (loadGen !== window.__thFlightsLoadGen) {
+                                    if (opts.onDone) opts.onDone();
+                                    resolve();
+                                    return;
+                                }
+                                loadAllFlightsThenFinish();
                             }
-                            if (opts.onDone) opts.onDone();
-                            resolve();
-                        }
-                    });
+                        }));
+                        return;
+                    }
+                    loadAllFlightsThenFinish();
                 }, opts.immediate ? 0 : 120);
             });
         }
@@ -6020,7 +6059,7 @@ if ($th_search_ui_raw === 'legacy') {
                             else ymg('lead_ok');
                             f.reset();
                             if (msg) {
-                                msg.textContent = 'Заявка отправлена. Перезвоним за 15 минут.';
+                                msg.textContent = 'Заявка отправлена. Менеджер свяжется с вами в рабочее время.';
                                 msg.className = 'text-xs rounded-lg p-2 bg-emerald-100 text-emerald-900 block';
                                 msg.classList.remove('hidden');
                             }
@@ -6057,11 +6096,12 @@ if ($th_search_ui_raw === 'legacy') {
         <div class="th-qbm-modal__panel">
             <button type="button" id="qbm-close" class="th-qbm-modal__close" aria-label="Закрыть">✕</button>
         <h3 class="th-qbm-modal__title">Подберём тур для вас</h3>
-        <p class="th-qbm-modal__sub">Перезвоним за 15 минут. Без спама.</p>
-        <p class="th-qbm-modal__proof"><i class="fas fa-clock"></i> Ответ за 15 минут · <i class="fas fa-shield-alt"></i> Без спама</p>
+        <p class="th-qbm-modal__sub">Позвоним с +7 (846) 254-16-56 — сохраните номер, чтобы ответить на звонок.</p>
+        <p class="th-qbm-modal__proof"><i class="fas fa-comment-dots"></i> Неудобно говорить? Напишите в MAX — кнопка внизу экрана</p>
         <form id="qbm-form" class="th-qbm-modal__form">
             <div class="th-qbm-modal__field"><input type="text" name="name" placeholder="ФИО" required maxlength="100" class="th-qbm-modal__input" autocomplete="name"></div>
             <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required class="th-qbm-modal__input">
+            <input type="text" name="callback_note" maxlength="120" placeholder="Когда удобно звонить? (необязательно)" class="th-qbm-modal__input th-qbm-modal__input--note" autocomplete="off">
                 <?php echo th_legal_form_consents_html(['id_prefix' => 'qbm']); ?>
                 <input type="text" name="website" class="th-qbm-modal__hp" tabindex="-1" autocomplete="off">
                 <div id="qbm-msg" class="th-qbm-modal__msg"></div>
@@ -7067,6 +7107,10 @@ if ($th_search_ui_raw === 'legacy') {
                     e.preventDefault();
                     if (submit.disabled) return;
                     var fd = new FormData(form);
+                    var leadSrc = (document.getElementById('quick-booking-modal') || {}).dataset?.thLeadSource || 'home_quick_modal';
+                    if (window.THLeadCapture && leadSrc === 'slow_search_lead') {
+                        window.THLeadCapture.reachGoal('slow_search_lead_attempt');
+                    }
                     function showMsg(t, ok) {
                         if (!msgEl) return;
                         msgEl.textContent = t; msgEl.style.display = 'block';
@@ -7074,6 +7118,9 @@ if ($th_search_ui_raw === 'legacy') {
                         msgEl.style.color = ok ? '#065F46' : '#991B1B';
                     }
                     submit.disabled = true; submit.textContent = 'Отправка…';
+                    var cbNote = String(fd.get('callback_note') || '').trim();
+                    var leadMsg = 'Заявка из модального окна (жёсткая воронка)';
+                    if (cbNote) leadMsg += '\nУдобное время для звонка: ' + cbNote;
                     var send = (window.THLeadCapture && window.THLeadCapture.submit)
                         ? window.THLeadCapture.submit({
                             name: String(fd.get('name') || '').trim() || 'Клиент сайта',
@@ -7083,15 +7130,15 @@ if ($th_search_ui_raw === 'legacy') {
                             website: String(fd.get('website') || ''),
                             source: (document.getElementById('quick-booking-modal') || {}).dataset?.thLeadSource || 'home_quick_modal',
                             phoneOnly: (document.getElementById('quick-booking-modal') || {}).dataset?.thPhoneOnly === '1',
-                            message: 'Заявка из модального окна (жёсткая воронка)'
+                            message: leadMsg
                         })
                         : Promise.resolve({ success: false, error: 'Модуль заявки не загружен' });
                     send.then(function (data) {
                         if (data && data.success) {
-                            showMsg(data.message || 'Заявка принята! Перезвоним за 15 минут.', true);
+                            showMsg(data.message || (window.THLeadCapture && window.THLeadCapture.SUCCESS_MSG) || 'Заявка принята.', true);
                             form.reset();
                             document.dispatchEvent(new Event('leadSubmitted'));
-                            setTimeout(closeQuickModal, 2500);
+                            setTimeout(closeQuickModal, 5000);
                         } else {
                             showMsg((data && data.error) || 'Ошибка отправки', false);
                         }
@@ -7112,10 +7159,18 @@ if ($th_search_ui_raw === 'legacy') {
            8. Пустые результаты
         ══════════════════════════════════════════════ */
         function initEmptyState() {
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.tv-empty-state__btn')) {
+            document.addEventListener('click', function (e) {
+                var btn = e.target.closest('.tv-empty-state__btn');
+                if (!btn) return;
+                if (btn.hasAttribute('data-tv-search-retry')) {
                     e.preventDefault();
-                    openQuickModal('empty-state');
+                    var retryBtn = document.getElementById('tv-search-btn');
+                    if (retryBtn) retryBtn.click();
+                    return;
+                }
+                if (btn.hasAttribute('data-open-lead-modal')) {
+                    e.preventDefault();
+                    openQuickModal(btn.getAttribute('data-open-lead-modal') || 'empty-state');
                 }
             });
         }
@@ -7141,40 +7196,7 @@ if ($th_search_ui_raw === 'legacy') {
         }
 
         function initLoaderLeadForm() {
-            var form = document.getElementById('tv-loader-lead-form');
-            if (!form || form.__thBound) return;
-            form.__thBound = true;
-            var phone = form.querySelector('[name="phone"]');
-            var msg = document.getElementById('tv-loader-lead-msg');
-            if (window.THLeadCapture && phone) window.THLeadCapture.formatPhoneInput(phone);
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                var btn = form.querySelector('[type="submit"]');
-                var fd = new FormData(form);
-                if (btn) { btn.disabled = true; }
-                if (window.THLeadCapture) window.THLeadCapture.reachGoal('slow_search_lead_attempt');
-                var send = (window.THLeadCapture && window.THLeadCapture.submit)
-                    ? window.THLeadCapture.submit({
-                        name: 'Клиент сайта',
-                        phone: String(fd.get('phone') || '').trim(),
-                        agree: !!fd.get('agree'),
-                        agree_ads: !!fd.get('agree_ads'),
-                        website: String(fd.get('website') || ''),
-                        source: 'slow_search_lead',
-                        phoneOnly: true,
-                        message: 'Лид во время долгого поиска на главной'
-                    })
-                    : Promise.resolve({ success: false, error: 'Форма недоступна' });
-                send.then(function(res) {
-                    if (msg) {
-                        msg.classList.remove('hidden');
-                        msg.textContent = res.success ? (res.message || 'Заявка принята! Поиск продолжается…') : (res.error || 'Ошибка');
-                    }
-                    if (res.success) form.reset();
-                }).finally(function() {
-                    if (btn) btn.disabled = false;
-                });
-            });
+            /* Лид при долгом поиске: #tv-loader-slow-lead → quick-booking-modal (slow_search_lead). */
         }
 
         /* ══════════════════════════════════════════════
@@ -7252,186 +7274,6 @@ if ($th_search_ui_raw === 'legacy') {
                     presets.forEach(function(c) { c.classList.remove('active'); });
                 });
             }
-        }
-
-        /* --- 2. Sidebar filters sync (синхронизируем с основными селектами) --- */
-        function initSidebarSync() {
-            var pairs = [
-                ['tv-meal',     'tv-meal-sidebar'],
-                ['tv-region',   'tv-region-sidebar'],
-                ['tv-category', 'tv-category-sidebar'],
-            ];
-            pairs.forEach(function(pair) {
-                var main    = document.getElementById(pair[0]);
-                var sidebar = document.getElementById(pair[1]);
-                if (!main || !sidebar) return;
-
-                // Копируем текущие options если уже есть
-                if (main.options.length > 1) {
-                    sidebar.innerHTML = main.innerHTML;
-                    sidebar.value     = main.value;
-                }
-
-                // Отслеживаем наполнение основного select → копируем в sidebar
-                var ob = new MutationObserver(function() {
-                    var val = main.value;
-                    sidebar.innerHTML = main.innerHTML;
-                    sidebar.value     = val;
-                });
-                ob.observe(main, { childList: true, subtree: true });
-
-                // Sync value: sidebar → main
-                sidebar.addEventListener('change', function() {
-                    main.value = sidebar.value;
-                });
-                // Sync value: main → sidebar
-                main.addEventListener('change', function() {
-                    sidebar.value = main.value;
-                });
-            });
-
-            // Кнопка поиска в сайдбаре — кликает на основную
-            var sidebarBtn = document.getElementById('tv-sidebar-search-btn');
-            var mainBtn    = document.getElementById('tv-search-btn');
-            if (sidebarBtn && mainBtn) {
-                sidebarBtn.addEventListener('click', function() {
-                    mainBtn.click();
-                });
-            }
-        }
-
-        /* --- 3. Sticky Mobile CTA: см. initStickyCta выше --- */
-
-        /* --- 5. Quick Booking Modal --- */
-        function openQuickModal(source) {
-            if (window.THConversionBoost && window.THConversionBoost.applyIntent) {
-                window.THConversionBoost.applyIntent(source || 'home_quick_modal');
-            }
-            var modal = document.getElementById('quick-booking-modal');
-            if (!modal) return;
-            modal.dataset.thLeadSource = source || 'home_quick_modal';
-            modal.style.display = 'flex';
-            document.body.classList.add('th-modal-open');
-            if (window.THMobile && window.THMobile.sync) window.THMobile.sync();
-            var msg = document.getElementById('qbm-msg');
-            if (msg) msg.style.display = 'none';
-            var phoneInp = modal.querySelector('[name="phone"]');
-            if (phoneInp) try { phoneInp.focus(); } catch (e) {}
-        }
-
-        function closeQuickModal() {
-            var modal = document.getElementById('quick-booking-modal');
-            if (!modal) return;
-            modal.style.display = 'none';
-            document.body.classList.remove('th-modal-open');
-            if (window.THMobile && window.THMobile.sync) window.THMobile.sync();
-        }
-
-        function initQuickModal() {
-            var backdrop = document.getElementById('qbm-backdrop');
-            var closeBtn = document.getElementById('qbm-close');
-            var form     = document.getElementById('qbm-form');
-            var submit   = document.getElementById('qbm-submit');
-            var msgEl    = document.getElementById('qbm-msg');
-
-            if (backdrop) backdrop.addEventListener('click', closeQuickModal);
-            if (closeBtn) closeBtn.addEventListener('click', closeQuickModal);
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeQuickModal();
-            });
-
-            if (form) {
-                // Маска телефона
-                var phoneInp = form.querySelector('[name="phone"]');
-                if (phoneInp) {
-                    phoneInp.addEventListener('input', function() {
-                        var v = this.value.replace(/\D/g, '');
-                        if (v.length > 0 && v[0] === '8') v = '7' + v.slice(1);
-                        if (v.length > 0 && v[0] !== '7') v = '7' + v;
-                        if (v.length > 11) v = v.slice(0, 11);
-                        var f2 = '';
-                        if (v.length > 0)  f2 += '+7';
-                        if (v.length > 1)  f2 += ' (' + v.slice(1, 4);
-                        if (v.length > 4)  f2 += ') ' + v.slice(4, 7);
-                        if (v.length > 7)  f2 += '-' + v.slice(7, 9);
-                        if (v.length > 9)  f2 += '-' + v.slice(9, 11);
-                        this.value = f2;
-                    });
-                }
-
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (submit.disabled) return;
-                    var fd      = new FormData(form);
-                    var name    = String(fd.get('name')  || '').trim();
-                    var phone   = String(fd.get('phone') || '').trim();
-                    var agree   = !!fd.get('agree');
-                    var agreeAds = !!fd.get('agree_ads');
-                    var website = String(fd.get('website') || '');
-
-                    function showMsg(text, ok) {
-                        if (!msgEl) return;
-                        msgEl.textContent = text;
-                        msgEl.style.display = 'block';
-                        msgEl.style.background = ok ? '#D1FAE5' : '#FEE2E2';
-                        msgEl.style.color      = ok ? '#065F46' : '#991B1B';
-                    }
-
-                    if (!name || !phone) { showMsg('Укажите имя и телефон', false); return; }
-                    if (!agree)         { showMsg('Нужно согласие на обработку данных', false); return; }
-
-                    submit.disabled = true;
-                    submit.textContent = 'Отправка...';
-
-                    fetch('/backend/api/uon-lead.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: name, phone: phone, agree: true, agree_ads: agreeAds, website: website, message: 'Заявка из модального окна (главная)' })
-                    })
-                    .then(function(r) { return r.json().catch(function() { return { success: false }; }); })
-                    .then(function(data) {
-                        if (data && data.success) {
-                            showMsg('Заявка принята! Перезвоним за 15 минут.', true);
-                            form.reset();
-                            document.dispatchEvent(new Event('leadSubmitted'));
-                            setTimeout(closeQuickModal, 2500);
-                        } else {
-                            showMsg((data && data.error) || 'Ошибка отправки, попробуйте ещё раз', false);
-                        }
-                    })
-                    .catch(function() {
-                        showMsg('Ошибка сети. Попробуйте позже.', false);
-                    })
-                    .finally(function() {
-                        submit.disabled = false;
-                        submit.textContent = 'Отправить заявку менеджеру';
-                    });
-                });
-            }
-
-            // Открыть модал через кнопки с data-open-lead-modal
-            document.addEventListener('click', function(e) {
-                var trigger = e.target.closest('[data-open-lead-modal]');
-                if (trigger) {
-                    e.preventDefault();
-                    openQuickModal(trigger.dataset.openLeadModal || 'trigger');
-                }
-            });
-
-            // Экспорт для других модулей
-            window.openQuickLeadModal = openQuickModal;
-        }
-
-        /* --- 6. Пустые результаты поиска --- */
-        function initEmptyState() {
-            // Кнопка «Подберём сами» в пустом состоянии открывает modal
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.tv-empty-state__btn')) {
-                    e.preventDefault();
-                    openQuickModal('empty-state');
-                }
-            });
         }
 
         /* --- Legacy date preset chips (оставляем) --- */

@@ -28,6 +28,9 @@
   function openModal(payload) {
     if (!modal) return;
     currentPayload = payload || {};
+    if (window.THLeadCapture && window.THLeadCapture.reachGoal) {
+      window.THLeadCapture.reachGoal('booking_form_open', { source: 'card_booking' });
+    }
     var title = currentPayload.hotel_name || 'тур';
     var loc = [currentPayload.country, currentPayload.region].filter(Boolean).join(', ');
     if (summaryEl) {
@@ -170,7 +173,8 @@
             window.THLeadCapture.reachGoal('card_booking_lead_ok');
           }
           if (msgEl) {
-            msgEl.textContent = 'Заявка отправлена! Перезвоним в течение 15 минут.';
+            msgEl.textContent = (window.THLeadCapture && window.THLeadCapture.SUCCESS_MSG)
+              || 'Заявка отправлена. Ждите звонок с +7 (846) 254-16-56.';
             msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--ok';
             msgEl.classList.remove('hidden');
           }

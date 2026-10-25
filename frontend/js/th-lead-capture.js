@@ -7,6 +7,9 @@
 
   var YM_FALLBACK = 113554694;
   var ENDPOINT = '/backend/api/uon-lead.php';
+  var SUCCESS_MSG = 'Заявка принята. Ждите звонок с +7 (846) 254-16-56 (9:00–21:00 МСК). Не смогли ответить — напишите в MAX.';
+  var WORKTIME_HINT = 'Позвоним с +7 (846) 254-16-56 в рабочее время (9:00–21:00 МСК). Сохраните номер в контакты.';
+  var PICKUP_HINT = 'Неудобно отвечать на звонок? Напишите в MAX — кнопка внизу экрана.';
 
   function ymId() {
     try {
@@ -179,16 +182,8 @@
    * @param {string} [opts.email]
    * @returns {Promise<{success:boolean, message?:string, error?:string}>}
    */
-  function defaultSuccessMessage(source) {
-    var base = 'Заявка принята. Перезвоним в течение 15 минут.';
-    try {
-      var maxA = document.querySelector('.th-site-lead-bar__btn--max');
-      var maxHref = maxA && maxA.getAttribute('href') ? maxA.getAttribute('href') : '';
-      if (maxHref && (source === 'slow_search_lead' || source === 'abandon_sheet')) {
-        return base + ' Или напишите нам в MAX.';
-      }
-    } catch (e0) {}
-    return base;
+  function defaultSuccessMessage() {
+    return SUCCESS_MSG;
   }
 
   function submitLead(opts) {
@@ -235,7 +230,7 @@
           try { global.document.dispatchEvent(new CustomEvent('th:lead_ok', { detail: { source: src } })); } catch (e3) {}
           return {
             success: true,
-            message: data.message || defaultSuccessMessage(src)
+            message: data.message || defaultSuccessMessage()
           };
         }
         reachGoal('lead_err', { source: source });
@@ -430,7 +425,7 @@
       });
     }
 
-    var bookingTrigger = target.closest('#btn-booking-with, #btn-booking-without, [data-th-booking-open], [data-th-book-tour]');
+    var bookingTrigger = target.closest('#btn-booking-with, #btn-booking-without, #th-detail-mobile-sticky-btn, [data-th-booking-open], [data-th-book-tour]');
     if (bookingTrigger) {
       var bookingSource = /\/promotions\.php$/i.test(global.location.pathname) ? 'promotions'
         : (/\/countries\//i.test(global.location.pathname) ? 'country'
@@ -452,9 +447,16 @@
     }
     var countryLink = target.closest('a[href*="/countries/"]');
     if (countryLink) {
+      var countrySlug = '';
+      try {
+        var cu = new URL(countryLink.href, global.location.href);
+        countrySlug = (cu.pathname.match(/\/countries\/([^/]+)\.php$/i) || [])[1] || '';
+      } catch (eCu) {}
       reachGoal('country_detail_open', {
-        source: String((global.location && global.location.pathname) || '')
+        source: String((global.location && global.location.pathname) || ''),
+        country_slug: countrySlug
       });
+      reachGoal('country_page_open', { country_slug: countrySlug });
     }
 
     var a = target.closest('a[href^="tel:"]');
@@ -494,7 +496,9 @@
     ruPhoneError: ruPhoneError,
     validateLeadFields: validateLeadFields,
     adsAccepted: adsAcceptedFrom,
-    SUCCESS_MSG: 'Заявка принята. Перезвоним в течение 15 минут.'
+    SUCCESS_MSG: SUCCESS_MSG,
+    WORKTIME_HINT: WORKTIME_HINT,
+    PICKUP_HINT: PICKUP_HINT
   };
 
   if (document.readyState === 'loading') {

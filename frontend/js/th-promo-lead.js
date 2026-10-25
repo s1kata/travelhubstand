@@ -76,7 +76,7 @@
     if (typeof global.openSiteFeedbackModal === 'function') {
       global.openSiteFeedbackModal({
         title: opts.title || 'Подобрать горящий тур',
-        sub: opts.sub || 'Оставьте телефон — перезвоним за 15 минут с лучшими акциями.',
+        sub: opts.sub || 'Оставьте заявку — менеджер ответит в рабочее время с актуальными акциями.',
         message: message,
         source: source,
         focusPhone: opts.focusPhone !== false,

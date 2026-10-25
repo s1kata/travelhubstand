@@ -1109,15 +1109,23 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
     function loadCountryFlightsForTours(hotels, callback) {
         const base = typeof TV_API_BASE !== 'undefined' ? TV_API_BASE : '';
         const depCityFl = (window.TH_DEPARTURE && window.TH_DEPARTURE.name) || 'Самара';
+        const container = document.getElementById('country-tv-search-results');
+        const flightOpts = {
+            apiBase: base,
+            departureCity: depCityFl,
+            maxConcurrent: 4,
+            waveSize: 12,
+            patchEvery: 1,
+            getTourId: getCountryTourId,
+            patchContainer: container,
+            onDone: callback
+        };
+        if (typeof thLoadFlightsVisibleThenAll === 'function' && base) {
+            thLoadFlightsVisibleThenAll(hotels, Object.assign({}, flightOpts, { maxTours: 0 }));
+            return;
+        }
         if (typeof thLoadTourFlightsForHotels === 'function' && base) {
-            thLoadTourFlightsForHotels(hotels, {
-                apiBase: base,
-                departureCity: depCityFl,
-                maxTours: hotels.length,
-                maxConcurrent: 6,
-                getTourId: getCountryTourId,
-                onDone: callback
-            });
+            thLoadTourFlightsForHotels(hotels, Object.assign({}, flightOpts, { maxTours: hotels.length }));
             return;
         }
         if (callback) callback();
@@ -1281,13 +1289,13 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                         : ((window.__countryFlightsByTourId && tourId) ? window.__countryFlightsByTourId[tourId] : null)
                 });
             }).join('');
-            if (typeof thLoadTourFlightsForHotels === 'function' && TV_API_BASE) {
-                thLoadTourFlightsForHotels(hotels, {
+            if (TV_API_BASE) {
+                const flightOpts = {
                     apiBase: TV_API_BASE.replace(/\/$/, ''),
                     departureCity: departureCity,
-                    maxTours: hotels.length,
-                    maxConcurrent: 6,
-                    patchEvery: 2,
+                    maxConcurrent: 4,
+                    waveSize: 12,
+                    patchEvery: 1,
                     getTourId: getCountryTourId,
                     patchContainer: container,
                     onDone: function () {
@@ -1295,7 +1303,12 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                             window.THTourCard.mountInContainer(container);
                         }
                     }
-                });
+                };
+                if (typeof thLoadFlightsVisibleThenAll === 'function') {
+                    thLoadFlightsVisibleThenAll(hotels, Object.assign({}, flightOpts, { maxTours: 0 }));
+                } else if (typeof thLoadTourFlightsForHotels === 'function') {
+                    thLoadTourFlightsForHotels(hotels, Object.assign({}, flightOpts, { maxTours: hotels.length }));
+                }
             }
             if (window.THTourCard && typeof window.THTourCard.mountInContainer === 'function') {
                 window.THTourCard.mountInContainer(container);

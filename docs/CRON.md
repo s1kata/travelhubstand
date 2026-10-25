@@ -1,11 +1,16 @@
 # Активные cron-задачи TravelHub
 
+**Prod SpaceWeb (hub63_ru):** готовая таблица для панели — [`spaceweb-crontab-hub63_ru.md`](spaceweb-crontab-hub63_ru.md).  
+Корень: `/home/g/garant77li/hub63_ru/public_html`.
+
 Ниже — единственный актуальный набор для SpaceWeb. Задачи из раздела
 «Не запускать» нужно удалить из панели cron, но сами legacy-скрипты пока
 оставлены в репозитории для безопасного отката.
 
 Замените `/path/to/travelhub-v2` на корень сайта и проверьте путь к PHP 8.1.
 Расписание указано для Europe/Moscow.
+
+После правок в панели: `php backend/scripts/cron_health_check.php` (SSH).
 
 ## Канонический crontab
 

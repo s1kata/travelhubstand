@@ -80,7 +80,7 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
     <?php
     $th_cta_source = 'offices_moscow';
     $th_cta_title = 'В Москве или онлайн — подберём тур одинаково быстро';
-    $th_cta_sub = 'Оставьте телефон: перезвоним и пришлём варианты под ваши даты.';
+    $th_cta_sub = 'Оставьте заявку — менеджер пришлёт варианты под ваши даты в рабочее время.';
     $th_cta_id = 'th-moscow-cta';
     include __DIR__ . '/../../../backend/components/page_cta_band.php';
     ?>

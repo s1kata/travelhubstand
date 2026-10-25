@@ -30,7 +30,7 @@ $heroCover = $offices[0]['cover'] ?? '/frontend/window/img/hero/e978c0767c0fe7bc
         <div class="th-off-hero__shade" aria-hidden="true"></div>
         <div class="th-off-hero__inner">
             <p class="th-off-hero__brand">Самара</p>
-            <p class="th-off-hero__lead"><?php echo count($offices); ?> офиса Travel Hub — фото, адреса и телефоны сразу. Заявка или звонок — ответ за 15 минут.</p>
+            <p class="th-off-hero__lead"><?php echo count($offices); ?> офиса Travel Hub — фото, адреса и телефоны сразу. Заявка или звонок в рабочее время.</p>
             <div class="th-off-hero__cta">
                 <a class="th-off-hero__cta-primary" href="#th-samara-cta-form">Оставить заявку</a>
                 <a class="th-off-hero__cta-ghost" href="tel:<?php echo htmlspecialchars($thc['phone_tel'], ENT_QUOTES, 'UTF-8'); ?>">

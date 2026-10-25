@@ -37,7 +37,7 @@ $thc = th_contacts();
     <?php
     $th_cta_source = '404_recovery';
     $th_cta_title = 'Не нашли страницу — оставьте телефон';
-    $th_cta_sub = 'Перезвоним за 15 минут и поможем с туром или нужным разделом сайта.';
+    $th_cta_sub = 'Оставьте заявку — менеджер поможет с туром или нужным разделом сайта.';
     $th_cta_id = 'th-404-cta';
     include __DIR__ . '/../../backend/components/page_cta_band.php';
     include __DIR__ . '/../../backend/components/footer.php';

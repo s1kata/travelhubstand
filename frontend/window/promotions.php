@@ -304,9 +304,9 @@ $th_promo_page_config = [
                     <div class="promo-hero-lead mt-6 max-w-md">
                         <button type="button" id="promo-hero-lead-btn" class="promo-hero-lead__btn">
                             <i class="fas fa-phone" aria-hidden="true"></i>
-                            Перезвонить с лучшими акциями
+                            Заявка по акциям
                         </button>
-                        <p class="promo-hero-lead__hint">Без спама · перезвоним за 15 минут</p>
+                        <p class="promo-hero-lead__hint">Ответ менеджера в рабочее время (9:00–21:00 МСК)</p>
                     </div>
                 </div>
             </div>
@@ -376,7 +376,7 @@ $th_promo_page_config = [
                     </button>
                     <button type="button" class="mt-3 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold text-white bg-[#FF6B6B] hover:opacity-95"
                             data-th-site-feedback data-th-track="lead_bar">
-                        Перезвонить с подбором
+                        Заявка менеджеру
                     </button>
                 </div>
 

@@ -751,6 +751,14 @@
         if (!tid) return;
         delete global.__thFlightsPending[tid];
         global.__thFlightsFailed[tid] = true;
+        try {
+            global.__thFlightGoalFired = global.__thFlightGoalFired || Object.create(null);
+            if (!global.__thFlightGoalFired['fail:' + tid]
+                && global.THLeadCapture && typeof global.THLeadCapture.reachGoal === 'function') {
+                global.__thFlightGoalFired['fail:' + tid] = true;
+                global.THLeadCapture.reachGoal('flight_load_fail', { tour_id: tid });
+            }
+        } catch (eFlGoal) {}
     }
 
     function thFlightLoadIsPending(tourId) {
@@ -768,6 +776,25 @@
 
     function thTourFlightsFailKey(tourId) {
         return String(tourId || '');
+    }
+
+    function thReadTourDetailApiBaseFromDom() {
+        try {
+            var cfgEl = document.getElementById('tour-detail-config');
+            if (!cfgEl || !cfgEl.textContent) return '';
+            var tdCfg = JSON.parse(cfgEl.textContent);
+            return (tdCfg && typeof tdCfg.tvApiBase === 'string') ? tdCfg.tvApiBase : '';
+        } catch (eDomBase) {
+            return '';
+        }
+    }
+
+    /** Единый базовый URL прокси Tourvisor (страницы без header.php тоже). */
+    function thResolveTvApiBase(opts) {
+        opts = opts || {};
+        var base = opts.apiBase || global.TH_TV_API_BASE || global.TV_API_BASE || '';
+        if (!base) base = thReadTourDetailApiBaseFromDom();
+        return String(base || '').replace(/\/$/, '');
     }
 
     function thTourFlightsRecentFail(tourId) {
@@ -827,9 +854,19 @@
         return tours[0] || {};
     }
 
-    function thTourPackageNeeds(hotel, tourId) {
+    function thTourPackageNeeds(hotel, tourId, depCity) {
+        var dep = String(depCity || (global.TH_DEPARTURE && global.TH_DEPARTURE.name) || 'Самара').trim();
+        var needFlights = !thFlightMetaReady(tourId, dep);
         var flights = thFlightPackagesGet(tourId);
-        var needFlights = !(flights && Array.isArray(flights.flights) && flights.flights.length);
+        if (needFlights && flights && Array.isArray(flights.flights) && flights.flights.length) {
+            var depIdHint = global.TH_DEPARTURE && global.TH_DEPARTURE.id;
+            thFlightsCacheFromJson(tourId, {
+                success: true,
+                flights: flights.flights.slice(),
+                info: flights.info || null
+            }, dep, depIdHint);
+            needFlights = !thFlightMetaReady(tourId, dep);
+        }
         var tour = thFindTourById(hotel, tourId);
         var roomId = thTourRoomId(tour);
         var roomTypeValue = tour.roomType || tour.room || tour.roomName;
@@ -916,12 +953,23 @@
             + '|r' + roomIds.slice().sort().join(',');
         if (!opts.force && includeFlights && !includeTour && !roomIds.length
             && pkgStore && Array.isArray(pkgStore.flights) && pkgStore.flights.length) {
-            return Promise.resolve({
-                success: true,
-                flights: pkgStore.flights.slice(),
-                info: pkgStore.info || null,
-                _fromPackagesCache: true
-            });
+            var depCache = opts.departureCity || (global.TH_DEPARTURE && global.TH_DEPARTURE.name) || 'Самара';
+            var depIdCache = opts.departureId != null ? opts.departureId : (global.TH_DEPARTURE && global.TH_DEPARTURE.id);
+            if (!thFlightMetaReady(tid, depCache)) {
+                thFlightsCacheFromJson(tid, {
+                    success: true,
+                    flights: pkgStore.flights.slice(),
+                    info: pkgStore.info || null
+                }, depCache, depIdCache);
+            }
+            if (thFlightMetaReady(tid, depCache)) {
+                return Promise.resolve({
+                    success: true,
+                    flights: pkgStore.flights.slice(),
+                    info: pkgStore.info || null,
+                    _fromPackagesCache: true
+                });
+            }
         }
         var recentFail = thTourFlightsRecentFail(tid);
         if (!opts.force && includeFlights && !includeTour && !roomIds.length && recentFail) {
@@ -941,7 +989,7 @@
             if (roomIds.length) packageParams.roomIds = roomIds.join(',');
             run = global.tvFetch('tour-package', packageParams, { timeoutMs: 180000, quiet: true });
         } else {
-            var base = opts.apiBase || global.TH_TV_API_BASE || global.TV_API_BASE || '';
+            var base = thResolveTvApiBase(opts);
             if (!base) {
                 return Promise.resolve({ success: false, error: 'API base missing' });
             }
@@ -1069,7 +1117,7 @@
 
     function thLoadTourFlightsForHotels(hotels, opts) {
         opts = opts || {};
-        var base = opts.apiBase || global.TH_TV_API_BASE || global.TV_API_BASE || '';
+        var base = thResolveTvApiBase(opts);
         var depCity = opts.departureCity || (global.TH_DEPARTURE && global.TH_DEPARTURE.name) || 'Самара';
         var departureIdHint = opts.departureId != null ? opts.departureId : (global.TH_DEPARTURE && global.TH_DEPARTURE.id);
         var maxTours = opts.maxTours != null ? Math.max(0, parseInt(String(opts.maxTours), 10) || 0) : 0;
@@ -1103,7 +1151,7 @@
             var hotelRows = tourHotelsById[tid] || [];
             var needs = { needFlights: false, needTour: false, roomIds: [], needed: false };
             hotelRows.forEach(function (hotel) {
-                var rowNeeds = thTourPackageNeeds(hotel, tid);
+                var rowNeeds = thTourPackageNeeds(hotel, tid, depCity);
                 needs.needFlights = needs.needFlights || rowNeeds.needFlights;
                 needs.needTour = needs.needTour || rowNeeds.needTour;
                 rowNeeds.roomIds.forEach(function (roomId) {
@@ -1193,7 +1241,7 @@
                 if (onDone) onDone();
                 return;
             }
-            if (retryQueue.length && retryPass < 1) {
+            if (retryQueue.length && retryPass < 2) {
                 retryPass++;
                 inRetryPhase = true;
                 queue = retryQueue.slice();
@@ -1220,6 +1268,15 @@
             }
             if (thFlightMetaReady(tourId, depCity)) {
                 thFlightLoadClearPending(tourId);
+                try {
+                    var okTid = String(tourId || '');
+                    global.__thFlightGoalFired = global.__thFlightGoalFired || Object.create(null);
+                    if (okTid && !global.__thFlightGoalFired['ok:' + okTid]
+                        && global.THLeadCapture && typeof global.THLeadCapture.reachGoal === 'function') {
+                        global.__thFlightGoalFired['ok:' + okTid] = true;
+                        global.THLeadCapture.reachGoal('flight_load_ok', { tour_id: okTid });
+                    }
+                } catch (eFlOk) {}
                 return;
             }
             /* Пустой ответ ТО / memo — не крутим ретраи, сразу stub. */
@@ -1312,6 +1369,29 @@
         });
     }
 
+    /** Сначала видимые карточки, затем вся выдача — меньше «вечной загрузки» перелёта. */
+    function thLoadFlightsVisibleThenAll(hotels, opts) {
+        opts = opts || {};
+        var container = opts.patchContainer;
+        var userDone = opts.onDone;
+        var flightOpts = Object.assign({}, opts);
+        delete flightOpts.onDone;
+        function loadAll() {
+            return thLoadTourFlightsForHotels(hotels, Object.assign({}, flightOpts, {
+                onDone: userDone
+            }));
+        }
+        if (container && typeof thLoadFlightsForVisibleCards === 'function') {
+            return thLoadFlightsForVisibleCards(container, Object.assign({}, flightOpts, {
+                maxTours: 0,
+                onDone: function () {
+                    loadAll();
+                }
+            }));
+        }
+        return loadAll();
+    }
+
     /** Догрузка перелётов для карточек на экране без кэша (после «ещё» / частичного ответа). */
     function thLoadFlightsForVisibleCards(root, opts) {
         opts = opts || {};
@@ -1351,6 +1431,7 @@
     global.thFlightsCacheFromJson = thFlightsCacheFromJson;
     global.thFetchTourFlightsJson = thFetchTourFlightsJson;
     global.thLoadTourFlightsForHotels = thLoadTourFlightsForHotels;
+    global.thLoadFlightsVisibleThenAll = thLoadFlightsVisibleThenAll;
     global.thLoadFlightsForVisibleCards = thLoadFlightsForVisibleCards;
     global.thFlightLoadIsPending = thFlightLoadIsPending;
     global.thFlightLoadIsFailed = thFlightLoadIsFailed;
@@ -1367,6 +1448,108 @@
     global.thFlightPackageLines = thFlightPackageLines;
     global.thFlightPickModalOpen = thFlightPickModalOpen;
     global.thFlightPickModalClose = thFlightPickModalClose;
+    global.thResolveTvApiBase = thResolveTvApiBase;
+
+    var thFlightIoBound = new WeakSet();
+    var thFlightIo = null;
+
+    function thFlightDefaultDepCity() {
+        return (global.TH_DEPARTURE && global.TH_DEPARTURE.name) || 'Самара';
+    }
+
+    function thSweepMissingFlightsOnPage() {
+        if (global.__thFlightsNetworkBusy) return;
+        var base = thResolveTvApiBase({});
+        if (!base || typeof thLoadTourFlightsForHotels !== 'function') return;
+        var depCity = thFlightDefaultDepCity();
+        var depId = global.TH_DEPARTURE && global.TH_DEPARTURE.id;
+        var hotels = [];
+        var seen = {};
+        var cards = document.querySelectorAll('.th-tour-card[data-th-tour-id]');
+        for (var i = 0; i < cards.length && hotels.length < 28; i++) {
+            var card = cards[i];
+            var tid = card.getAttribute('data-th-tour-id');
+            if (!tid || seen[tid]) continue;
+            seen[tid] = true;
+            var dc = card.getAttribute('data-th-departure-city') || depCity;
+            if (thFlightMetaReady(tid, dc)) continue;
+            if (thFlightLoadIsPending(tid)) continue;
+            try {
+                delete global.__thFlightsFailed[tid];
+                delete thTourFlightsFailMemo[thTourFlightsFailKey(tid)];
+            } catch (eClr) {}
+            hotels.push({ tours: [{ id: tid }], _tour: { id: tid } });
+        }
+        if (!hotels.length) return;
+        thLoadTourFlightsForHotels(hotels, {
+            apiBase: base,
+            departureCity: depCity,
+            departureId: depId,
+            maxTours: hotels.length,
+            maxConcurrent: 4,
+            waveSize: 8,
+            patchEvery: 1,
+            patchContainer: document,
+            getTourId: function (h) {
+                return (h && h._tour && h._tour.id != null) ? String(h._tour.id) : '';
+            }
+        });
+    }
+
+    function thBindFlightCardIntersectionObserver(root) {
+        if (!global.IntersectionObserver || typeof thLoadFlightsForVisibleCards !== 'function') return;
+        var scope = root && root.querySelectorAll ? root : document;
+        if (!thFlightIo) {
+            thFlightIo = new IntersectionObserver(function (entries) {
+                var roots = [];
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    var card = entry.target;
+                    if (!card || !card.getAttribute) return;
+                    var grid = card.closest('.th-tour-grid, #tv-search-results, #promo-tours-results, #country-tv-search-results, #home-hot-tours-grid');
+                    if (grid && roots.indexOf(grid) < 0) roots.push(grid);
+                });
+                if (!roots.length) return;
+                var base = thResolveTvApiBase({});
+                if (!base) return;
+                roots.forEach(function (gridEl) {
+                    thLoadFlightsForVisibleCards(gridEl, {
+                        apiBase: base,
+                        departureCity: thFlightDefaultDepCity(),
+                        departureId: global.TH_DEPARTURE && global.TH_DEPARTURE.id,
+                        maxTours: 0,
+                        maxConcurrent: 4,
+                        waveSize: 8,
+                        patchContainer: gridEl
+                    });
+                });
+            }, { root: null, rootMargin: '240px 0px', threshold: 0.01 });
+        }
+        scope.querySelectorAll('.th-tour-card[data-th-tour-id]').forEach(function (card) {
+            if (thFlightIoBound.has(card)) return;
+            thFlightIoBound.add(card);
+            thFlightIo.observe(card);
+        });
+    }
+
+    function thInitFlightLoadWatchers() {
+        if (global.__thFlightWatchersInited) return;
+        global.__thFlightWatchersInited = true;
+        thBindFlightCardIntersectionObserver(document);
+        global.setInterval(thSweepMissingFlightsOnPage, 10000);
+        if (typeof global.MutationObserver === 'function') {
+            var mo = new MutationObserver(function () {
+                thBindFlightCardIntersectionObserver(document);
+            });
+            mo.observe(document.documentElement, { childList: true, subtree: true });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', thInitFlightLoadWatchers);
+    } else {
+        thInitFlightLoadWatchers();
+    }
 
     document.addEventListener('click', function (e) {
         var target = e.target;

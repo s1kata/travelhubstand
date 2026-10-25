@@ -1165,7 +1165,7 @@
                 cb.setAttribute('data-promo-country-callback', '1');
                 cb.setAttribute('data-country-id', id);
                 cb.setAttribute('data-country-name', String(cName || '').trim());
-                cb.textContent = 'Перезвонить';
+                cb.textContent = 'Заявка';
                 tile.appendChild(cb);
             }
         });
@@ -2528,30 +2528,33 @@
             var depCity = promoDepartureNameForFlights();
             var depIdFl = promoDepartureIdForFlights();
             var base = (TV_API_BASE || '').replace(/\/$/, '');
-            if (typeof thLoadTourFlightsForHotels === 'function' && base) {
-                thLoadTourFlightsForHotels(hotels, {
+            if (base && typeof thLoadFlightsVisibleThenAll === 'function') {
+                thLoadFlightsVisibleThenAll(hotels, {
                     apiBase: base,
                     departureCity: depCity,
                     departureId: depIdFl,
-                    maxTours: hotels.length,
                     maxConcurrent: 4,
                     waveSize: 12,
                     patchEvery: 1,
                     loadGen: loadGen,
                     getTourId: getTourId,
                     patchContainer: resultsEl,
-                    onDone: function () {
-                        if (typeof thLoadFlightsForVisibleCards === 'function') {
-                            thLoadFlightsForVisibleCards(resultsEl, {
-                                apiBase: base,
-                                departureCity: depCity,
-                                departureId: depIdFl,
-                                maxConcurrent: 4,
-                                waveSize: 12,
-                                patchContainer: resultsEl
-                            });
-                        }
-                    }
+                    maxTours: 0
+                });
+                return;
+            }
+            if (typeof thLoadTourFlightsForHotels === 'function' && base) {
+                thLoadTourFlightsForHotels(hotels, {
+                    apiBase: base,
+                    departureCity: depCity,
+                    departureId: depIdFl,
+                    maxConcurrent: 4,
+                    waveSize: 12,
+                    patchEvery: 1,
+                    loadGen: loadGen,
+                    getTourId: getTourId,
+                    patchContainer: resultsEl,
+                    maxTours: hotels.length
                 });
                 return;
             }
@@ -3062,7 +3065,7 @@
                 '<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>' +
                 '<span class="absolute bottom-4 left-4 right-16 text-white font-bold text-xl sm:text-2xl drop-shadow-lg">' + nameEsc + '</span>' +
                 '</div></a>' +
-                '<button type="button" class="promo-country-callback" data-promo-country-callback data-country-name="' + nameEsc + '" data-country-id="' + escAttr(cid) + '">Перезвонить</button>' +
+                '<button type="button" class="promo-country-callback" data-promo-country-callback data-country-name="' + nameEsc + '" data-country-id="' + escAttr(cid) + '">Заявка</button>' +
                 '</div>';
         }
 
@@ -4083,11 +4086,11 @@
                     promoYm('promo_lead_submit');
                     form.reset();
                     if (msgBox) {
-                        msgBox.textContent = data.message || 'Заявка отправлена. Перезвоним за 15 минут.';
+                        msgBox.textContent = data.message || 'Заявка отправлена. Менеджер свяжется с вами в рабочее время.';
                         msgBox.className = 'text-sm rounded-lg p-2 bg-emerald-100 text-emerald-900 block';
                         msgBox.classList.remove('hidden');
                     } else {
-                        alert('Заявка отправлена. Перезвоним за 15 минут.');
+                        alert('Заявка отправлена. Менеджер свяжется с вами в рабочее время.');
                     }
                 } else {
                     var err = (data && data.error) ? data.error : 'Не удалось отправить.';
@@ -4180,7 +4183,7 @@
                     country: hotelCountry,
                     note: 'Запрос уточнения цены с карточки акции.',
                     title: 'Уточнить цену',
-                    sub: 'Менеджер проверит актуальность и перезвонит за 15 минут.'
+                    sub: 'Менеджер проверит актуальность и ответит в рабочее время.'
                 });
             }
         });

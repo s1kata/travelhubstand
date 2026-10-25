@@ -300,7 +300,7 @@
   formWrap.innerHTML =
     '<div class="mw-cbf-title"></div><form><div class="mw-cbf-field"><input class="mw-cbf-input" name="name" placeholder="Ваше имя" required></div><div class="mw-cbf-field"><input class="mw-cbf-input" name="phone" placeholder="Телефон" required></div><div class="mw-cbf-field mw-cbf-email"><input class="mw-cbf-input" name="email" placeholder="Email"></div><div class="mw-cbf-field mw-cbf-message"><textarea class="mw-cbf-textarea" name="message" placeholder="Сообщение"></textarea></div><div class="mw-cbf-actions"><button type="button" class="mw-cbf-btn mw-cbf-back">Назад</button><button type="submit" class="mw-cbf-btn primary mw-cbf-submit">Отправить</button></div><div class="mw-cbf-success"></div></form>';
   formWrap.querySelector('.mw-cbf-title').textContent = callbackTexts.title || 'Заказать звонок';
-  formWrap.querySelector('.mw-cbf-submit').textContent = callbackTexts.button || 'Перезвоните мне';
+  formWrap.querySelector('.mw-cbf-submit').textContent = callbackTexts.button || 'Оставить заявку';
   formWrap.querySelector('.mw-cbf-email').style.display = callbackFields.email ? 'block' : 'none';
   formWrap.querySelector('.mw-cbf-message').style.display = callbackFields.message ? 'block' : 'none';
   panel.appendChild(formWrap);
@@ -381,7 +381,7 @@
       delivered = true;
     var success = formWrap.querySelector('.mw-cbf-success');
     success.textContent = delivered
-      ? callbackTexts.success || 'Спасибо! Мы перезвоним в ближайшее время.'
+      ? callbackTexts.success || 'Спасибо! Менеджер свяжется с вами в рабочее время.'
       : 'Ошибка отправки. Проверьте настройки доставки.';
     success.style.display = 'block';
     if (delivered) ev.target.reset();

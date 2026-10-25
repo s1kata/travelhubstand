@@ -9,7 +9,7 @@
     <div class="th-sf-card">
         <button type="button" class="th-sf-x" data-th-sf-close="1" aria-label="Закрыть">&times;</button>
         <h2 id="th-sf-title" class="th-sf-title">Обратная связь</h2>
-        <p class="th-sf-sub">Оставьте телефон — перезвоним за 15 минут. Без спама.</p>
+        <p class="th-sf-sub">Позвоним с +7 (846) 254-16-56 — сохраните номер. Неудобно говорить — напишите в MAX.</p>
         <form id="th-site-feedback-form" class="th-sf-form">
             <div class="th-sf-field">
                 <label for="th-sf-name">ФИО <span class="text-red-500">*</span></label>
