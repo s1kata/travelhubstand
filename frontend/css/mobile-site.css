@@ -743,6 +743,7 @@
 
     #quick-booking-modal > div,
     #booking-modal > div,
+    #th-tour-booking-modal .th-qbm-modal__panel,
     #th-tour-booking-modal .th-tour-booking-modal__panel,
     .th-tour-booking-modal__panel {
         width: 100% !important;
@@ -1255,6 +1256,43 @@ html.th-kb-open .th-results-sticky-lead {
     font-size: 0.875rem;
     color: #6b7280;
     margin: 0 0 20px;
+    line-height: 1.45;
+}
+
+.th-qbm-modal__summary {
+    font-size: 0.8125rem;
+    color: #374151;
+    font-weight: 600;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.th-qbm-modal__summary.hidden,
+.th-qbm-modal__summary[hidden] {
+    display: none !important;
+}
+
+.th-qbm-modal__lbl {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.th-qbm-modal__req {
+    color: #ef4444;
+}
+
+.th-qbm-modal__hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin: 6px 0 0;
+    line-height: 1.4;
+}
+
+#th-tour-booking-modal.th-qbm-modal {
+    z-index: 100001;
 }
 
 .th-qbm-modal__form {
@@ -1275,6 +1313,24 @@ html.th-kb-open .th-results-sticky-lead {
 
 .th-qbm-modal__input:focus {
     border-color: #ff6b6b;
+}
+
+.th-qbm-modal__input.is-invalid,
+.th-lead-capture__input.is-invalid,
+.th-sf-input.is-invalid {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+}
+
+.th-lead-field-error {
+    margin: 6px 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: #b91c1c;
+}
+
+.th-lead-field-error:not(.is-visible) {
+    display: none;
 }
 
 .th-qbm-modal__agree {
@@ -1367,12 +1423,14 @@ html.th-kb-open .th-results-sticky-lead {
     }
 
     /* Карточка тура — th-tour-booking-modal */
+    #th-tour-booking-modal.th-qbm-modal,
     .th-tour-booking-modal {
         align-items: flex-end !important;
         justify-content: center !important;
         padding: 0 !important;
     }
 
+    #th-tour-booking-modal .th-qbm-modal__panel,
     .th-tour-booking-modal__panel {
         max-width: 100% !important;
         width: 100% !important;

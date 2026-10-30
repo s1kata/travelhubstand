@@ -161,7 +161,7 @@ if ($th_search_ui_raw === 'legacy') {
     <link rel="stylesheet" href="/frontend/css/responsive.css?v=17" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="/frontend/css/responsive.css?v=17"></noscript>
     <link rel="stylesheet" href="/frontend/css/design-system.css?v=14">
-    <link rel="stylesheet" href="/frontend/css/redesign.css?v=44">
+    <link rel="stylesheet" href="/frontend/css/redesign.css?v=45">
     <link rel="stylesheet" href="/frontend/css/v2-theme.css?v=5">
     <?php if ($th_search_ui === 'legacy'): ?>
     <link rel="stylesheet" href="/frontend/search-legacy/css/tour-search-wizard.css?v=legacy1">
@@ -609,8 +609,8 @@ if ($th_search_ui_raw === 'legacy') {
                     <p class="hidden">removed</p>
                     <form id="main-quick-lead-form" class="space-y-3 relative">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <input type="text" name="name" required placeholder="ФИО" autocomplete="name" class="rounded-xl px-3 py-2.5 text-slate-900 text-sm border-0 shadow-inner">
-                            <input type="tel" name="phone" required placeholder="Телефон" autocomplete="tel" class="rounded-xl px-3 py-2.5 text-slate-900 text-sm border-0 shadow-inner">
+                            <input type="text" name="name" required maxlength="40" placeholder="Имя" autocomplete="given-name" class="rounded-xl px-3 py-2.5 text-slate-900 text-sm border-0 shadow-inner">
+                            <input type="tel" name="phone" required value="+7" placeholder="+7 (999) 123-45-67" autocomplete="tel" inputmode="tel" class="rounded-xl px-3 py-2.5 text-slate-900 text-sm border-0 shadow-inner">
                         </div>
                         <?php echo th_legal_form_consents_html(['id_prefix' => 'main-quick-lead', 'variant' => 'on-dark']); ?>
                         <input type="text" name="website" class="absolute opacity-0 pointer-events-none w-px h-px overflow-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -5695,11 +5695,19 @@ if ($th_search_ui_raw === 'legacy') {
                 const starsHtml = catNum > 0 ? '★'.repeat(Math.min(catNum, 5)) : '';
                 // Форматирование дат
                 const fmtDate = (ymd) => { if (!ymd) return ''; const [y,m,d] = ymd.split('-'); return `${d}.${m}.${String(y).slice(2)}`; };
-                const pricePartyLabel = hotelModeLegacy ? 'проживание от' : tvPartyPriceLabel(priceAdults);
-                const partySummary = tvPartySummaryLabel(priceAdults);
+                const childAgesForCard = tvChildAgesForSearch();
+                const pricePartyLabelHtml = hotelModeLegacy
+                    ? 'проживание от'
+                    : ((window.THTourCard && typeof window.THTourCard.partyPriceLabelHtml === 'function')
+                        ? window.THTourCard.partyPriceLabelHtml(priceAdults, childAgesForCard)
+                        : tvPartyPriceLabel(priceAdults).replace(/</g, '&lt;'));
+                const partySummaryHtml = (window.THTourCard && typeof window.THTourCard.partySummaryLabelHtml === 'function')
+                    ? window.THTourCard.partySummaryLabelHtml(priceAdults, childAgesForCard)
+                    : tvPartySummaryLabel(priceAdults).replace(/</g, '&lt;');
+                const nightsWord = nightsNum === 1 ? 'ночь' : (nightsNum < 5 ? 'ночи' : 'ночей');
                 const datesMeta = (startYmd && retYmd)
-                    ? `${fmtDate(startYmd)} – ${fmtDate(retYmd)}, ${nightsNum} ${nightsNum === 1 ? 'ночь' : (nightsNum < 5 ? 'ночи' : 'ночей')}, ${partySummary}`
-                    : (nights ? `${nights} ${nightsNum < 5 ? 'ночи' : 'ночей'}, ${partySummary}` : partySummary);
+                    ? `${fmtDate(startYmd)} – ${fmtDate(retYmd)}, ${nightsNum} ${nightsWord}, ${partySummaryHtml}`
+                    : (nights ? `${nights} ${nightsNum < 5 ? 'ночи' : 'ночей'}, ${partySummaryHtml}` : partySummaryHtml);
                 const mediaHtml = (window.THTourCard && typeof window.THTourCard.buildCarouselMediaHtml === 'function')
                     ? window.THTourCard.buildCarouselMediaHtml(slidesForCard, { fallbackImg, hotelName: h.name || '' })
                     : `<div class="th-tour-card__media th-tour-card__media--carousel"><div class="th-tour-card__strip-scroll" tabindex="-1">${slidesForCard.map((src, idx) => {
@@ -5718,9 +5726,9 @@ if ($th_search_ui_raw === 'legacy') {
                             </div>
                             ${meal ? `<span class="th-tour-card__meal-badge">${meal.replace(/</g,'&lt;')}</span>` : ''}
                             <div class="th-tour-card__price-block">
-                                <span class="th-tour-card__price-label">${pricePartyLabel.replace(/</g,'&lt;')}</span>
+                                <span class="th-tour-card__price-label">${pricePartyLabelHtml}</span>
                                 <span class="th-tour-card__price">${formatPrice(price)}</span>
-                                ${datesMeta ? `<span class="th-tour-card__dates">${datesMeta.replace(/</g,'&lt;')}</span>` : ''}
+                                ${datesMeta ? `<span class="th-tour-card__dates">${datesMeta}</span>` : ''}
                             </div>
                             <span class="th-tour-card__btn">Выбрать этот тур</span>
                         </div>
@@ -6095,17 +6103,21 @@ if ($th_search_ui_raw === 'legacy') {
         <div class="th-qbm-modal__backdrop" id="qbm-backdrop"></div>
         <div class="th-qbm-modal__panel">
             <button type="button" id="qbm-close" class="th-qbm-modal__close" aria-label="Закрыть">✕</button>
+        <?php $_th_qbm_copy = require __DIR__ . '/../backend/config/lead_copy.php'; ?>
         <h3 class="th-qbm-modal__title">Подберём тур для вас</h3>
-        <p class="th-qbm-modal__sub">Позвоним с +7 (846) 254-16-56 — сохраните номер, чтобы ответить на звонок.</p>
-        <p class="th-qbm-modal__proof"><i class="fas fa-comment-dots"></i> Неудобно говорить? Напишите в MAX — кнопка внизу экрана</p>
-        <form id="qbm-form" class="th-qbm-modal__form">
-            <div class="th-qbm-modal__field"><input type="text" name="name" placeholder="ФИО" required maxlength="100" class="th-qbm-modal__input" autocomplete="name"></div>
-            <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required class="th-qbm-modal__input">
-            <input type="text" name="callback_note" maxlength="120" placeholder="Когда удобно звонить? (необязательно)" class="th-qbm-modal__input th-qbm-modal__input--note" autocomplete="off">
-                <?php echo th_legal_form_consents_html(['id_prefix' => 'qbm']); ?>
-                <input type="text" name="website" class="th-qbm-modal__hp" tabindex="-1" autocomplete="off">
-                <div id="qbm-msg" class="th-qbm-modal__msg"></div>
-                <button type="submit" id="qbm-submit" class="th-qbm-modal__submit">Отправить заявку менеджеру</button>
+        <p class="th-qbm-modal__sub"><?php echo htmlspecialchars((string) ($_th_qbm_copy['modal_worktime_sub'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+        <form id="qbm-form" class="th-qbm-modal__form" data-th-lead data-th-lead-source="home_quick_modal">
+            <?php
+            $th_lm_prefix = 'qbm';
+            $th_lm_name_id = 'qbm-name';
+            $th_lm_phone_id = 'qbm-phone';
+            $th_lm_msg_id = 'qbm-msg';
+            $th_lm_booking_hidden = false;
+            $th_lm_callback_note = true;
+            include __DIR__ . '/../backend/components/th_lead_modal_form_body.php';
+            ?>
+            <div id="qbm-msg" class="th-qbm-modal__msg"></div>
+            <button type="submit" id="qbm-submit" class="th-qbm-modal__submit"><?php echo htmlspecialchars((string) ($_th_qbm_copy['modal_submit_label'] ?? 'Отправить заявку менеджеру'), ENT_QUOTES, 'UTF-8'); ?></button>
             </form>
         </div>
     </div>
@@ -7144,7 +7156,7 @@ if ($th_search_ui_raw === 'legacy') {
                         }
                     }).finally(function () {
                         submit.disabled = false;
-                        submit.textContent = 'Отправить заявку менеджеру';
+                        submit.textContent = '✈ Отправить заявку менеджеру';
                     });
                 });
             }

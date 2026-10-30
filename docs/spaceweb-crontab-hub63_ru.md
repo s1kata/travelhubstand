@@ -17,6 +17,9 @@ PHP: `/usr/bin/php8.1` (метрики OTLP — `php8.3`, если есть в P
 | 5 | 0,12 | * | * | * | `cd /home/g/garant77li/hub63_ru/public_html && PHP_BIN=/usr/bin/php8.1 flock -n data/promo_warm.lock bash backend/cron/warm_promotions_cache.sh >> data/promo_warm.log 2>&1` |
 | 15 | 3 | * | * | 0 | то же (страховка вс) |
 | 30 | 0,8,14,20 | * | * | * | `cd ... && flock -n data/search_warm.lock bash backend/cron/warm_home_search_cache.sh >> data/home_search_warm.log 2>&1` |
+| 30 | 1 | * | * | * | `bash /home/g/garant77li/hub63_ru/public_html/backend/cron/warm_home_search_nightly.sh>>/home/g/garant77li/hub63_ru/public_html/data/home_search_warm_nightly.log 2>&1` *(фаза 0 по часу)* |
+| 30 | 2 | * | * | * | та же команда *(фаза 1)* |
+| 30 | 3 | * | * | * | та же команда *(фаза 2)* |
 | 20 | 1,9,15,21 | * | * | * | `cd ... && PHP_BIN=/usr/bin/php8.1 flock -n data/calendar_warm.lock bash backend/cron/warm_calendar_cache.sh >> data/calendar_warm.log 2>&1` |
 | 20 | 0 | * | * | * | `cd ... && /usr/bin/php8.1 backend/scripts/yml_feed_rules_cron.php >> data/yandex_yml_rules_cron.log 2>&1` |
 | 10 | 0 | * | * | 1 | `cd ... && PHP_BIN=/usr/bin/php8.1 flock -n data/yml_rotation_warm.lock bash backend/cron/warm_yml_rotation_countries.sh >> data/yml_rotation_warm.log 2>&1` |

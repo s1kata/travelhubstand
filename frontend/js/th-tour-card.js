@@ -271,6 +271,25 @@
     return 'за ' + parts.join(' + ');
   }
 
+  function partyAdultsAccentHtml(label) {
+    return '<span class="th-tour-card__party-adults">' + esc(label) + '</span>';
+  }
+
+  /** HTML-подпись над ценой с выделением числа взрослых. */
+  function partyPriceLabelHtml(adults, childAges) {
+    var a = Math.max(1, parseInt(String(adults), 10) || 2);
+    var ages = normalizeChildAges(childAges);
+    var adultPart = a === 1 ? '1 взрослого' : a + ' взрослых';
+    var tail = [];
+    ages.forEach(function (age) {
+      tail.push('1 реб. (' + esc(childAgeLabel(age)) + ')');
+    });
+    if (tail.length) {
+      return 'за ' + partyAdultsAccentHtml(adultPart) + ' + ' + tail.join(' + ');
+    }
+    return 'за ' + partyAdultsAccentHtml(adultPart);
+  }
+
   /** Краткий состав для строки дат: «2 взрослых + 1 реб. (до 2 лет)». */
   function partySummaryLabel(adults, childAges) {
     var a = Math.max(1, parseInt(String(adults), 10) || 2);
@@ -280,6 +299,18 @@
       parts.push('1 реб. (' + childAgeLabel(age) + ')');
     });
     return parts.join(' + ');
+  }
+
+  /** HTML для строки дат — взрослые выделены цветом. */
+  function partySummaryLabelHtml(adults, childAges) {
+    var a = Math.max(1, parseInt(String(adults), 10) || 2);
+    var ages = normalizeChildAges(childAges);
+    var tail = [];
+    ages.forEach(function (age) {
+      tail.push('1 реб. (' + esc(childAgeLabel(age)) + ')');
+    });
+    var head = partyAdultsAccentHtml(adultsLabel(a));
+    return tail.length ? head + ' + ' + tail.join(' + ') : head;
   }
 
   /** Совпадает ли тур из API с запрошенным составом (Tourvisor считает цену под него). */
@@ -1279,18 +1310,18 @@
     var startYmd = options.dateFrom || '';
     var retYmd = options.dateTo || '';
     var datesMeta = '';
-    var partyWord = partySummaryLabel(adultsNum, childAges);
-    var pricePartyLabel = options.priceLabel
-      ? String(options.priceLabel)
-      : partyPriceLabel(adultsNum, childAges);
+    var partyWordHtml = partySummaryLabelHtml(adultsNum, childAges);
+    var pricePartyLabelHtml = options.priceLabel
+      ? esc(String(options.priceLabel))
+      : partyPriceLabelHtml(adultsNum, childAges);
     var partyMismatch = !options.priceLabel && !tourPartyMatches(tour, adultsNum, childAges);
     var showFlight = options.hideFlight !== true;
     if (startYmd && retYmd) {
-      datesMeta = fmtDateShort(startYmd) + ' \u2013 ' + fmtDateShort(retYmd) + ', ' + nightsLabel(nightsNum) + ', ' + partyWord;
+      datesMeta = esc(fmtDateShort(startYmd) + ' \u2013 ' + fmtDateShort(retYmd) + ', ' + nightsLabel(nightsNum) + ', ') + partyWordHtml;
     } else if (nightsNum) {
-      datesMeta = nightsLabel(nightsNum) + ', ' + partyWord;
+      datesMeta = esc(nightsLabel(nightsNum) + ', ') + partyWordHtml;
     } else {
-      datesMeta = partyWord;
+      datesMeta = partyWordHtml;
     }
 
     // Hard funnel: никогда не рисуем фейковую «было» (+15%). Только реальная цена API.
@@ -1387,11 +1418,11 @@
       '<a href="' + esc(cardHref) + '"' + targetAttr + ' class="th-tour-card__link th-tour-card__link--main th-tour-card__link--tail">' +
       '<div class="th-tour-card__price-block">' +
       (oldPriceNum ? '<span class="th-tour-card__old-price">' + formatPrice(oldPriceNum) + '</span>' : '') +
-      '<span class="th-tour-card__price-label">' + esc(pricePartyLabel) + '</span>' +
+      '<span class="th-tour-card__price-label">' + pricePartyLabelHtml + '</span>' +
       (partyMismatch ? '<span class="th-tour-card__price-hint">Уточните цену для вашего состава</span>' : '') +
       '<span class="th-tour-card__price">' + formatPrice(priceNum) + '</span>' +
       (isPromo ? '<span class="th-tour-card__promo-label">\u0410\u043a\u0446\u0438\u043e\u043d\u043d\u0430\u044f \u0446\u0435\u043d\u0430</span>' : '') +
-      '<span class="th-tour-card__dates">' + esc(datesMeta) + '</span>' +
+      '<span class="th-tour-card__dates">' + datesMeta + '</span>' +
       '</div>' +
       '</a>' +
       '</div>' +
@@ -1672,7 +1703,9 @@
     normalizeChildAges: normalizeChildAges,
     childsParam: childsParam,
     partyPriceLabel: partyPriceLabel,
+    partyPriceLabelHtml: partyPriceLabelHtml,
     partySummaryLabel: partySummaryLabel,
+    partySummaryLabelHtml: partySummaryLabelHtml,
     tourPartyMatches: tourPartyMatches,
     collectHotelPhotoRawUrls: collectHotelPhotoRawUrls,
     mapTourvisorImageUrl: mapTourvisorImageUrl,

@@ -51,9 +51,9 @@ $agree_id = $th_lead_id . '-agree';
           <?php if ($th_lead_phone_only): ?>data-th-lead-phone-only="1"<?php endif; ?>>
         <?php if (!$th_lead_phone_only): ?>
         <div class="th-lead-capture__row">
-            <label class="th-lead-capture__lbl" for="<?php echo htmlspecialchars($name_id, ENT_QUOTES, 'UTF-8'); ?>">ФИО</label>
-            <input type="text" id="<?php echo htmlspecialchars($name_id, ENT_QUOTES, 'UTF-8'); ?>" name="name" required maxlength="100"
-                   autocomplete="name" placeholder="Иванов Иван Иванович" class="th-lead-capture__input">
+            <label class="th-lead-capture__lbl" for="<?php echo htmlspecialchars($name_id, ENT_QUOTES, 'UTF-8'); ?>">Имя</label>
+            <input type="text" id="<?php echo htmlspecialchars($name_id, ENT_QUOTES, 'UTF-8'); ?>" name="name" required maxlength="40"
+                   autocomplete="given-name" placeholder="Иван" class="th-lead-capture__input">
         </div>
         <?php else: ?>
         <input type="hidden" name="name" value="Клиент сайта">
@@ -61,7 +61,7 @@ $agree_id = $th_lead_id . '-agree';
         <div class="th-lead-capture__row">
             <label class="th-lead-capture__lbl" for="<?php echo htmlspecialchars($phone_id, ENT_QUOTES, 'UTF-8'); ?>">Телефон</label>
             <input type="tel" id="<?php echo htmlspecialchars($phone_id, ENT_QUOTES, 'UTF-8'); ?>" name="phone" required
-                   autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__" class="th-lead-capture__input">
+                   autocomplete="tel" inputmode="tel" value="+7" placeholder="+7 (___) ___-__-__" class="th-lead-capture__input">
         </div>
         <?php if ($th_lead_show_msg): ?>
         <div class="th-lead-capture__row">

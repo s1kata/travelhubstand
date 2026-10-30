@@ -338,7 +338,7 @@
     var title = modal.querySelector('.th-qbm-modal__title');
     var sub = modal.querySelector('.th-qbm-modal__sub');
     var submit = document.getElementById('qbm-submit');
-    var nameRow = modal.querySelector('[name="name"]');
+    var nameRow = modal.querySelector('#qbm-name') || modal.querySelector('[name="name"]');
     if (title) title.textContent = cfg.title;
     if (sub) sub.textContent = cfg.sub;
     if (submit) submit.textContent = cfg.submit;

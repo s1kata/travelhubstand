@@ -106,10 +106,13 @@ bash backend/cron/warm_home_search_cache.sh
 
 В логе JSON: `skipped`, `extendedChunks`, `warmed`, `mode: cover-skip-extend`.
 
-Рекомендуется **3–4× в сутки** (не в пик пользовательского трафика):
+Рекомендуется **3–4× в сутки** (не в пик пользовательского трафика) + **3 ночных этапа** (все `popular_countries.php`, горизонт ~30 дней, отдельный бюджет live):
 
 ```
 30 0,8,14,20 * * * cd /path/to/travelhub-v2 && bash backend/cron/warm_home_search_cache.sh >> data/home_search_warm.log 2>&1
+30 1 * * * cd /path/to/travelhub-v2 && flock -n data/search_warm_nightly.lock env WARM_NIGHTLY_PHASE=0 bash backend/cron/warm_home_search_nightly.sh >> data/home_search_warm_nightly.log 2>&1
+30 2 * * * ... WARM_NIGHTLY_PHASE=1 ...
+30 3 * * * ... WARM_NIGHTLY_PHASE=2 ...
 ```
 
 На SpaceWeb часто нужен `php8.1` вместо `php` — поправьте в `.sh` при необходимости.

@@ -13,6 +13,7 @@ chdir($root);
 $checks = [
     'data/promo_warm.log' => 14,
     'data/home_search_warm.log' => 10,
+    'data/home_search_warm_nightly.log' => 28,
     'data/calendar_warm.log' => 12,
     'data/yandex_yml_rules_cron.log' => 26,
     'data/cover_cleanup.log' => 48,

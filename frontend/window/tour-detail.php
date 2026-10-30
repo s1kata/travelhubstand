@@ -645,14 +645,14 @@ if ($return_url !== '' && $return_url[0] === '/') {
                             <div id="booking-form-step">
                             <form id="booking-form" class="p-4 space-y-3">
                                 <input type="hidden" name="booking_type" id="booking-type" value="without_payment">
-                                <p class="text-xs text-slate-500 -mt-1 mb-1" id="booking-modal-subtitle">Звонок с +7 (846) 254-16-56 (9:00–21:00 МСК). Добавьте номер в контакты, чтобы не пропустить.</p>
+                                <p class="text-xs text-slate-500 -mt-1 mb-1" id="booking-modal-subtitle">Звонок с +7 (846) 254-16-56 (9:00–21:00 МСК). Неудобно говорить — MAX внизу экрана.</p>
                                 <div>
-                                    <label for="b-manager-name" class="block text-sm font-semibold text-slate-700 mb-1">ФИО <span class="text-red-500">*</span></label>
-                                    <input type="text" id="b-manager-name" autocomplete="name" maxlength="100" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="Иванов Иван Иванович">
+                                    <label for="b-manager-name" class="block text-sm font-semibold text-slate-700 mb-1">Имя <span class="text-red-500">*</span></label>
+                                    <input type="text" id="b-manager-name" name="name" required autocomplete="given-name" maxlength="40" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="Иван">
                                 </div>
                                 <div>
                                     <label for="b-phone" class="block text-sm font-semibold text-slate-700 mb-1">Номер телефона <span class="text-red-500">*</span></label>
-                                    <input type="tel" name="phone" id="b-phone" autocomplete="tel" inputmode="tel" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="+7 (999) 123-45-67">
+                                    <input type="tel" name="phone" id="b-phone" autocomplete="tel" inputmode="tel" value="+7" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base focus:ring-2 focus:ring-sky-300 focus:border-sky-400" placeholder="+7 (999) 123-45-67">
                                     <p class="text-xs text-slate-500 mt-1">Связь по заявке — с менеджером. Рекламу отправим только если отметите согласие ниже.</p>
                                 </div>
                                 <?php require_once __DIR__ . '/../../backend/components/legal_consent_label.php'; echo th_legal_form_consents_html(['id_prefix' => 'b']); ?>
@@ -1160,16 +1160,19 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 });
                 if (!leadCheck.ok) {
                     tourYmGoal('lead_validation_error', { source: 'tour_detail' });
+                    if (window.THLeadCapture.markLeadFormErrors && form) {
+                        window.THLeadCapture.markLeadFormErrors(form, leadCheck);
+                    }
                     showModalMsg(leadCheck.error || 'Проверьте данные формы.', true);
                     return;
                 }
                 nameVal = leadCheck.name;
                 phoneVal = leadCheck.phone;
             } else {
-                if (!nameVal || nameVal.length < 2) { tourYmGoal('lead_validation_error', { source: 'tour_detail' }); showModalMsg('Укажите ФИО.', true); return; }
-                if (!/^[\p{L}\s\-'.]+$/u.test(nameVal)) { tourYmGoal('lead_validation_error', { source: 'tour_detail' }); showModalMsg('Укажите корректные ФИО.', true); return; }
+                if (!nameVal || nameVal.length < 2) { tourYmGoal('lead_validation_error', { source: 'tour_detail' }); showModalMsg('Укажите имя.', true); return; }
+                if (!/^[\p{L}\s\-'.]+$/u.test(nameVal)) { tourYmGoal('lead_validation_error', { source: 'tour_detail' }); showModalMsg('Укажите корректное имя.', true); return; }
                 var cyrN = nameVal.match(/\p{Script=Cyrillic}/gu);
-                if (!cyrN || cyrN.length < 2) { tourYmGoal('lead_validation_error', { source: 'tour_detail' }); showModalMsg('Укажите ФИО русскими буквами.', true); return; }
+                if (!cyrN || cyrN.length < 2) { tourYmGoal('lead_validation_error', { source: 'tour_detail' }); showModalMsg('Укажите имя русскими буквами.', true); return; }
                 var phoneDigits = phoneVal.replace(/\D/g, '');
                 if (phoneDigits.length === 11 && phoneDigits[0] === '8') phoneDigits = '7' + phoneDigits.slice(1);
                 var phoneRest = phoneDigits.slice(1);

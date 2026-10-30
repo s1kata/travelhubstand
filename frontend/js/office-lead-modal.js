@@ -70,10 +70,10 @@
       '<div class="th-ol-sub">' + esc(sub) + '</div>' +
       '</div>' +
       '<div class="th-ol-body">' +
-      '<label class="th-ol-label" for="th-ol-name">ФИО</label>' +
-      '<input class="th-ol-inp" id="th-ol-name" autocomplete="name" maxlength="100" placeholder="Иванов Иван Иванович">' +
+      '<label class="th-ol-label" for="th-ol-name">Имя</label>' +
+      '<input class="th-ol-inp" id="th-ol-name" autocomplete="given-name" maxlength="40" placeholder="Иван">' +
       '<label class="th-ol-label" for="th-ol-phone">Телефон</label>' +
-      '<input class="th-ol-inp" id="th-ol-phone" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="+7 (___) ___-__-__">' +
+      '<input class="th-ol-inp" id="th-ol-phone" inputmode="tel" autocomplete="tel" maxlength="24" value="+7" placeholder="+7 (___) ___-__-__">' +
       '<div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">' +
       '<label>Сайт</label><input type="text" id="th-ol-website" tabindex="-1" autocomplete="off">' +
       '</div>' +
@@ -94,7 +94,7 @@
     if (legalHost) {
       legalHost.innerHTML = (window.THLegal && window.THLegal.formHtml)
         ? window.THLegal.formHtml('th-ol')
-        : '<div class="th-legal-consents"><label class="th-legal-consents__row"><input type="checkbox" id="th-ol-agree" name="agree" value="1" required><span>Даю <a href="/frontend/window/consent.php" target="_blank" rel="noopener">согласие на обработку персональных данных</a></span></label><label class="th-legal-consents__row"><input type="checkbox" id="th-ol-agree-ads" name="agree_ads" value="1"><span>Даю <a href="/frontend/window/advertising.php" target="_blank" rel="noopener">согласие на получение рекламы</a> (SMS, email, звонки, мессенджеры) от ИП Смахтина Антона Валерьевича (Travel Hub)</span></label><p class="th-legal-consents__hint">Необязательно. Без этой отметки рекламу не отправим.</p><p class="th-legal-consents__docs">Документы: <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политика в отношении обработки персональных данных</a></p></div>';
+        : '<div class="th-legal-consents"><label class="th-legal-consents__row"><input type="checkbox" id="th-ol-agree" name="agree" value="1" required checked><span>Даю <a href="/frontend/window/consent.php" target="_blank" rel="noopener">согласие на обработку персональных данных</a></span></label><label class="th-legal-consents__row"><input type="checkbox" id="th-ol-agree-ads" name="agree_ads" value="1"><span>Даю <a href="/frontend/window/advertising.php" target="_blank" rel="noopener">согласие на получение рекламы</a> (SMS, email, звонки, мессенджеры) от ИП Смахтина Антона Валерьевича (Travel Hub)</span></label><p class="th-legal-consents__hint">Необязательно. Без этой отметки рекламу не отправим.</p><p class="th-legal-consents__docs">Документы: <a href="/frontend/window/privacy.php" target="_blank" rel="noopener">Политика в отношении обработки персональных данных</a></p></div>';
     }
     var agree = document.getElementById('th-ol-agree');
     var adsEl = document.getElementById('th-ol-agree-ads');
@@ -104,6 +104,14 @@
 
     if (window.THLeadCapture && THLeadCapture.formatPhoneInput) {
       THLeadCapture.formatPhoneInput(phone);
+    } else if (phone && !phone.value) {
+      phone.value = '+7';
+    }
+    if (window.THLeadCapture && THLeadCapture.ensurePhoneDefault) {
+      THLeadCapture.ensurePhoneDefault(phone);
+    }
+    if (window.THLeadCapture && THLeadCapture.formatPersonNameInput && nameEl) {
+      THLeadCapture.formatPersonNameInput(nameEl);
     }
 
     function trackFormStart() {
@@ -168,17 +176,17 @@
       } else {
         // Fallback, если th-lead-capture.js не загрузился — те же правила
         if (!name || name.length < 2 || !/^[\p{L}\s\-'.]+$/u.test(name)) {
-          show('Укажите корректные ФИО', false);
+          show('Укажите корректное имя', false);
           return;
         }
         var compact = name.replace(/[\s\-'.]/g, '');
         if (compact.length < 2 || /^(\p{L})\1+$/u.test(compact)) {
-          show('Укажите корректные ФИО', false);
+          show('Укажите корректное имя', false);
           return;
         }
         var cyr = name.match(/\p{Script=Cyrillic}/gu);
         if (!cyr || cyr.length < 2) {
-          show('Укажите ФИО русскими буквами', false);
+          show('Укажите имя русскими буквами', false);
           return;
         }
         var pd = phoneVal.replace(/\D/g, '');

@@ -2905,7 +2905,11 @@
                 flightHtml +
                 '<div class="th-tour-card__price-block">' +
                 (oldPriceNum ? '<span class="th-tour-card__old-price">' + formatPrice(oldPriceNum) + '</span>' : '') +
-                '<span class="th-tour-card__price-label">\u0437\u0430 ' + adultsNum + ' \u0432\u0437\u0440.</span>' +
+                '<span class="th-tour-card__price-label">' + (
+                    (window.THTourCard && typeof window.THTourCard.partyPriceLabelHtml === 'function')
+                        ? window.THTourCard.partyPriceLabelHtml(adultsNum, [])
+                        : ('\u0437\u0430 <span class="th-tour-card__party-adults">' + adultsNum + ' \u0432\u0437\u0440\u043e\u0441\u043b\u044b\u0445</span>')
+                ) + '</span>' +
                 '<span class="th-tour-card__price">' + formatPrice(priceNum) + '</span>' +
                 (showPromoBadge ? '<span class="th-tour-card__promo-label">\u0410\u043a\u0446\u0438\u043e\u043d\u043d\u0430\u044f \u0446\u0435\u043d\u0430</span>' : '') +
                 (datesMeta ? '<span class="th-tour-card__dates">' + datesMeta + '</span>' : '') +
@@ -4040,12 +4044,12 @@
             } else {
                 /* Fallback без THLeadCapture — минимальная клиентская проверка до fetch */
                 if (!payload.name || payload.name.length < 2) {
-                    showLeadErr('Укажите корректные ФИО');
+                    showLeadErr('Укажите корректное имя');
                     return Promise.resolve();
                 }
                 var cyrFb = payload.name.match(/\p{Script=Cyrillic}/gu);
                 if (!cyrFb || cyrFb.length < 2) {
-                    showLeadErr('Укажите ФИО русскими буквами');
+                    showLeadErr('Укажите имя русскими буквами');
                     return Promise.resolve();
                 }
                 var pd = payload.phone.replace(/\D/g, '');

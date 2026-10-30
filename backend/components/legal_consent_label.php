@@ -50,7 +50,8 @@ if (!function_exists('th_legal_form_consents_html')) {
      *   id_prefix?: string,
      *   include_terms?: bool,
      *   include_ads?: bool,
-     *   variant?: string
+     *   variant?: string,
+     *   pd_checked_default?: bool
      * } $opts
      */
     function th_legal_form_consents_html(array $opts = []): string
@@ -58,6 +59,7 @@ if (!function_exists('th_legal_form_consents_html')) {
         $prefix = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) ($opts['id_prefix'] ?? 'th-legal')) ?: 'th-legal';
         $includeTerms = !empty($opts['include_terms']);
         $includeAds = !array_key_exists('include_ads', $opts) || !empty($opts['include_ads']);
+        $pdCheckedDefault = !array_key_exists('pd_checked_default', $opts) || !empty($opts['pd_checked_default']);
         $variant = (string) ($opts['variant'] ?? '');
         $class = 'th-legal-consents';
         if ($variant === 'on-dark') {
@@ -72,7 +74,8 @@ if (!function_exists('th_legal_form_consents_html')) {
         $html = '<div class="' . $class . '" data-th-legal-consents="1">';
         $html .= '<input type="hidden" name="consent_version" value="' . $version . '">';
         $html .= '<div class="th-legal-consents__item"><label class="th-legal-consents__row" for="' . htmlspecialchars($pdId, ENT_QUOTES, 'UTF-8') . '">';
-        $html .= '<input type="checkbox" id="' . htmlspecialchars($pdId, ENT_QUOTES, 'UTF-8') . '" name="agree" value="1" required>';
+        $pdCheckedAttr = $pdCheckedDefault ? ' checked' : '';
+        $html .= '<input type="checkbox" id="' . htmlspecialchars($pdId, ENT_QUOTES, 'UTF-8') . '" name="agree" value="1" required' . $pdCheckedAttr . '>';
         $html .= '<span>' . th_legal_consent_checkbox_html() . '</span></label></div>';
         if ($includeAds) {
             $html .= '<div class="th-legal-consents__item"><label class="th-legal-consents__row" for="' . htmlspecialchars($adsId, ENT_QUOTES, 'UTF-8') . '">';

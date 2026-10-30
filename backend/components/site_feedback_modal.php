@@ -12,12 +12,12 @@
         <p class="th-sf-sub">Позвоним с +7 (846) 254-16-56 — сохраните номер. Неудобно говорить — напишите в MAX.</p>
         <form id="th-site-feedback-form" class="th-sf-form">
             <div class="th-sf-field">
-                <label for="th-sf-name">ФИО <span class="text-red-500">*</span></label>
-                <input type="text" id="th-sf-name" name="name" required maxlength="100" autocomplete="name" class="th-sf-input" placeholder="Иванов Иван Иванович">
+                <label for="th-sf-name">Имя <span class="text-red-500">*</span></label>
+                <input type="text" id="th-sf-name" name="name" required maxlength="40" autocomplete="given-name" class="th-sf-input" placeholder="Иван">
             </div>
             <div class="th-sf-field">
                 <label for="th-sf-phone">Телефон <span class="text-red-500">*</span></label>
-                <input type="tel" id="th-sf-phone" name="phone" required maxlength="20" autocomplete="tel" class="th-sf-input" placeholder="+7">
+                <input type="tel" id="th-sf-phone" name="phone" required maxlength="20" autocomplete="tel" class="th-sf-input" value="+7" placeholder="+7 (999) 123-45-67">
             </div>
             <div class="th-sf-field">
                 <label for="th-sf-email">Email</label>
@@ -87,7 +87,7 @@
     function open(opts) {
         opts = opts || {};
         modalState.source = opts.source || 'site_feedback';
-        /* focusPhone только ставит фокус — не скрывает поле ФИО */
+        /* focusPhone только ставит фокус — не скрывает поле имени */
         modalState.phoneOnly = !!opts.phoneOnly;
         applyModalCopy(opts);
         var nameField = document.getElementById('th-sf-name');
@@ -131,8 +131,9 @@
         if (e.key === 'Escape' && !overlay.classList.contains('hidden')) close();
     });
     if (form) {
-        var phoneEl = document.getElementById('th-sf-phone');
-        if (window.THLeadCapture && phoneEl) THLeadCapture.formatPhoneInput(phoneEl);
+        if (window.THLeadCapture && window.THLeadCapture.bindLeadInputs) {
+            window.THLeadCapture.bindLeadInputs(form);
+        }
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             var msg = document.getElementById('th-sf-msg');
@@ -189,7 +190,7 @@
                 });
                 if (!check.ok) {
                     var err = check.error || 'Проверьте данные формы';
-                    if (/ФИО/i.test(err)) markField(nameEl, true);
+                    if (/им/i.test(err)) markField(nameEl, true);
                     if (/телефон/i.test(err)) markField(phoneEl2, true);
                     if (/email/i.test(err)) markField(emailEl, true);
                     finish({ success: false, error: err });
@@ -223,7 +224,7 @@
                     }
                     if (!(data && data.success)) {
                         var err2 = (data && data.error) || '';
-                        if (/ФИО/i.test(err2)) markField(nameEl, true);
+                        if (/им/i.test(err2)) markField(nameEl, true);
                         if (/телефон/i.test(err2)) markField(phoneEl2, true);
                         if (/email/i.test(err2)) markField(emailEl, true);
                     }

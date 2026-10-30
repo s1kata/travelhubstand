@@ -16,7 +16,7 @@ if (!defined('TRAVELHUB_DS_HEAD')) {
 <link rel="stylesheet" href="/frontend/css/responsive.css?v=17">
 <?php endif; ?>
 <link rel="stylesheet" href="/frontend/css/design-system.css?v=16">
-<link rel="stylesheet" href="/frontend/css/redesign.css?v=43">
+<link rel="stylesheet" href="/frontend/css/redesign.css?v=45">
 <link rel="stylesheet" href="/frontend/css/v2-theme.css?v=5">
 <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=2">
 <link rel="stylesheet" href="/frontend/css/th-hard-funnel.css?v=8">

@@ -57,22 +57,194 @@
     return parts.join('\n');
   }
 
+  var PHONE_DEFAULT_PREFIX = '+7';
+
+  function phoneDigitCount(val) {
+    return digitsOnly(val).length;
+  }
+
+  /** Только код страны (+7), номер ещё не введён. */
+  function isPhonePrefixOnly(val) {
+    return phoneDigitCount(val) <= 1;
+  }
+
+  function ensurePhoneDefault(el) {
+    if (!el) return;
+    var raw = String(el.value || '').trim();
+    if (!raw || isPhonePrefixOnly(raw)) {
+      el.value = PHONE_DEFAULT_PREFIX;
+    }
+  }
+
   function formatPhoneInput(el) {
     if (!el || el.__thPhoneBound) return;
     el.__thPhoneBound = true;
-    el.addEventListener('input', function () {
+    function applyPhoneMask() {
       var v = el.value.replace(/\D/g, '');
       if (v.length > 0 && v[0] === '8') v = '7' + v.slice(1);
       if (v.length > 0 && v[0] !== '7') v = '7' + v;
       if (v.length > 11) v = v.slice(0, 11);
-      var formatted = '';
-      if (v.length > 0) formatted += '+7';
+      if (v.length === 0) {
+        el.value = '';
+        return;
+      }
+      var formatted = '+7';
       if (v.length > 1) formatted += ' (' + v.slice(1, 4);
       if (v.length > 4) formatted += ') ' + v.slice(4, 7);
       if (v.length > 7) formatted += '-' + v.slice(7, 9);
       if (v.length > 9) formatted += '-' + v.slice(9, 11);
       el.value = formatted;
+    }
+    el.addEventListener('input', applyPhoneMask);
+    el.addEventListener('paste', function () {
+      setTimeout(applyPhoneMask, 0);
     });
+    el.addEventListener('focus', function () {
+      if (isPhonePrefixOnly(el.value)) {
+        el.value = PHONE_DEFAULT_PREFIX;
+        try {
+          var end = el.value.length;
+          el.setSelectionRange(end, end);
+        } catch (eFocus) {}
+      }
+    });
+    el.addEventListener('blur', function () {
+      if (!String(el.value || '').trim() || isPhonePrefixOnly(el.value)) {
+        el.value = PHONE_DEFAULT_PREFIX;
+        setLeadInputValidity(el, '');
+      }
+    });
+    ensurePhoneDefault(el);
+  }
+
+  function normalizeFirstName(name) {
+    var n = String(name || '').trim().replace(/\s+/g, ' ');
+    if (!n) return '';
+    var first = n.split(/[\s\-]+/)[0] || '';
+    return first.replace(/[^\p{Script=Cyrillic}\-']/gu, '');
+  }
+
+  function formatPersonNameInput(el) {
+    if (!el || el.__thNameBound) return;
+    el.__thNameBound = true;
+    el.addEventListener('input', function () {
+      var cleaned = el.value.replace(/[^\p{Script=Cyrillic}\s\-']/gu, '');
+      if (cleaned !== el.value) el.value = cleaned;
+    });
+    el.addEventListener('blur', function () {
+      var n = normalizeFirstName(el.value);
+      if (n && n !== el.value.trim()) el.value = n;
+      validateLeadInputEl(el);
+    });
+  }
+
+  function leadFieldWrap(el) {
+    if (!el || !el.closest) return null;
+    return el.closest('.th-qbm-modal__field, .th-lead-capture__row, .th-sf-field') || el.parentElement;
+  }
+
+  function ensureLeadFieldErrorEl(input) {
+    var wrap = leadFieldWrap(input);
+    if (!wrap) return null;
+    var err = wrap.querySelector('[data-th-lead-field-error]');
+    if (!err) {
+      err = document.createElement('p');
+      err.className = 'th-lead-field-error';
+      err.setAttribute('data-th-lead-field-error', '1');
+      err.hidden = true;
+      wrap.appendChild(err);
+    }
+    return err;
+  }
+
+  function setLeadInputValidity(input, errorMsg) {
+    if (!input) return;
+    var bad = !!errorMsg;
+    input.classList.toggle('is-invalid', bad);
+    input.setAttribute('aria-invalid', bad ? 'true' : 'false');
+    var errEl = ensureLeadFieldErrorEl(input);
+    if (errEl) {
+      if (bad) {
+        errEl.textContent = errorMsg;
+        errEl.hidden = false;
+        errEl.classList.add('is-visible');
+      } else {
+        errEl.textContent = '';
+        errEl.hidden = true;
+        errEl.classList.remove('is-visible');
+      }
+    }
+  }
+
+  function validateLeadInputEl(input) {
+    if (!input) return '';
+    var form = input.closest('form');
+    var phoneOnly = form && form.getAttribute('data-th-lead-phone-only') === '1';
+    if (input.name === 'name' || input.id && /name$/i.test(input.id)) {
+      if (phoneOnly && input.closest('[style*="display: none"]')) return '';
+      var nameErr = personNameError(input.value);
+      setLeadInputValidity(input, nameErr);
+      return nameErr;
+    }
+    if (input.type === 'tel' || input.name === 'phone') {
+      if (isPhonePrefixOnly(input.value)) {
+        setLeadInputValidity(input, '');
+        return '';
+      }
+      var phoneErr = ruPhoneError(input.value);
+      setLeadInputValidity(input, phoneErr);
+      return phoneErr;
+    }
+    return '';
+  }
+
+  function clearLeadFormFieldErrors(form) {
+    if (!form || !form.querySelectorAll) return;
+    form.querySelectorAll('input[name="name"], input[type="tel"], input[name="phone"]').forEach(function (el) {
+      setLeadInputValidity(el, '');
+    });
+  }
+
+  function markLeadFormErrors(form, check) {
+    if (!form || !check) return;
+    clearLeadFormFieldErrors(form);
+    if (check.ok) return;
+    var err = check.error || '';
+    var nameEl = form.querySelector('[name="name"]');
+    var phoneEl = form.querySelector('input[type="tel"], input[name="phone"]');
+    if (/им/i.test(err) && nameEl) setLeadInputValidity(nameEl, err);
+    else if (/телефон/i.test(err) && phoneEl) setLeadInputValidity(phoneEl, err);
+    else if (/email/i.test(err)) {
+      var emailEl = form.querySelector('[name="email"]');
+      if (emailEl) setLeadInputValidity(emailEl, err);
+    } else if (nameEl && personNameError(nameEl.value)) setLeadInputValidity(nameEl, personNameError(nameEl.value));
+    else if (phoneEl && ruPhoneError(phoneEl.value)) setLeadInputValidity(phoneEl, ruPhoneError(phoneEl.value));
+  }
+
+  var LEAD_INPUT_FORM_SELECTOR = 'form[data-th-lead], #th-tour-booking-form, #th-site-feedback-form, #booking-form, #main-quick-lead-form, #quick-booking-modal form';
+
+  function bindLeadInputs(form) {
+    if (!form || form.__thLeadInputsBound) return;
+    form.__thLeadInputsBound = true;
+    var nameEl = form.querySelector('[name="name"]:not([type="hidden"])')
+      || form.querySelector('#b-manager-name, #th-tb-name, #th-sf-name');
+    var phoneEl = form.querySelector('input[type="tel"], input[name="phone"]')
+      || form.querySelector('#b-phone, #th-tb-phone, #th-sf-phone');
+    formatPersonNameInput(nameEl);
+    formatPhoneInput(phoneEl);
+    if (phoneEl) {
+      phoneEl.addEventListener('blur', function () { validateLeadInputEl(phoneEl); });
+      form.addEventListener('reset', function () {
+        setTimeout(function () { ensurePhoneDefault(phoneEl); }, 0);
+      });
+    }
+    if (nameEl) {
+      nameEl.addEventListener('blur', function () { validateLeadInputEl(nameEl); });
+    }
+  }
+
+  function autoBindLeadInputs() {
+    document.querySelectorAll(LEAD_INPUT_FORM_SELECTOR).forEach(bindLeadInputs);
   }
 
   function digitsOnly(s) {
@@ -93,40 +265,32 @@
   }
 
   function isValidPersonName(name) {
-    var n = String(name || '').trim().replace(/\s+/g, ' ');
-    if (n.length < 2 || n.length > 100) return false;
-    // Только кириллица — латиница вперемешку («Lion Паша…») отклоняется
-    if (!/^[\p{Script=Cyrillic}\s\-'.]+$/u.test(n)) return false;
-    var compact = n.replace(/[\s\-'.]/g, '');
-    if (compact.length < 2) return false;
-    if (/^(\p{L})\1+$/u.test(compact)) return false;
-    var cyr = n.match(/\p{Script=Cyrillic}/gu);
-    if (!cyr || cyr.length < 2) return false;
-    var parts = n.split(/[\s\-]+/).filter(Boolean);
-    if (parts.length >= 2) {
-      for (var i = 0; i < parts.length; i++) {
-        if (parts[i].length < 2) return false;
-      }
-    }
+    var n = normalizeFirstName(name);
+    if (n.length < 2 || n.length > 40) return false;
+    if (!/^[\p{Script=Cyrillic}\-']+$/u.test(n)) return false;
+    if (/^(\p{L})\1+$/u.test(n)) return false;
+    if (!/[аеёиоуыэюя]/iu.test(n)) return false;
     var lower = n.toLowerCase();
     var bannedExact = ['тест', 'test', 'asdf', 'qwerty', 'admin', 'user', 'имя', 'фамилия', 'фио', 'xxx', 'null', 'none'];
     if (bannedExact.indexOf(lower) >= 0) return false;
-    if (/тест | test|qwerty|asdf|admin|xxx/.test(lower)) return false;
+    if (/тест|test|qwerty|asdf|admin|xxx/.test(lower)) return false;
     return true;
   }
 
   function personNameError(name) {
-    var n = String(name || '').trim();
-    if (!n) return 'Укажите ФИО';
+    var raw = String(name || '').trim();
+    if (!raw) return 'Укажите имя';
+    var n = normalizeFirstName(raw);
     if (isValidPersonName(n)) return '';
-    if (/\p{Script=Latin}/u.test(n) || (n.length >= 2 && !/\p{Script=Cyrillic}/u.test(n))) {
-      return 'Укажите ФИО русскими буквами';
+    if (/\p{Script=Latin}/u.test(raw) || (raw.length >= 1 && !/\p{Script=Cyrillic}/u.test(raw))) {
+      return 'Укажите имя русскими буквами';
     }
-    return 'Укажите корректные ФИО (минимум 2 буквы)';
+    return 'Укажите корректное имя (минимум 2 буквы)';
   }
 
   function ruPhoneError(phone) {
-    if (!String(phone || '').trim()) return 'Укажите телефон';
+    var p = String(phone || '').trim();
+    if (!p || isPhonePrefixOnly(p)) return 'Укажите телефон';
     if (!isValidRuPhone(phone)) {
       return 'Укажите корректный мобильный телефон РФ (+7 9XX…)';
     }
@@ -149,9 +313,11 @@
     var email = String(opts.email || '').trim();
     var agree = !!opts.agree;
     if (!phoneOnly) {
+      name = normalizeFirstName(name);
       var nameErr = personNameError(name);
       if (nameErr) return { ok: false, error: nameErr };
     } else if (name !== 'Клиент сайта' && name) {
+      name = normalizeFirstName(name);
       var nameErr2 = personNameError(name);
       if (nameErr2) return { ok: false, error: nameErr2 };
     }
@@ -161,6 +327,7 @@
       return { ok: false, error: 'Укажите корректный email или оставьте поле пустым' };
     }
     if (!agree) return { ok: false, error: 'Нужно согласие на обработку персональных данных' };
+    if (!phoneOnly && name) name = normalizeFirstName(name);
     return { ok: true, name: name, phone: phone, email: email };
   }
 
@@ -193,6 +360,7 @@
     var check = validateLeadFields(opts);
     if (!check.ok) {
       reachGoal('lead_validation_error', { source: source });
+      if (opts.formEl) markLeadFormErrors(opts.formEl, check);
       return Promise.resolve({ success: false, error: check.error });
     }
     var name = check.name;
@@ -254,8 +422,8 @@
       || document.getElementById(form.getAttribute('data-th-lead-msg') || '')
       || form.querySelector('[data-th-lead-msg]');
     var submitBtn = options.submitBtn || form.querySelector('[type="submit"]');
+    bindLeadInputs(form);
     var phoneEl = form.querySelector('input[type="tel"], input[name="phone"]');
-    formatPhoneInput(phoneEl);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -283,16 +451,19 @@
         msgEl.textContent = '';
       }
 
+      clearLeadFormFieldErrors(form);
       submitLead({
-        name: name,
+        name: normalizeFirstName(name) || name,
         phone: phone,
         agree: agree,
         agree_ads: agreeAds,
         website: website,
         message: message,
         email: email,
-        source: source
+        source: source,
+        formEl: form
       }).then(function (res) {
+        if (!res.success) markLeadFormErrors(form, { ok: false, error: res.error });
         if (msgEl) {
           msgEl.textContent = res.success ? (res.message || '') : (res.error || '');
           msgEl.classList.remove('hidden');
@@ -316,6 +487,8 @@
         }
         if (res.success) {
           form.reset();
+          var phoneReset = form.querySelector('input[type="tel"], input[name="phone"]');
+          ensurePhoneDefault(phoneReset);
           if (typeof options.onSuccess === 'function') options.onSuccess(res);
         } else if (typeof options.onError === 'function') {
           options.onError(res);
@@ -488,8 +661,14 @@
   global.THLeadCapture = {
     submit: submitLead,
     bindForm: bindForm,
+    bindLeadInputs: bindLeadInputs,
+    markLeadFormErrors: markLeadFormErrors,
+    clearLeadFormFieldErrors: clearLeadFormFieldErrors,
+    normalizeFirstName: normalizeFirstName,
     reachGoal: reachGoal,
     formatPhoneInput: formatPhoneInput,
+    ensurePhoneDefault: ensurePhoneDefault,
+    formatPersonNameInput: formatPersonNameInput,
     isValidRuPhone: isValidRuPhone,
     isValidPersonName: isValidPersonName,
     personNameError: personNameError,
@@ -502,8 +681,12 @@
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoBind);
+    document.addEventListener('DOMContentLoaded', function () {
+      autoBind();
+      autoBindLeadInputs();
+    });
   } else {
     autoBind();
+    autoBindLeadInputs();
   }
 })(typeof window !== 'undefined' ? window : this);

@@ -381,7 +381,7 @@ if (!$countryData) {
                         ${meal ? `<span class="th-tour-card__meal-badge">${meal}</span>` : ''}
                         <span class="th-tour-card__dep-city">Вылет: ${(window.TH_DEPARTURE && window.TH_DEPARTURE.name) ? String(window.TH_DEPARTURE.name).replace(/</g,'&lt;') : 'Самара'}</span>
                         <div class="th-tour-card__price-block">
-                            <span class="th-tour-card__price-label">за ${adultsN} взр.</span>
+                            <span class="th-tour-card__price-label">за <span class="th-tour-card__party-adults">${adultsN === 1 ? '1 взрослого' : adultsN + ' взрослых'}</span></span>
                             <span class="th-tour-card__price">${priceNum > 0 ? formatPrice(priceNum) : 'Уточняйте'}</span>
                             <span class="th-tour-card__dates">${datesMeta}</span>
                         </div>

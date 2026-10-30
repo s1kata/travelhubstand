@@ -25,6 +25,11 @@
 # Обычный поиск: exact/cover cache, Самара+Москва, популярные страны (~42 дня, near-first).
 30 0,8,14,20 * * * cd /path/to/travelhub-v2 && flock -n data/search_warm.lock bash backend/cron/warm_home_search_cache.sh >> data/home_search_warm.log 2>&1
 
+# Ночной поэтапный прогрев cover (все страны из popular_countries.php, горизонт ~30 дней).
+30 1 * * * cd /path/to/travelhub-v2 && flock -n data/search_warm_nightly.lock env WARM_NIGHTLY_PHASE=0 PHP_BIN=/usr/bin/php8.1 bash backend/cron/warm_home_search_nightly.sh >> data/home_search_warm_nightly.log 2>&1
+30 2 * * * cd /path/to/travelhub-v2 && flock -n data/search_warm_nightly.lock env WARM_NIGHTLY_PHASE=1 PHP_BIN=/usr/bin/php8.1 bash backend/cron/warm_home_search_nightly.sh >> data/home_search_warm_nightly.log 2>&1
+30 3 * * * cd /path/to/travelhub-v2 && flock -n data/search_warm_nightly.lock env WARM_NIGHTLY_PHASE=2 PHP_BIN=/usr/bin/php8.1 bash backend/cron/warm_home_search_nightly.sh >> data/home_search_warm_nightly.log 2>&1
+
 # Календарь: calendar_cache из cover + seed из promo (копия, без перезаписи promo_cache).
 20 1,9,15,21 * * * cd /path/to/travelhub-v2 && PHP_BIN=/usr/bin/php8.1 flock -n data/calendar_warm.lock bash backend/cron/warm_calendar_cache.sh >> data/calendar_warm.log 2>&1
 

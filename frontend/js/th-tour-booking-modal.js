@@ -25,27 +25,60 @@
     } catch (e) { return null; }
   }
 
+  var SUBMIT_LABEL = '✈ Отправить заявку менеджеру';
+
+  function setMsg(text, kind) {
+    if (!msgEl) return;
+    msgEl.textContent = text || '';
+    msgEl.classList.remove('hidden', 'is-visible', 'is-ok', 'is-err');
+    if (!text) {
+      msgEl.classList.add('hidden');
+      msgEl.hidden = true;
+      return;
+    }
+    msgEl.hidden = false;
+    msgEl.classList.add('is-visible', kind === 'ok' ? 'is-ok' : 'is-err');
+  }
+
   function openModal(payload) {
     if (!modal) return;
     currentPayload = payload || {};
     if (window.THLeadCapture && window.THLeadCapture.reachGoal) {
       window.THLeadCapture.reachGoal('booking_form_open', { source: 'card_booking' });
     }
+    var titleEl = document.getElementById('th-tour-booking-title');
+    if (titleEl) {
+      var promo = currentPayload.from_promo === '1' || currentPayload.from_promo === 1 || currentPayload.from_promo === true;
+      titleEl.textContent = promo ? 'Заявка на акционный тур' : 'Заявка на тур';
+    }
     var title = currentPayload.hotel_name || 'тур';
     var loc = [currentPayload.country, currentPayload.region].filter(Boolean).join(', ');
+    var summaryText = (loc ? loc + ' — ' : '') + title +
+      (currentPayload.price ? ' · ' + currentPayload.price + ' ₽' : '') +
+      (currentPayload.nights ? ' · ' + currentPayload.nights + ' ноч.' : '');
     if (summaryEl) {
-      summaryEl.textContent = (loc ? loc + ' — ' : '') + title +
-        (currentPayload.price ? ' · ' + currentPayload.price + ' ₽' : '') +
-        (currentPayload.nights ? ' · ' + currentPayload.nights + ' ноч.' : '');
+      if (summaryText && summaryText !== 'тур') {
+        summaryEl.textContent = summaryText;
+        summaryEl.classList.remove('hidden');
+        summaryEl.hidden = false;
+      } else {
+        summaryEl.textContent = '';
+        summaryEl.classList.add('hidden');
+        summaryEl.hidden = true;
+      }
     }
-    if (msgEl) {
-      msgEl.classList.add('hidden');
-      msgEl.textContent = '';
+    setMsg('', '');
+    if (form && window.THLeadCapture && window.THLeadCapture.bindLeadInputs) {
+      window.THLeadCapture.bindLeadInputs(form);
     }
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
     if (window.THMobile && window.THMobile.lockScroll) window.THMobile.lockScroll(true);
     var nameInp = document.getElementById('th-tb-name');
+    var phoneInpOpen = document.getElementById('th-tb-phone');
+    if (window.THLeadCapture && window.THLeadCapture.ensurePhoneDefault && phoneInpOpen) {
+      window.THLeadCapture.ensurePhoneDefault(phoneInpOpen);
+    }
     if (nameInp) try { nameInp.focus(); } catch (e) {}
   }
 
@@ -80,11 +113,10 @@
       });
       if (!check.ok) {
         trackBookingGoal('lead_validation_error');
-        if (msgEl) {
-          msgEl.textContent = check.error || 'Проверьте данные формы';
-          msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-          msgEl.classList.remove('hidden');
+        if (window.THLeadCapture.markLeadFormErrors && form) {
+          window.THLeadCapture.markLeadFormErrors(form, check);
         }
+        setMsg(check.error || 'Проверьте данные формы', 'err');
         return;
       }
       nameVal = check.name;
@@ -92,21 +124,13 @@
     } else {
       if (!nameVal || nameVal.length < 2 || !/^[\p{L}\s\-'.]+$/u.test(nameVal)) {
         trackBookingGoal('lead_validation_error');
-        if (msgEl) {
-          msgEl.textContent = 'Укажите корректные ФИО';
-          msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-          msgEl.classList.remove('hidden');
-        }
+        setMsg('Укажите корректное имя', 'err');
         return;
       }
       var cyr = nameVal.match(/\p{Script=Cyrillic}/gu);
       if (!cyr || cyr.length < 2) {
         trackBookingGoal('lead_validation_error');
-        if (msgEl) {
-          msgEl.textContent = 'Укажите ФИО русскими буквами';
-          msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-          msgEl.classList.remove('hidden');
-        }
+        setMsg('Укажите имя русскими буквами', 'err');
         return;
       }
       var phoneDigits = phoneVal.replace(/\D/g, '');
@@ -114,20 +138,12 @@
       var rest = phoneDigits.slice(1);
       if (phoneDigits.length !== 11 || phoneDigits[0] !== '7' || !rest || rest[0] !== '9' || /^(\d)\1{9}$/.test(rest)) {
         trackBookingGoal('lead_validation_error');
-        if (msgEl) {
-          msgEl.textContent = 'Укажите корректный мобильный телефон РФ (+7 9XX…)';
-          msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-          msgEl.classList.remove('hidden');
-        }
+        setMsg('Укажите корректный мобильный телефон РФ (+7 9XX…)', 'err');
         return;
       }
       if (!agreeInp || !agreeInp.checked) {
         trackBookingGoal('lead_validation_error');
-        if (msgEl) {
-          msgEl.textContent = 'Нужно согласие на обработку данных';
-          msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-          msgEl.classList.remove('hidden');
-        }
+        setMsg('Нужно согласие на обработку данных', 'err');
         return;
       }
     }
@@ -172,35 +188,29 @@
             window.THLeadCapture.reachGoal('lead_ok', { source: 'card_booking' });
             window.THLeadCapture.reachGoal('card_booking_lead_ok');
           }
-          if (msgEl) {
-            msgEl.textContent = (window.THLeadCapture && window.THLeadCapture.SUCCESS_MSG)
-              || 'Заявка отправлена. Ждите звонок с +7 (846) 254-16-56.';
-            msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--ok';
-            msgEl.classList.remove('hidden');
+          setMsg((window.THLeadCapture && window.THLeadCapture.SUCCESS_MSG)
+              || 'Заявка отправлена. Ждите звонок с +7 (846) 254-16-56.', 'ok');
+          if (form) {
+            form.reset();
+            var phoneAfterReset = document.getElementById('th-tb-phone');
+            if (window.THLeadCapture && window.THLeadCapture.ensurePhoneDefault && phoneAfterReset) {
+              window.THLeadCapture.ensurePhoneDefault(phoneAfterReset);
+            }
           }
-          if (form) form.reset();
           setTimeout(closeModal, 2500);
         } else {
           trackBookingGoal('lead_err');
-          if (msgEl) {
-            msgEl.textContent = (res.data && res.data.error) ? res.data.error : 'Не удалось отправить заявку';
-            msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-            msgEl.classList.remove('hidden');
-          }
+          setMsg((res.data && res.data.error) ? res.data.error : 'Не удалось отправить заявку', 'err');
         }
       })
       .catch(function () {
         trackBookingGoal('lead_err');
-        if (msgEl) {
-          msgEl.textContent = 'Ошибка сети. Попробуйте ещё раз.';
-          msgEl.className = 'th-tour-booking-modal__msg th-tour-booking-modal__msg--err';
-          msgEl.classList.remove('hidden');
-        }
+        setMsg('Ошибка сети. Попробуйте ещё раз.', 'err');
       })
       .finally(function () {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Отправить заявку';
+          submitBtn.textContent = SUBMIT_LABEL;
         }
       });
   }
@@ -226,7 +236,12 @@
       }
     });
 
-    if (form) form.addEventListener('submit', submitForm);
+    if (form) {
+      form.addEventListener('submit', submitForm);
+      if (window.THLeadCapture && window.THLeadCapture.bindLeadInputs) {
+        window.THLeadCapture.bindLeadInputs(form);
+      }
+    }
 
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && modal && modal.style.display !== 'none') closeModal();

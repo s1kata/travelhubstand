@@ -226,7 +226,7 @@ if ($is_guest_manager) {
     } else {
         $full_name = $form_name !== '' ? $form_name : trim((string) ($user['name'] ?? ''));
         if ($full_name === '') {
-            echo json_encode(['success' => false, 'error' => 'Укажите ФИО в форме или в профиле']);
+            echo json_encode(['success' => false, 'error' => 'Укажите имя в форме или в профиле']);
             exit;
         }
         $parts = preg_split('/\s+/u', $full_name, 2);

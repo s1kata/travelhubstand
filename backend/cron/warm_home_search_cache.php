@@ -12,14 +12,20 @@
  * Cover warm нельзя тянуть на 3 месяца в один прогон — бюджет live кончается,
  * ближний кэш холодеет → поиск уходит в live (~1 мин).
  *
- * Cron:
+ * Cron (днём — все страны, ближний приоритет):
  *   30 0,8,14,20 * * * cd /path/to/site && bash backend/cron/warm_home_search_cache.sh >> data/home_search_warm.log 2>&1
+ *
+ * Ночью — поэтапно все popular_countries, горизонт ~30 дней:
+ *   30 1 * * * ... WARM_NIGHTLY_PHASE=0 bash backend/cron/warm_home_search_nightly.sh >> data/home_search_warm_nightly.log 2>&1
+ *   30 2 * * * ... WARM_NIGHTLY_PHASE=1 ...
+ *   30 3 * * * ... WARM_NIGHTLY_PHASE=2 ...
  */
 declare(strict_types=1);
 
 require_once __DIR__ . '/../components/tourvisor_proxy_http_base.php';
 require_once __DIR__ . '/../config/departure_defaults.php';
 require_once __DIR__ . '/../components/tourvisor_search_cover.php';
+require_once __DIR__ . '/../components/home_search_warm_scope.php';
 
 $isCli = (php_sapi_name() === 'cli');
 if (!$isCli) {
@@ -46,10 +52,28 @@ if (is_file($envPath)) {
     }
 }
 
-$popularFile = dirname(__DIR__) . '/config/popular_countries.php';
-$popular = is_file($popularFile) ? require $popularFile : [];
-if (!is_array($popular) || $popular === []) {
-    $popular = [['id' => 4, 'name' => 'Турция']];
+/** @var list<string> $cliArgv */
+$cliArgv = $isCli && isset($argv) && is_array($argv) ? $argv : [];
+$scopeMeta = th_home_search_warm_resolve_scope($cliArgv);
+$scopeApplied = th_home_search_warm_apply_scope(th_home_search_warm_load_popular(), $scopeMeta);
+$popular = $scopeApplied['popular'];
+$warmScope = $scopeApplied['scope'];
+$warmPhase = $scopeApplied['phase'];
+$warmPhaseCount = $scopeApplied['phaseCount'];
+
+if ($popular === []) {
+    $out = [
+        'success' => true,
+        'mode' => 'empty-scope',
+        'warmScope' => $warmScope,
+        'warmPhase' => $warmPhase,
+        'warmPhaseCount' => $warmPhaseCount,
+        'warmed' => 0,
+        'errors' => 0,
+        'elapsedSec' => 0,
+    ];
+    echo json_encode($out, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
+    exit(0);
 }
 
 /** Самара первой — основной трафик; Москва добирается тем же бюджетом. */
@@ -370,6 +394,13 @@ foreach ($liveJobs as $job) {
 $out = [
     'success' => true,
     'mode' => 'cover-skip-extend-near-first',
+    'warmScope' => $warmScope,
+    'warmPhase' => $warmPhase,
+    'warmPhaseCount' => $warmPhaseCount,
+    'countriesInRun' => array_map(
+        static fn (array $r): int => (int) ($r['id'] ?? 0),
+        $popular
+    ),
     'departureIds' => $departureIds,
     'targetFrom' => $targetFrom,
     'targetTo' => $targetTo,

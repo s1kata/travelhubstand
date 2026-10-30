@@ -1,10 +1,10 @@
 <?php
 /**
- * Общая серверная валидация лидов (ФИО + телефон РФ).
+ * Общая серверная валидация лидов (имя + телефон РФ).
  * Используется uon-lead, office-lead, uon-booking, registration и др. — не дублировать правила.
  *
  * Правила (синхронизировать с frontend/js/th-lead-capture.js):
- * - ФИО: только кириллица (буквы/пробелы/дефис/апостроф), без латиницы и «мусорных» слов
+ * - Имя: одно слово, кириллица, без латиницы и «мусорных» слов
  * - Телефон: мобильный РФ +79XXXXXXXXX, без «одинаковых» и очевидных последовательностей
  * - Город (регистрация): реальное РФ/СНГ название, без фантазий вроде «Луна»
  * - Пароль (регистрация): не короче 8 и не из списка очевидных
@@ -50,64 +50,44 @@ if (!function_exists('th_lead_validate_person_name')) {
     /**
      * @return string|null текст ошибки на русском или null если ок
      */
-    function th_lead_validate_person_name(string $name, int $minLen = 2, int $maxLen = 100): ?string
+    function th_lead_validate_person_name(string $name, int $minLen = 2, int $maxLen = 40): ?string
     {
         $name = trim(preg_replace('/\s+/u', ' ', $name) ?? $name);
         if ($name === '') {
-            return 'Укажите ФИО';
+            return 'Укажите имя';
+        }
+        $parts = preg_split('/[\s\-]+/u', $name, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+        $name = (string) ($parts[0] ?? $name);
+        $name = preg_replace('/[^\p{Cyrillic}\-\']/u', '', $name) ?? $name;
+        if ($name === '') {
+            return 'Укажите имя';
         }
         if (mb_strlen($name) < $minLen) {
-            return 'Укажите корректные ФИО';
+            return 'Укажите корректное имя';
         }
         if (mb_strlen($name) > $maxLen) {
-            return 'ФИО слишком длинное';
+            return 'Имя слишком длинное';
         }
-        // Только кириллица (+ пробел/дефис/апостроф). Латиница («Lion …») — отклоняем.
-        if (!preg_match('/^[\p{Cyrillic}\s\-\'.]+$/u', $name)) {
+        if (!preg_match('/^[\p{Cyrillic}\-\']+$/u', $name)) {
             if (preg_match('/\p{Latin}/u', $name)) {
-                return 'Укажите ФИО русскими буквами';
+                return 'Укажите имя русскими буквами';
             }
-            return 'Укажите корректные ФИО';
+            return 'Укажите корректное имя';
         }
-        $compact = preg_replace('/[\s\-\'.]+/u', '', $name);
-        if (!is_string($compact)) {
-            $compact = '';
+        if (preg_match('/^(.)\1+$/u', $name)) {
+            return 'Укажите корректное имя';
         }
-        if (mb_strlen($compact) < 2) {
-            return 'Укажите корректные ФИО';
+        if (!preg_match('/[аеёиоуыэюя]/iu', $name)) {
+            return 'Укажите корректное имя';
         }
-        if ($compact !== '' && preg_match('/^(.)\1+$/u', $compact)) {
-            return 'Укажите корректные ФИО';
-        }
-        $cyrCount = preg_match_all('/\p{Cyrillic}/u', $name);
-        if ($cyrCount === false || $cyrCount < 2) {
-            return 'Укажите ФИО русскими буквами';
-        }
-        // Слишком «короткие» токены вперемешку (тест/никнеймы)
-        $parts = preg_split('/[\s\-]+/u', $name, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        if (count($parts) >= 2) {
-            $shortish = 0;
-            foreach ($parts as $p) {
-                if (mb_strlen($p) < 2) {
-                    return 'Укажите корректные ФИО';
-                }
-                if (mb_strlen($p) <= 2) {
-                    $shortish++;
-                }
-            }
-            if ($shortish >= 2 && count($parts) >= 3) {
-                return 'Укажите корректные ФИО';
-            }
-        }
-        // Явный мусор / тестовые клички
         $lower = mb_strtolower($name, 'UTF-8');
         $bannedExact = ['тест', 'test', 'asdf', 'qwerty', 'admin', 'user', 'имя', 'фамилия', 'фио', 'xxx', 'null', 'none'];
         if (in_array($lower, $bannedExact, true)) {
-            return 'Укажите корректные ФИО';
+            return 'Укажите корректное имя';
         }
-        foreach (['тест ', ' test', 'qwerty', 'asdf', 'admin', 'xxx'] as $b) {
+        foreach (['тест', ' test', 'qwerty', 'asdf', 'admin', 'xxx'] as $b) {
             if (mb_strpos($lower, $b) !== false) {
-                return 'Укажите корректные ФИО';
+                return 'Укажите корректное имя';
             }
         }
         return null;

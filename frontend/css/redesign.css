@@ -3385,10 +3385,19 @@ select.flatpickr-monthDropdown-months {
     line-height: 1.15;
 }
 .th-tour-card__price-label {
-    font-size: 11px;
-    color: #94a3b8;
-    margin-bottom: 1px;
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 2px;
     display: block;
+    line-height: 1.35;
+}
+.th-tour-card__party-adults {
+    color: #0f766e;
+    font-weight: 700;
+}
+.th-tour-card__dates .th-tour-card__party-adults {
+    color: #0d9488;
+    font-weight: 700;
 }
 .th-tour-card__price-hint {
     display: block;
