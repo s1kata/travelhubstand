@@ -49,6 +49,9 @@
         if (typeof window.thLoadYandexMetrika === 'function') {
             try { window.thLoadYandexMetrika(); } catch (e4) { /* ignore */ }
         }
+        if (typeof window.thLoadAvitoPixel === 'function') {
+            try { window.thLoadAvitoPixel(); } catch (e5) { /* ignore */ }
+        }
     }
 
     function removeBanner(banner) {

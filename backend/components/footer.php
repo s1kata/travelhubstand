@@ -124,4 +124,6 @@ if (!defined('TH_PROMO_TIMER_INCLUDED')) {
 <?php
 require_once __DIR__ . '/yandex_metrika.php';
 th_yandex_metrika_print_snippet();
+require_once __DIR__ . '/avito_pixel.php';
+th_avito_pixel_print_snippet();
 ?>
