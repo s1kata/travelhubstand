@@ -4085,8 +4085,13 @@
             send.then(function (data) {
                 if (data && data.success) {
                     ymGoal('promo_lead_success');
-                    /* lead_ok уже стреляет THLeadCapture.submit */
-                    if (!usedLeadCapture) ymGoal('lead_ok');
+                    /* lead_ok / Avito — THLeadCapture.submit; fallback — вручную */
+                    if (!usedLeadCapture) {
+                        ymGoal('lead_ok');
+                        if (window.THLeadCapture && typeof window.THLeadCapture.dispatchLeadOk === 'function') {
+                            window.THLeadCapture.dispatchLeadOk({ source: leadSource });
+                        }
+                    }
                     promoYm('promo_lead_submit');
                     form.reset();
                     if (msgBox) {

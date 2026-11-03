@@ -1300,6 +1300,9 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 if (data && data.success) {
                     tourYmGoal('tour_booking_success');
                     tourYmGoal('lead_ok', { source: 'tour_detail' });
+                    if (window.THLeadCapture && typeof window.THLeadCapture.dispatchLeadOk === 'function') {
+                        window.THLeadCapture.dispatchLeadOk({ source: 'tour_detail' });
+                    }
                     if (type === 'with_payment') {
                         startTbankPayment();
                     } else {

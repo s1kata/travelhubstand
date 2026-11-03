@@ -35,6 +35,43 @@
     } catch (e) {}
   }
 
+  function avitoPixelId() {
+    try {
+      var n = parseInt(String(global.__TH_AVITO_PIXEL_ID || '3930704').replace(/\D/g, ''), 10);
+      if (n) return n;
+    } catch (eId) {}
+    return 3930704;
+  }
+
+  /**
+   * Avito Pixel: цель «заявка принята» — только после успешного ответа API (см. th:lead_ok).
+   */
+  function reachAvitoApplicationSent() {
+    try {
+      var w = global;
+      if (!w._apxl) {
+        w._apxl = [];
+      }
+      w._apxl.q = w._apxl.q || [];
+      if (typeof w._apxl.sendEvent !== 'function') {
+        w._apxl.sendEvent = function (args) {
+          w._apxl.q.push([args, w.location.href, (new Date()).getTime()]);
+        };
+      }
+      w._apxl.sendEvent({
+        type: 'reachGoal',
+        id: avitoPixelId(),
+        goalName: 'application_sent'
+      });
+    } catch (eApx) {}
+  }
+
+  function dispatchLeadOk(detail) {
+    try {
+      global.document.dispatchEvent(new CustomEvent('th:lead_ok', { detail: detail || {} }));
+    } catch (eOk) {}
+  }
+
   function pageMeta() {
     var path = '';
     try { path = location.pathname + location.search; } catch (e) {}
@@ -395,7 +432,7 @@
           if (src === 'slow_search_lead') reachGoal('slow_search_lead');
           if (src === 'abandon_sheet') reachGoal('abandon_sheet_lead');
           if (src.indexOf('empty') >= 0 || src === 'empty-state') reachGoal('empty_state_lead');
-          try { global.document.dispatchEvent(new CustomEvent('th:lead_ok', { detail: { source: src } })); } catch (e3) {}
+          dispatchLeadOk({ source: src });
           return {
             success: true,
             message: data.message || defaultSuccessMessage()
@@ -658,6 +695,10 @@
   global.addEventListener('th:cookie-consent-accepted', trackPageFunnelStage);
   trackPageFunnelStage();
 
+  global.document.addEventListener('th:lead_ok', function () {
+    reachAvitoApplicationSent();
+  });
+
   global.THLeadCapture = {
     submit: submitLead,
     bindForm: bindForm,
@@ -666,6 +707,8 @@
     clearLeadFormFieldErrors: clearLeadFormFieldErrors,
     normalizeFirstName: normalizeFirstName,
     reachGoal: reachGoal,
+    reachAvitoApplicationSent: reachAvitoApplicationSent,
+    dispatchLeadOk: dispatchLeadOk,
     formatPhoneInput: formatPhoneInput,
     ensurePhoneDefault: ensurePhoneDefault,
     formatPersonNameInput: formatPersonNameInput,

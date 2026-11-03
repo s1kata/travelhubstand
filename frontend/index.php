@@ -6063,8 +6063,14 @@ if ($th_search_ui_raw === 'legacy') {
                     .then(function (data) {
                         if (data && data.success) {
                             ymg('main_quick_lead_ok');
-                            if (window.THLeadCapture) window.THLeadCapture.reachGoal('lead_ok', { source: 'home_quick_lead' });
-                            else ymg('lead_ok');
+                            if (window.THLeadCapture) {
+                                window.THLeadCapture.reachGoal('lead_ok', { source: 'home_quick_lead' });
+                                if (typeof window.THLeadCapture.dispatchLeadOk === 'function') {
+                                    window.THLeadCapture.dispatchLeadOk({ source: 'home_quick_lead' });
+                                }
+                            } else {
+                                ymg('lead_ok');
+                            }
                             f.reset();
                             if (msg) {
                                 msg.textContent = 'Заявка отправлена. Менеджер свяжется с вами в рабочее время.';

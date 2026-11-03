@@ -36,6 +36,7 @@ if (!function_exists('th_avito_pixel_print_snippet')) {
 <script>
 (function () {
     var AVITO_PIXEL_ID = <?php echo $idInt; ?>;
+    window.__TH_AVITO_PIXEL_ID = AVITO_PIXEL_ID;
     var TAG_SRC = <?php echo json_encode($tagSrc, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES); ?>;
 
     function hasCookieAnalyticsConsent() {

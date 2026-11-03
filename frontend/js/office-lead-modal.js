@@ -244,6 +244,9 @@
             source: 'office',
             office_city: officeCity
           });
+          if (j && j.success && typeof THLeadCapture.dispatchLeadOk === 'function') {
+            THLeadCapture.dispatchLeadOk({ source: 'office', office_city: officeCity });
+          }
         }
         done(j && j.success
           ? { success: true, message: j.message || 'Заявка принята.' }

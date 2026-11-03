@@ -188,6 +188,9 @@
             window.THLeadCapture.reachGoal('lead_ok', { source: 'card_booking' });
             window.THLeadCapture.reachGoal('card_booking_lead_ok');
           }
+          if (window.THLeadCapture && window.THLeadCapture.dispatchLeadOk) {
+            window.THLeadCapture.dispatchLeadOk({ source: 'card_booking' });
+          }
           setMsg((window.THLeadCapture && window.THLeadCapture.SUCCESS_MSG)
               || 'Заявка отправлена. Ждите звонок с +7 (846) 254-16-56.', 'ok');
           if (form) {
