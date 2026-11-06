@@ -1281,6 +1281,11 @@
                 });
                 needs.needed = needs.needed || rowNeeds.needed;
             });
+            if (opts.fullPackage) {
+                needs.needFlights = true;
+                needs.needTour = true;
+                needs.needed = true;
+            }
             packageNeedsById[tid] = needs;
         });
         if (opts.priorityTourIds) {

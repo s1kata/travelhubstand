@@ -3848,6 +3848,23 @@ if ($th_search_ui_raw === 'legacy') {
             if (msg && text) msg.textContent = text;
             if (sub && subText !== undefined) sub.textContent = subText;
         }
+        function tvReleaseLoaderIfFirstPageDrawn() {
+            if (thIsHotelSearchMode()) {
+                window.__tvTourCardsPending = false;
+                tvLoaderHide();
+                return;
+            }
+            var total = Array.isArray(tvLastResults) ? tvLastResults.length : 0;
+            var need = Math.min(TV_PAGE_SIZE, total);
+            var root = document.getElementById('tv-search-results');
+            var drawn = root ? root.querySelectorAll('article.th-tour-card:not(.th-tour-card--skeleton)').length : 0;
+            if (need <= 0 || drawn < need) return;
+            if (drawn >= TV_PAGE_SIZE || !window.__tvSearchBusy) {
+                window.__tvTourCardsPending = false;
+                tvLoaderHide();
+            }
+        }
+
         function tvLoaderHide() {
             const el = document.getElementById('tv-search-loader');
             if (tvLoaderRotateInterval) { clearInterval(tvLoaderRotateInterval); tvLoaderRotateInterval = null; }
@@ -4219,6 +4236,7 @@ if ($th_search_ui_raw === 'legacy') {
             window.__thFlightsLoadGen = (window.__thFlightsLoadGen || 0) + 1;
             window.__thDeferHeavyCards = true;
             window.__tvSearchBusy = true;
+            window.__tvTourCardsPending = false;
             if (window.THTourCard && typeof window.THTourCard.clearCarouselHydrateQueue === 'function') {
                 window.THTourCard.clearCarouselHydrateQueue();
             }
@@ -4324,7 +4342,6 @@ if ($th_search_ui_raw === 'legacy') {
             if (swrHit) {
                 paintedFromSwr = true;
                 paintedAny = true;
-                tvLoaderHide();
                 tvPaintSearchHotels(swrHit.data, '%c[Главная · Поиск] Session SWR', { fromCache: true });
             } else if (!softSearch) {
                 tvLoaderShow();
@@ -4394,9 +4411,8 @@ if ($th_search_ui_raw === 'legacy') {
                             copy._thDirectWave = true;
                             return copy;
                         });
-                        if (!paintedAny && !softSearch) {
+                        if (!paintedAny && !softSearch && hotelModeSearch) {
                             paintedAny = true;
-                            tvLoaderHide();
                             tvShowLiveRefine(true, 'Показаны прямые рейсы · подгружаем остальные варианты…');
                             tvPaintSearchHotels(earlyDirectHotels, '%c[Главная · Поиск] Early direct (cache TH/VN/LK)', { fromCache: true });
                             try {
@@ -4413,7 +4429,6 @@ if ($th_search_ui_raw === 'legacy') {
                         ? tvMergeHotelsDirectFirst(earlyDirectHotels, rCache.data)
                         : rCache.data;
                     if (tvCountPlausibleHotels(paintListCache) > 0) {
-                        tvLoaderHide();
                         tvShowLiveRefine(false);
                         var progOk = document.getElementById('tv-search-progress');
                         if (progOk) progOk.classList.add('hidden');
@@ -4468,11 +4483,11 @@ if ($th_search_ui_raw === 'legacy') {
                         gen: searchGen,
                         earlyProgress: 30,
                         softMaxMs: 16000,
+                        finalLimit: hotelModeSearch ? 200 : 80,
                         resultFetchOpts: searchLiveResultsOpts,
-                        onPartial: function (list, meta) {
+                        onPartial: hotelModeSearch ? function (list, meta) {
                             if (tvIsSearchStale()) return;
                             paintedAny = true;
-                            tvLoaderHide();
                             var merged = preferDirectFirst
                                 ? tvMergeHotelsDirectFirst(earlyDirectHotels, list)
                                 : list;
@@ -4489,7 +4504,7 @@ if ($th_search_ui_raw === 'legacy') {
                                     wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }
                             } catch (eScr) {}
-                        }
+                        } : null
                     });
                     if (tvIsSearchStale()) return;
 
@@ -4514,19 +4529,19 @@ if ($th_search_ui_raw === 'legacy') {
                             gen: searchGen,
                             earlyProgress: 30,
                             softMaxMs: 16000,
+                            finalLimit: hotelModeSearch ? 200 : 80,
                             resultFetchOpts: searchLiveResultsOpts,
-                            onPartial: function (list, meta) {
+                            onPartial: hotelModeSearch ? function (list, meta) {
                                 if (tvIsSearchStale()) return;
                                 paintedAny = true;
                                 usedAltNights = true;
                                 tvShowAltNightsBanner(true, origNFrom, origNTo);
-                                tvLoaderHide();
                                 tvShowLiveRefine(true, 'Показываем первые варианты · уточняем цены…');
                                 tvPaintSearchHotels(
                                     preferDirectFirst ? tvMergeHotelsDirectFirst(earlyDirectHotels, list) : list,
                                     '%c[Главная · Поиск] Early paint (alt nights)'
                                 );
-                            }
+                            } : null
                         });
                         if (tvIsSearchStale()) return;
                         if (altLive.success && Array.isArray(altLive.data) && altLive.data.length > 0) {
@@ -4542,11 +4557,19 @@ if ($th_search_ui_raw === 'legacy') {
             } finally {
                 if (tvIsSearchStale()) return;
                 window.__tvSearchBusy = false;
-                if (!softSearch) tvLoaderSetStage('done');
                 var progEnd = document.getElementById('tv-search-progress');
                 if (progEnd) progEnd.classList.add('hidden');
-                if (!paintedAny && !softSearch) await new Promise(r => setTimeout(r, 120));
-                tvLoaderHide();
+                var tourRows = (!thIsHotelSearchMode() && rCache && rCache.success && Array.isArray(rCache.data)) ? rCache.data : [];
+                var tourCardsDrawn = !!document.querySelector('#tv-search-results article.th-tour-card:not(.th-tour-card--skeleton)');
+                if (tourRows.length > 0 && tvCountPlausibleHotels(tourRows) > 0 && !tourCardsDrawn) {
+                    window.__tvTourCardsPending = true;
+                }
+                if (tourCardsDrawn) tvReleaseLoaderIfFirstPageDrawn();
+                if (!window.__tvTourCardsPending) {
+                    if (!softSearch) tvLoaderSetStage('done');
+                    if (!paintedAny && !softSearch) await new Promise(r => setTimeout(r, 120));
+                    tvLoaderHide();
+                }
                 tvShowLiveRefine(false);
                 try {
                     var wrapClr = document.getElementById('tv-results-wrapper');
@@ -5313,10 +5336,14 @@ if ($th_search_ui_raw === 'legacy') {
             var searchGeneration = window.__tvSearchGen;
             var flightLoadGeneration = window.__thFlightsLoadGen;
 
+            function sliceStillCurrent() {
+                return renderGeneration === tvResultsRenderGeneration
+                    && searchGeneration === window.__tvSearchGen
+                    && flightLoadGeneration === window.__thFlightsLoadGen;
+            }
+
             function renderSlice() {
-                if (renderGeneration !== tvResultsRenderGeneration
-                    || searchGeneration !== window.__tvSearchGen
-                    || flightLoadGeneration !== window.__thFlightsLoadGen) return;
+                if (!sliceStillCurrent()) return;
                 tvSetResultsPackageLoading(false);
                 renderTvResults(slice);
                 tvCompareSyncButtons();
@@ -5325,34 +5352,53 @@ if ($th_search_ui_raw === 'legacy') {
                 if (tvResEl && window.THTourCard && typeof window.THTourCard.mountInContainer === 'function') {
                     window.THTourCard.mountInContainer(tvResEl);
                 }
-                if (!opts.skipFlights && !thIsHotelSearchMode()) {
-                    tvKickSearchFlightsLoad(slice, {
-                        allHotels: tvLastResults.slice(),
-                        immediate: true,
-                        onDone: function () {
-                            if (renderGeneration !== tvResultsRenderGeneration
-                                || searchGeneration !== window.__tvSearchGen
-                                || flightLoadGeneration !== window.__thFlightsLoadGen) return;
-                            var preferDirect = !thIsHotelSearchMode()
-                                && window.__tvSearchFlightFlags
-                                && window.__tvSearchFlightFlags.preferDirect
-                                && !window.__tvSearchFlightFlags.onlyDirect;
-                            if (preferDirect) {
-                                tvMaybeResortDirectPriority();
-                                applyTvSort({ skipFlights: true });
-                            }
-                        }
-                    });
-                }
                 if (!window.__tvRestoringFromBack) saveTvMainSearchSnapshot();
+            }
+
+            function kickRemainingFlights() {
+                if (opts.skipFlights || thIsHotelSearchMode() || !sliceStillCurrent()) return;
+                var rest = tvLastResults.slice(TV_PAGE_SIZE);
+                if (!rest.length) return;
+                tvKickSearchFlightsLoad(rest, {
+                    allHotels: rest,
+                    immediate: true,
+                    skipVisibleFirst: true,
+                    onDone: function () {
+                        if (!sliceStillCurrent()) return;
+                        var preferDirectNow = !thIsHotelSearchMode()
+                            && window.__tvSearchFlightFlags
+                            && window.__tvSearchFlightFlags.preferDirect
+                            && !window.__tvSearchFlightFlags.onlyDirect;
+                        if (preferDirectNow) {
+                            tvMaybeResortDirectPriority();
+                            applyTvSort({ skipFlights: true });
+                        }
+                    }
+                });
             }
 
             if (opts.skipFlights || thIsHotelSearchMode() || !slice.length) {
                 renderSlice();
+                if (!slice.length && !window.__tvSearchBusy) {
+                    window.__tvTourCardsPending = false;
+                    tvLoaderHide();
+                }
                 return;
             }
 
-            renderSlice();
+            /* Лоадер гаснет, когда нарисованы первые 25 туров (или все, если их меньше и поиск уже закончен). */
+            var flightsPainted = false;
+            window.__tvTourCardsPending = true;
+            function paintSliceWithFlights() {
+                if (flightsPainted) return;
+                flightsPainted = true;
+                if (!sliceStillCurrent()) return;
+                renderSlice();
+                tvReleaseLoaderIfFirstPageDrawn();
+                kickRemainingFlights();
+            }
+            tvAwaitVisibleFlights(slice, paintSliceWithFlights);
+            if (!flightsPainted) tvSetResultsPackageLoading(true);
         }
 
         function updateTvLoadMoreButton() {
@@ -5392,6 +5438,42 @@ if ($th_search_ui_raw === 'legacy') {
         var tvFlightLoadTimer = null;
         function loadMainFlightsForTours(hotels, callback) {
             tvKickSearchFlightsLoad(hotels, { onDone: callback });
+        }
+
+        /**
+         * Рейсы первой страницы. Карточки рисуем, когда пачка собрана или через 8 с — зависший пакет не держит экран.
+         */
+        function tvAwaitVisibleFlights(hotels, onReady) {
+            var finished = false;
+            function finish() {
+                if (finished) return;
+                finished = true;
+                if (typeof onReady === 'function') onReady();
+            }
+            var timer = setTimeout(finish, 8000);
+            var base = typeof TV_API_BASE !== 'undefined' ? TV_API_BASE : '';
+            if (!base || !hotels || !hotels.length || typeof thLoadTourFlightsForHotels !== 'function') {
+                clearTimeout(timer);
+                finish();
+                return;
+            }
+            var depActiveFl = tvEffectiveSearchDeparture();
+            var container = document.getElementById('tv-search-results');
+            thLoadTourFlightsForHotels(hotels, {
+                apiBase: base,
+                departureCity: depActiveFl.name || 'Самара',
+                departureId: depActiveFl.id,
+                maxConcurrent: 4,
+                waveSize: 0,
+                maxTours: hotels.length,
+                loadGen: window.__thFlightsLoadGen,
+                getTourId: getMainTourId,
+                patchContainer: container,
+                onDone: function () {
+                    clearTimeout(timer);
+                    finish();
+                }
+            });
         }
 
         function tvKickSearchFlightsLoad(priorityHotels, opts) {
@@ -5446,7 +5528,7 @@ if ($th_search_ui_raw === 'legacy') {
                             }
                         }));
                     }
-                    if (container && typeof thLoadFlightsForVisibleCards === 'function') {
+                    if (!opts.skipVisibleFirst && container && typeof thLoadFlightsForVisibleCards === 'function') {
                         thLoadFlightsForVisibleCards(container, Object.assign({}, flightOptsBase, {
                             maxTours: 0,
                             onDone: function () {
