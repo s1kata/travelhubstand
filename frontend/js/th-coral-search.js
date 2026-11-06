@@ -678,9 +678,12 @@ THSearchUI.prototype.openDates = function () {
         qsa('[data-th-search-open]', this.root).forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                /* Rail в wizard: только смена шага (data-thw-goto). Sheet — по клику на поле в панели. */
-                if (btn.hasAttribute('data-thw-goto') && window.THTourSearchWizard) {
-                    return;
+                /* Плитки rail = те же триггеры, что и поля шагов: открываем тот же sheet/popup. Шаг синхронизирует TourSearchWizard. */
+                if (btn.hasAttribute('data-thw-goto') && window.THTourSearchWizard && typeof window.THTourSearchWizard.go === 'function') {
+                    var stepNum = parseInt(btn.getAttribute('data-thw-goto'), 10);
+                    if (stepNum) {
+                        try { window.THTourSearchWizard.go(stepNum, true); } catch (eWz) {}
+                    }
                 }
                 var target = btn.getAttribute('data-th-search-open');
                 if (target === 'country' || target === 'departure') {

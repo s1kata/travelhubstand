@@ -101,27 +101,46 @@
         return false;
     }
 
+    /** Текст вылета для сопоставления с городом: все сегменты «туда» (чартер/стыковка). */
+    function forwardDepartureMatchText(pkg) {
+        if (!pkg || !Array.isArray(pkg.forward) || !pkg.forward.length) return '';
+        var parts = [];
+        pkg.forward.forEach(function (leg) {
+            var t = portDepText(leg);
+            if (t) parts.push(t);
+        });
+        return parts.join(' ');
+    }
+
+    function packageMatchesDepartureHints(pkg, hints) {
+        if (!hints || !hints.length || !pkg || !Array.isArray(pkg.forward)) return false;
+        for (var i = 0; i < pkg.forward.length; i++) {
+            var leg = pkg.forward[i];
+            var depTxt = portDepText(leg);
+            if (portTextIsBlocked(depTxt)) continue;
+            if (depTextMatchesHints(depTxt, hints)) return true;
+        }
+        return false;
+    }
+
     function pickTourvisorFlightPackage(flights, cityHint, departureIdHint) {
         if (!flights || !flights.length) return null;
         var hints = mergeDepartureHints(cityHint, departureIdHint);
         if (hints.length) {
             for (var i = 0; i < flights.length; i++) {
                 var f = flights[i];
-                var fw = f.forward && f.forward[0];
-                var depTxt = portDepText(fw);
-                if (portTextIsBlocked(depTxt)) continue;
-                if (depTextMatchesHints(depTxt, hints)) return f;
+                if (packageMatchesDepartureHints(f, hints)) return f;
             }
         }
         for (var j = 0; j < flights.length; j++) {
             if (!flights[j]) continue;
-            var fw3 = flights[j].forward && flights[j].forward[0];
-            if (portTextIsBlocked(portDepText(fw3))) continue;
+            var agg = forwardDepartureMatchText(flights[j]);
+            if (portTextIsBlocked(agg)) continue;
             if (flights[j].isDefault) return flights[j];
         }
         for (var m = 0; m < flights.length; m++) {
-            var fw4 = flights[m].forward && flights[m].forward[0];
-            if (!portTextIsBlocked(portDepText(fw4))) return flights[m];
+            var agg2 = forwardDepartureMatchText(flights[m]);
+            if (!portTextIsBlocked(agg2)) return flights[m];
         }
         return null;
     }
@@ -379,6 +398,81 @@
         return dep || arr;
     }
 
+    /** Одна строка по сегменту: авиакомпания · рейс · маршрут · багаж (если есть). */
+    function thFlightLegDetailLine(leg) {
+        if (!leg || typeof leg !== 'object') return '';
+        var airline = legCompanyName(leg);
+        var num = String(leg.number || leg.flightNumber || leg.flight || leg.flightNum || '').trim();
+        var dep = legPortLabel(leg, 'departure');
+        var arr = legPortLabel(leg, 'arrival');
+        var route = '';
+        if (dep && arr) route = dep + ' \u2192 ' + arr;
+        else route = dep || arr;
+        var bag = String(leg.baggage || leg.luggage || leg.baggageAllowance || (leg.baggageInfo && leg.baggageInfo.text) || '').trim();
+        var parts = [];
+        if (airline && num) parts.push(airline + ' ' + num);
+        else if (airline) parts.push(airline);
+        else if (num) parts.push('\u0420\u0435\u0439\u0441 ' + num);
+        if (route) parts.push(route);
+        if (bag) parts.push(bag);
+        return parts.length ? parts.join(' \u00b7 ') : '';
+    }
+
+    function thFlightLegDetailLines(legs) {
+        if (!Array.isArray(legs) || !legs.length) return [];
+        var out = [];
+        legs.forEach(function (leg) {
+            var ln = thFlightLegDetailLine(leg);
+            if (ln) out.push(ln);
+        });
+        return out;
+    }
+
+    /**
+     * HTML содержимого .th-flight-pkgs__legs: сводка + по сегментам при наличии данных.
+     *
+     * @param {object|null} pkg
+     * @param {function(string): string} escHtml
+     * @return {string}
+     */
+    function thFlightPkgLegsInnerHtml(pkg, escHtml) {
+        if (typeof escHtml !== 'function') escHtml = function (s) { return String(s || ''); };
+        var fwd = pkg && pkg.forward;
+        var bwd = pkg && (pkg.backward || pkg.back);
+        var fwdSegs = thFlightLegDetailLines(Array.isArray(fwd) ? fwd : []);
+        var bwdSegs = thFlightLegDetailLines(Array.isArray(bwd) ? bwd : []);
+        var fwdSum = thFlightDirectionLine(Array.isArray(fwd) ? fwd : []);
+        var bwdSum = thFlightDirectionLine(Array.isArray(bwd) ? bwd : []);
+        var html = '';
+        function groupBlock(label, summary, segs) {
+            if (!summary && (!segs || !segs.length)) return '';
+            var inner = '<div class="th-flight-pkg__leg"><span class="th-flight-pkg__leg-label">' + escHtml(label) + '</span>';
+            if (summary) inner += '<span class="th-flight-pkg__route">' + escHtml(summary) + '</span>';
+            inner += '</div>';
+            if (segs && segs.length) {
+                inner += '<div class="th-flight-pkg__sublegs" role="list">';
+                segs.forEach(function (s) {
+                    inner += '<div class="th-flight-pkg__subleg" role="listitem">' + escHtml(s) + '</div>';
+                });
+                inner += '</div>';
+            }
+            return '<div class="th-flight-pkg__leg-group">' + inner + '</div>';
+        }
+        html += groupBlock('\u0422\u0443\u0434\u0430', fwdSum, fwdSegs);
+        html += groupBlock('\u041e\u0431\u0440\u0430\u0442\u043d\u043e', bwdSum, bwdSegs);
+        if (html !== '') return html;
+        var lines = [];
+        if (fwdSum) lines.push(fwdSum);
+        if (bwdSum) lines.push(bwdSum);
+        if (!lines.length) {
+            return '<div class="th-flight-pkg__leg"><span>\u0414\u0435\u0442\u0430\u043b\u0438 \u0443\u0442\u043e\u0447\u043d\u044f\u044e\u0442\u0441\u044f \u0443 \u0442\u0443\u0440\u043e\u043f\u0435\u0440\u0430\u0442\u043e\u0440\u0430</span></div>';
+        }
+        return lines.map(function (ln, li) {
+            var lab = li === 0 ? '\u0422\u0443\u0434\u0430' : '\u041e\u0431\u0440\u0430\u0442\u043d\u043e';
+            return '<div class="th-flight-pkg__leg"><span class="th-flight-pkg__leg-label">' + escHtml(lab) + '</span><span class="th-flight-pkg__route">' + escHtml(ln) + '</span></div>';
+        }).join('');
+    }
+
     function thFlightPackageLines(pkg) {
         var lines = [];
         var fwd = thFlightDirectionLine(pkg && pkg.forward);
@@ -406,7 +500,6 @@
     }
 
     function thFlightPkgCardHtml(pkg, idx, selectedIdx, info) {
-        var lines = thFlightPackageLines(pkg);
         var airlines = collectCompaniesFromPackage(pkg);
         var priceNum = thFlightPackagePriceNum(pkg, info);
         var priceTxt = priceNum > 0 ? priceNum.toLocaleString('ru-RU') + ' \u20bd' : '';
@@ -419,15 +512,7 @@
         var badgeHtml = badges.map(function (b) {
             return '<span class="th-flight-pkg__badge">' + escHtml(b) + '</span>';
         }).join('');
-        var linesHtml = '';
-        if (lines.length) {
-            linesHtml = lines.map(function (ln, li) {
-                var label = li === 0 ? '\u0422\u0443\u0434\u0430' : '\u041e\u0431\u0440\u0430\u0442\u043d\u043e';
-                return '<div class="th-flight-pkg__leg"><span class="th-flight-pkg__leg-label">' + label + '</span><span>' + escHtml(ln) + '</span></div>';
-            }).join('');
-        } else {
-            linesHtml = '<div class="th-flight-pkg__leg"><span>\u0414\u0435\u0442\u0430\u043b\u0438 \u0443\u0442\u043e\u0447\u043d\u044f\u044e\u0442\u0441\u044f \u0443 \u0442\u0443\u0440\u043e\u043f\u0435\u0440\u0430\u0442\u043e\u0440\u0430</span></div>';
-        }
+        var linesHtml = thFlightPkgLegsInnerHtml(pkg, escHtml);
         return (
             '<button type="button" class="th-flight-pkg' + (idx === selectedIdx ? ' is-selected' : '') + '" data-th-flight-idx="' + idx + '">' +
             '<div class="th-flight-pkg__body">' +
@@ -699,7 +784,7 @@
             else if (!subline && time) subline = time;
         }
         var hasFlightData = !!subline;
-        if (!subline) subline = '\u0423\u0442\u043e\u0447\u043d\u0438\u0442\u0435 \u0443 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430';
+        if (!subline) subline = '\u041d\u0430\u043b\u0438\u0447\u0438\u0435 \u0430\u0432\u0438\u0430\u0431\u0438\u043b\u0435\u0442\u043e\u0432 \u0443\u0442\u043e\u0447\u043d\u0438\u0442\u0435 \u0443 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430';
         var subClass = hasFlightData
             ? 'th-tour-card__flight-sub'
             : 'th-tour-card__flight-sub th-tour-card__flight-sub--stub';
@@ -726,6 +811,7 @@
     var TH_TOUR_FLIGHTS_FAIL_TTL_MS = 900000;
     global.__thFlightsPending = global.__thFlightsPending || Object.create(null);
     global.__thFlightsFailed = global.__thFlightsFailed || Object.create(null);
+    global.__thFlightsNoData = global.__thFlightsNoData || Object.create(null);
 
     function thFlightMetaReady(tourId, depCity) {
         var meta = thFlightsCacheGet(tourId, depCity);
@@ -738,6 +824,7 @@
         if (!tid) return;
         global.__thFlightsPending[tid] = true;
         delete global.__thFlightsFailed[tid];
+        delete global.__thFlightsNoData[tid];
     }
 
     function thFlightLoadClearPending(tourId) {
@@ -746,10 +833,23 @@
         delete global.__thFlightsPending[tid];
     }
 
+    function thFlightLoadMarkNoData(tourId) {
+        var tid = String(tourId || '');
+        if (!tid) return;
+        delete global.__thFlightsPending[tid];
+        delete global.__thFlightsFailed[tid];
+        global.__thFlightsNoData[tid] = true;
+    }
+
+    function thFlightLoadIsNoData(tourId) {
+        return !!global.__thFlightsNoData[String(tourId || '')];
+    }
+
     function thFlightLoadMarkFailed(tourId) {
         var tid = String(tourId || '');
         if (!tid) return;
         delete global.__thFlightsPending[tid];
+        delete global.__thFlightsNoData[tid];
         global.__thFlightsFailed[tid] = true;
         try {
             global.__thFlightGoalFired = global.__thFlightGoalFired || Object.create(null);
@@ -772,6 +872,7 @@
     function thFlightLoadResetAll() {
         global.__thFlightsPending = Object.create(null);
         global.__thFlightsFailed = Object.create(null);
+        global.__thFlightsNoData = Object.create(null);
     }
 
     function thTourFlightsFailKey(tourId) {
@@ -940,6 +1041,18 @@
         };
     }
 
+    /**
+     * ТО не вернул рейсы / список пуст — не кэшируем как «ошибка запроса» (иначе ретраи не помогают).
+     */
+    function thMarkTourFlightsNoData(tourId, err) {
+        var key = thTourFlightsFailKey(tourId);
+        thTourFlightsFailMemo[key] = {
+            ts: Date.now(),
+            error: String(err || 'no operator flights'),
+            _noData: true
+        };
+    }
+
     function thFetchTourFlightsJson(tourId, opts) {
         opts = opts || {};
         var tid = String(tourId || '');
@@ -973,7 +1086,12 @@
         }
         var recentFail = thTourFlightsRecentFail(tid);
         if (!opts.force && includeFlights && !includeTour && !roomIds.length && recentFail) {
-            return Promise.resolve({ success: false, error: recentFail.error, _memoFail: true });
+            return Promise.resolve({
+                success: false,
+                error: recentFail.error,
+                _memoFail: true,
+                _memoNoData: !!recentFail._noData
+            });
         }
         if (thTourFlightsInflight[inflightKey]) {
             return thTourFlightsInflight[inflightKey];
@@ -1026,7 +1144,11 @@
             if (includeFlights && j.flightSuccess === false) {
                 var flightError = j.flightError || 'no flights';
                 if (j.operatorNoFlights || j.tourGone) {
-                    thMarkTourFlightsFail(tid, flightError);
+                    if (j.operatorNoFlights && !j.tourGone) {
+                        thMarkTourFlightsNoData(tid, flightError);
+                    } else {
+                        thMarkTourFlightsFail(tid, flightError);
+                    }
                     return Object.assign({}, j, {
                         success: false,
                         error: flightError,
@@ -1054,7 +1176,7 @@
                     if (typeof tvErr === 'string') reason = tvErr;
                     else reason = String(tvErr.reason || tvErr.message || tvErr.code || reason);
                 }
-                thMarkTourFlightsFail(tid, reason);
+                thMarkTourFlightsNoData(tid, reason);
                 return {
                     success: false,
                     error: reason,
@@ -1279,9 +1401,17 @@
                 } catch (eFlOk) {}
                 return;
             }
-            /* Пустой ответ ТО / memo — не крутим ретраи, сразу stub. */
-            if (j && (j._operatorNoFlights || j.operatorNoFlights || j._memoFail)) {
-                thFlightLoadMarkFailed(tourId);
+            /* Нет рейсов у ТО / кэш «нет данных» — карточка тура остаётся, текст «уточните у менеджера». */
+            if (j && (j._operatorNoFlights || j.operatorNoFlights)) {
+                thFlightLoadMarkNoData(tourId);
+                return;
+            }
+            if (j && j._memoFail) {
+                if (j._memoNoData) {
+                    thFlightLoadMarkNoData(tourId);
+                } else {
+                    thFlightLoadMarkFailed(tourId);
+                }
                 return;
             }
             if (j && j.success === false) {
@@ -1435,6 +1565,7 @@
     global.thLoadFlightsForVisibleCards = thLoadFlightsForVisibleCards;
     global.thFlightLoadIsPending = thFlightLoadIsPending;
     global.thFlightLoadIsFailed = thFlightLoadIsFailed;
+    global.thFlightLoadIsNoData = thFlightLoadIsNoData;
     global.thFlightLoadMarkFailed = thFlightLoadMarkFailed;
     global.thFlightLoadResetAll = thFlightLoadResetAll;
     global.thFlightPackagesGet = thFlightPackagesGet;
@@ -1445,6 +1576,7 @@
     global.thFlightPackageOptionLabel = thFlightPackageOptionLabel;
     global.thFlightPackageSummary = thFlightPackageSummary;
     global.thFlightPkgCardHtml = thFlightPkgCardHtml;
+    global.thFlightPkgLegsInnerHtml = thFlightPkgLegsInnerHtml;
     global.thFlightPackageLines = thFlightPackageLines;
     global.thFlightPickModalOpen = thFlightPickModalOpen;
     global.thFlightPickModalClose = thFlightPickModalClose;
@@ -1476,6 +1608,7 @@
             if (thFlightLoadIsPending(tid)) continue;
             try {
                 delete global.__thFlightsFailed[tid];
+                delete global.__thFlightsNoData[tid];
                 delete thTourFlightsFailMemo[thTourFlightsFailKey(tid)];
             } catch (eClr) {}
             hotels.push({ tours: [{ id: tid }], _tour: { id: tid } });

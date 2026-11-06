@@ -7,6 +7,8 @@
  * — skip если cover свежий и закрывает горизонт;
  * — иначе live только по дырам (куски ≤14 дней);
  * — туристические комбо: 2+0 всегда, 2+1 (возраст 7) для топ-5 стран.
+ * — live-запрос с full=1 (полный пакет тура в файловом кэше); клиент с full=1 попадает в тот же ключ (slim/full не влияют на tvSearchParamsKey).
+ * — приоритетные страны (по умолчанию Таиланд 2, Шри-Ланка 12): очередь live ближних окон для них выше — не отрезаются лимитом TH_WARM_MAX_LIVE_CHUNKS раньше остальных.
  *
  * Важно: длинный горизонт календаря собирает warm_calendar_cache.php из cover.
  * Cover warm нельзя тянуть на 3 месяца в один прогон — бюджет live кончается,
@@ -115,6 +117,21 @@ $maxLiveChunks = (int) (getenv('TH_WARM_MAX_LIVE_CHUNKS') ?: ($_ENV['TH_WARM_MAX
 $maxLiveChunks = max(5, min(160, $maxLiveChunks));
 $liveChunksDone = 0;
 
+/** ID стран для приоритизации очереди live (CSV), по умолчанию Таиланд и Шри-Ланка из popular_countries. */
+$warmPriorityCountryRaw = (string) (getenv('TH_WARM_PRIORITY_COUNTRY_IDS') ?: ($_ENV['TH_WARM_PRIORITY_COUNTRY_IDS'] ?? '2,12'));
+$warmPriorityCountryIds = array_values(array_unique(array_filter(array_map(
+    static fn (string $s): int => max(0, (int) trim($s)),
+    preg_split('/\s*,\s*/', $warmPriorityCountryRaw) ?: []
+), static fn (int $id): bool => $id > 0)));
+/** @var array<int, int> countryId → порядок в приоритете (меньше — раньше в очереди) */
+$warmCountryPriorityRank = [];
+foreach ($warmPriorityCountryIds as $i => $cid) {
+    $warmCountryPriorityRank[(int) $cid] = $i;
+}
+
+$warmCurlTimeout = (int) (getenv('TH_WARM_CURL_TIMEOUT_SEC') ?: ($_ENV['TH_WARM_CURL_TIMEOUT_SEC'] ?? 180));
+$warmCurlTimeout = max(60, min(300, $warmCurlTimeout));
+
 $ok = 0;
 $err = 0;
 $skipped = 0;
@@ -126,7 +143,7 @@ $started = microtime(true);
  * @param array<string,mixed> $job
  * @return array<string,mixed>
  */
-$runLiveChunk = static function (array $job) use ($proxyBase): array {
+$runLiveChunk = static function (array $job) use ($proxyBase, $warmCurlTimeout): array {
     $q = [
         'type' => 'search-cached',
         'departureId' => $job['departureId'],
@@ -139,7 +156,7 @@ $runLiveChunk = static function (array $job) use ($proxyBase): array {
         'currency' => 'RUB',
         'cacheScope' => 'country_page',
         'live' => 1,
-        'slim' => 1,
+        'full' => 1,
     ];
     if ($job['childs'] !== '') {
         $q['childs'] = $job['childs'];
@@ -161,7 +178,7 @@ $runLiveChunk = static function (array $job) use ($proxyBase): array {
     }
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 120,
+        CURLOPT_TIMEOUT => $warmCurlTimeout,
         CURLOPT_CONNECTTIMEOUT => 20,
         CURLOPT_FOLLOWLOCATION => true,
     ]);
@@ -340,6 +357,7 @@ foreach ($identities as $item) {
                 'identity' => $identity,
                 'mode' => $didExtend ? 'extended' : 'full',
                 'priorityBand' => $near ? 0 : 1,
+                'countryPriorityRank' => $warmCountryPriorityRank[$params['countryId']] ?? 99,
                 'depRank' => (int) ($item['depRank'] ?? 99),
                 'countryRank' => (int) ($item['countryRank'] ?? 99),
             ];
@@ -350,6 +368,9 @@ foreach ($identities as $item) {
 usort($liveJobs, static function (array $a, array $b): int {
     if ($a['priorityBand'] !== $b['priorityBand']) {
         return $a['priorityBand'] <=> $b['priorityBand'];
+    }
+    if (($a['countryPriorityRank'] ?? 99) !== ($b['countryPriorityRank'] ?? 99)) {
+        return ($a['countryPriorityRank'] ?? 99) <=> ($b['countryPriorityRank'] ?? 99);
     }
     if ($a['depRank'] !== $b['depRank']) {
         return $a['depRank'] <=> $b['depRank'];
@@ -407,6 +428,8 @@ $out = [
     'priorityTo' => $priorityTo,
     'coverDays' => $coverDays,
     'priorityDays' => $priorityDays,
+    'warmPriorityCountryIds' => $warmPriorityCountryIds,
+    'warmCurlTimeout' => $warmCurlTimeout,
     'nights' => $wideNights,
     'ttlSeconds' => $ttlSeconds,
     'identities' => count($identities),

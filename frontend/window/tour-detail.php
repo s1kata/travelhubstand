@@ -20,6 +20,21 @@ $nights = isset($_GET['nights']) ? trim((string) $_GET['nights']) : '';
 $meal_raw = isset($_GET['meal']) ? trim((string) $_GET['meal']) : '';
 $meal_map = ['AI'=>'Всё включено','UAI'=>'Ультра всё включено','BB'=>'Завтрак','HB'=>'Завтрак + ужин','HB+'=>'Завтрак + ужин (улучш.)','FB'=>'Завтрак + обед + ужин','RO'=>'Без питания','SC'=>'Самообслуживание','AL'=>'Всё включено'];
 $meal = isset($meal_map[strtoupper($meal_raw)]) ? $meal_map[strtoupper($meal_raw)] : $meal_raw;
+$meal_code_param = isset($_GET['meal_code']) ? (int) $_GET['meal_code'] : 0;
+if ($meal_code_param <= 0 && $meal_raw !== '') {
+    $mcUpper = strtoupper($meal_raw);
+    if (isset($meal_map[$mcUpper])) {
+        /** Коды питания Tourvisor (GET type=tours) — совпадают с кодами в slim-поиске */
+        $meal_code_map = [
+            'RO' => 1, 'BB' => 2, 'HB' => 3, 'FB' => 4, 'AI' => 5, 'UAI' => 6, 'AL' => 7, 'HB+' => 8, 'SC' => 9,
+        ];
+        $meal_code_param = (int) ($meal_code_map[$mcUpper] ?? 0);
+    }
+}
+$country_id_param = isset($_GET['country_id']) ? (int) $_GET['country_id'] : 0;
+if ($country_id_param <= 0 && isset($_GET['countryId'])) {
+    $country_id_param = (int) $_GET['countryId'];
+}
 $region = isset($_GET['region']) ? trim((string) $_GET['region']) : '';
 $departure_city = isset($_GET['departure_city']) ? trim((string) $_GET['departure_city']) : '';
 $departure_id_param = isset($_GET['departure_id']) ? (int) $_GET['departure_id'] : 0;
@@ -493,8 +508,12 @@ if ($return_url !== '' && $return_url[0] === '/') {
                     </div>
                     <?php endif; ?>
 
-                    <?php if (count($room_options) > 1): ?>
-                    <section id="th-room-selector" class="th-detail__section th-room-selector" aria-label="Выбор типа номера">
+                    <?php
+                    $show_room_selector_block = count($room_options) > 1
+                        || ($hotel_id !== '' && $country_id_param > 0 && $date_from !== '' && $nights !== '');
+                    ?>
+                    <?php if ($show_room_selector_block): ?>
+                    <section id="th-room-selector" class="th-detail__section th-room-selector<?php echo count($room_options) < 2 ? ' th-room-selector--pending' : ''; ?>" aria-label="Выбор типа номера">
                         <div class="th-room-selector__heading">
                             <span class="th-room-selector__icon" aria-hidden="true"><i class="fas fa-bed"></i></span>
                             <div class="th-room-selector__heading-copy">
@@ -502,9 +521,9 @@ if ($return_url !== '' && $return_url[0] === '/') {
                                 <h2 id="th-room-selector-title" class="th-detail__section-title">Выберите номер</h2>
                                 <p class="th-room-selector__hint">Даты, питание и состав туристов останутся прежними. Меняется только вариант номера и стоимость тура.</p>
                             </div>
-                            <span class="th-room-selector__count">Вариантов: <?php echo count($room_options); ?></span>
+                            <span id="th-room-selector-count" class="th-room-selector__count"><?php echo count($room_options) > 1 ? ('Вариантов: ' . count($room_options)) : ''; ?><?php if (count($room_options) < 2): ?><span class="th-room-selector__count-pending">Загрузка…</span><?php endif; ?></span>
                         </div>
-                        <div id="th-room-choice" class="th-room-selector__options" role="radiogroup" aria-labelledby="th-room-selector-title" aria-describedby="th-room-choice-note"></div>
+                        <div id="th-room-choice" class="th-room-selector__options" role="radiogroup" aria-labelledby="th-room-selector-title" aria-describedby="th-room-choice-note"><?php if (count($room_options) < 2): ?><p id="th-room-choice-placeholder" class="th-room-selector__placeholder">Подбираем категории номеров по тем же датам и туристам…</p><?php endif; ?></div>
                         <div class="th-room-selector__note" role="status" aria-live="polite">
                             <i class="fas fa-circle-check" aria-hidden="true"></i>
                             <span id="th-room-choice-note" class="th-room-selector__note-text"></span>
@@ -704,6 +723,8 @@ if ($return_url !== '' && $return_url[0] === '/') {
         'tourOperator' => $tour_operator_param,
         'tourId' => $tour_id,
         'hotelId' => $hotel_id,
+        'countryId' => $country_id_param,
+        'mealCode' => $meal_code_param,
         'tvApiBase' => $tv_api_base,
         'tvImageProxy' => $tv_image_proxy,
         'galleryUrls' => $gallery_images,
@@ -757,6 +778,10 @@ if ($return_url !== '' && $return_url[0] === '/') {
         var roomId = (typeof cfg.roomId === 'string') ? cfg.roomId : '';
         var roomOptions = Array.isArray(cfg.roomOptions) ? cfg.roomOptions : [];
         var hotelId = (typeof cfg.hotelId === 'string') ? cfg.hotelId : '';
+        var countryId = cfg.countryId != null ? Number(cfg.countryId) : 0;
+        if (!Number.isFinite(countryId) || countryId < 0) countryId = 0;
+        var mealCode = cfg.mealCode != null ? Number(cfg.mealCode) : 0;
+        if (!Number.isFinite(mealCode) || mealCode < 0) mealCode = 0;
         var tvApiBase = (typeof cfg.tvApiBase === 'string') ? cfg.tvApiBase : '';
         if (tvApiBase) {
             try {
@@ -1581,6 +1606,76 @@ if ($return_url !== '' && $return_url[0] === '/') {
             if (bwd) lines.push(bwd);
             return lines;
         }
+        function thTdFlightPkgLegsInnerHtml(pkg) {
+            if (typeof thFlightPkgLegsInnerHtml === 'function') {
+                return thFlightPkgLegsInnerHtml(pkg, thTdFlightEsc);
+            }
+            var lines = thTdFlightPackageLines(pkg);
+            if (lines.length) {
+                return lines.map(function (ln, li) {
+                    var label = li === 0 ? 'Туда' : 'Обратно';
+                    return '<div class="th-flight-pkg__leg"><span class="th-flight-pkg__leg-label">' + thTdFlightEsc(label) + '</span><span class="th-flight-pkg__route">' + thTdFlightEsc(ln) + '</span></div>';
+                }).join('');
+            }
+            return '<div class="th-flight-pkg__leg"><span>' + thTdFlightEsc('Детали уточняются у туроператора') + '</span></div>';
+        }
+        /** @type {Record<string, string>} */
+        var thTdRoomDescByKey = {};
+        var thTdRoomDescFetchToken = 0;
+        function thTdTourPackageRoomIds() {
+            var ids = [];
+            if (!roomOptions || !roomOptions.length) return ids;
+            roomOptions.forEach(function (o) {
+                var id = String(o && o.roomId != null ? o.roomId : '').trim();
+                if (id && /^\d+$/.test(id) && ids.indexOf(id) < 0) ids.push(id);
+            });
+            return ids;
+        }
+        function thTdFetchRoomDescriptions() {
+            var ids = thTdTourPackageRoomIds();
+            if (ids.length === 0 || !tourId || !tvApiBase) return;
+            var token = ++thTdRoomDescFetchToken;
+            var sep = tvApiBase.indexOf('?') >= 0 ? '&' : '?';
+            var url = tvApiBase + sep + 'type=tour-package&tourId=' + encodeURIComponent(tourId) + '&currency=RUB&roomIds=' + encodeURIComponent(ids.join(','));
+            fetch(url, { cache: 'no-store' })
+                .then(function (r) { return r.json(); })
+                .then(function (j) {
+                    if (token !== thTdRoomDescFetchToken) return;
+                    var rooms = j && j.rooms;
+                    if (!Array.isArray(rooms)) {
+                        rooms = (j && j.data && Array.isArray(j.data.rooms)) ? j.data.rooms : [];
+                    }
+                    if (!Array.isArray(rooms)) return;
+                    rooms.forEach(function (room) {
+                        if (!room || room.id == null) return;
+                        var name = String(room.name || room.title || '').trim();
+                        var desc = String(room.description || room.desc || room.text || '').replace(/\s+/g, ' ').trim();
+                        var bits = [];
+                        if (name) bits.push(name);
+                        if (desc) bits.push(desc);
+                        if (!bits.length) return;
+                        thTdRoomDescByKey[String(room.id)] = bits.join(' — ');
+                    });
+                    var optionsRoot = document.getElementById('th-room-choice');
+                    if (!optionsRoot) return;
+                    optionsRoot.querySelectorAll('.th-room-option[data-room-opt-index]').forEach(function (card) {
+                        var idx = parseInt(card.getAttribute('data-room-opt-index'), 10);
+                        if (isNaN(idx) || !roomOptions[idx]) return;
+                        var rid = String(roomOptions[idx].roomId || '').trim();
+                        var txt = rid ? thTdRoomDescByKey[rid] : '';
+                        var sub = card.querySelector('.th-room-option__sub');
+                        if (!sub) return;
+                        if (txt) {
+                            sub.textContent = txt;
+                            sub.classList.remove('hidden');
+                        } else {
+                            sub.textContent = '';
+                            sub.classList.add('hidden');
+                        }
+                    });
+                })
+                .catch(function () {});
+        }
         function thTdFlightManagerFallback(opts) {
             opts = opts || {};
             var listItemEl = document.getElementById('flight-info-list-item');
@@ -1685,7 +1780,6 @@ if ($return_url !== '' && $return_url[0] === '/') {
             }
             var html = '';
             thTdFlightsList.forEach(function (pkg, idx) {
-                    var lines = thTdFlightPackageLines(pkg);
                     var airlines = thTdFlightAirlines(pkg);
                     var priceNum = (typeof thFlightPackagePriceNum === 'function')
                         ? thFlightPackagePriceNum(pkg, thTdFlightsInfo)
@@ -1705,10 +1799,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                     var badgeHtml = badges.map(function (b) {
                         return '<span class="th-flight-pkg__badge">' + thTdFlightEsc(b) + '</span>';
                     }).join('');
-                    var linesHtml = (lines.length ? lines : ['\u0414\u0435\u0442\u0430\u043b\u0438 \u0443\u0442\u043e\u0447\u043d\u044f\u044e\u0442\u0441\u044f \u0443 \u0442\u0443\u0440\u043e\u043f\u0435\u0440\u0430\u0442\u043e\u0440\u0430']).map(function (ln, li) {
-                        var label = li === 0 ? '\u0422\u0443\u0434\u0430' : '\u041e\u0431\u0440\u0430\u0442\u043d\u043e';
-                        return '<div class="th-flight-pkg__leg"><span class="th-flight-pkg__leg-label">' + label + '</span><span>' + thTdFlightEsc(ln) + '</span></div>';
-                    }).join('');
+                    var linesHtml = thTdFlightPkgLegsInnerHtml(pkg);
                     html +=
                         '<label class="th-flight-pkg' + (idx === thTdSelectedFlightIdx ? ' is-selected' : '') + '" data-idx="' + idx + '">' +
                         '<input type="radio" name="th-flight-pkg" value="' + idx + '"' + (idx === thTdSelectedFlightIdx ? ' checked' : '') + '>' +
@@ -1963,9 +2054,132 @@ if ($return_url !== '' && $return_url[0] === '/') {
             }
         }
 
+        var thRoomFetchToken = 0;
+        /** Показать/скрыть состояние загрузки списка номеров. */
+        function thRoomSelectorShowPending(isPending) {
+            var sec = document.getElementById('th-room-selector');
+            var countEl = document.getElementById('th-room-selector-count');
+            if (sec) sec.classList.toggle('th-room-selector--pending', !!isPending);
+            if (!countEl) return;
+            var pend = countEl.querySelector('.th-room-selector__count-pending');
+            if (isPending) {
+                if (!pend) {
+                    pend = document.createElement('span');
+                    pend.className = 'th-room-selector__count-pending';
+                    pend.textContent = 'Загрузка…';
+                    countEl.appendChild(pend);
+                }
+                pend.classList.remove('hidden');
+            } else if (pend) {
+                pend.classList.add('hidden');
+            }
+        }
+        /**
+         * Если в URL не передали room_options, подгружаем отели через type=tours (hotelIds)
+         * и строим список категорий номеров через THTourCard.getRoomOptions.
+         */
+        function thTryHydrateRoomOptions() {
+            if (roomOptions.length >= 2) return;
+            if (!tvApiBase || !hotelId || countryId <= 0) return;
+            var df = String(dateFrom || '').trim();
+            var dt = String(dateTo || '').trim();
+            var nf = parseInt(String(defaultNights || ''), 10);
+            if (!df || !dt || !nf || nf < 1) return;
+            var depId = departureId != null && String(departureId) !== '' ? parseInt(String(departureId), 10) : 0;
+            if (!depId || depId < 1) return;
+            var adultsN = searchAdults != null ? searchAdults : 2;
+            if (!adultsN || adultsN < 1) adultsN = 2;
+            var token = ++thRoomFetchToken;
+            thRoomSelectorShowPending(true);
+            var qs = [
+                'type=tours',
+                'departureId=' + encodeURIComponent(String(depId)),
+                'countryId=' + encodeURIComponent(String(countryId)),
+                'hotelIds=' + encodeURIComponent(String(hotelId)),
+                'dateFrom=' + encodeURIComponent(df),
+                'dateTo=' + encodeURIComponent(dt),
+                'nightsFrom=' + encodeURIComponent(String(nf)),
+                'nightsTo=' + encodeURIComponent(String(nf)),
+                'adults=' + encodeURIComponent(String(adultsN)),
+                'perPage=100'
+            ];
+            if (mealCode > 0) qs.push('meal=' + encodeURIComponent(String(mealCode)));
+            if (searchChilds) qs.push('childs=' + encodeURIComponent(searchChilds));
+            var sep = tvApiBase.indexOf('?') >= 0 ? '&' : '?';
+            var url = tvApiBase + sep + qs.join('&');
+            fetch(url, { cache: 'no-store' })
+                .then(function (r) { return r.json(); })
+                .then(function (j) {
+                    if (token !== thRoomFetchToken) return;
+                    var rows = (j && Array.isArray(j.data)) ? j.data : (j && Array.isArray(j.tours) ? j.tours : []);
+                    if (!rows || !rows.length) {
+                        thRoomSelectorShowPending(false);
+                        return;
+                    }
+                    var hid = String(hotelId).trim();
+                    var hotelRow = null;
+                    for (var i = 0; i < rows.length; i++) {
+                        var hrow = rows[i];
+                        if (!hrow || typeof hrow !== 'object') continue;
+                        var hidMatch = String(hrow.id != null ? hrow.id : (hrow.hotelId || '')).trim();
+                        if (hidMatch === hid) {
+                            hotelRow = hrow;
+                            break;
+                        }
+                    }
+                    if (!hotelRow) {
+                        thRoomSelectorShowPending(false);
+                        return;
+                    }
+                    var toursList = hotelRow.tours;
+                    if (!Array.isArray(toursList) || !toursList.length) {
+                        thRoomSelectorShowPending(false);
+                        return;
+                    }
+                    var matchTour = null;
+                    if (tourId) {
+                        for (var t = 0; t < toursList.length; t++) {
+                            var tid = String(toursList[t] && (toursList[t].id != null ? toursList[t].id : (toursList[t].tourId || ''))).trim();
+                            if (tid && tid === String(tourId)) {
+                                matchTour = toursList[t];
+                                break;
+                            }
+                        }
+                    }
+                    if (!matchTour) matchTour = toursList[0];
+                    if (!matchTour || typeof matchTour !== 'object') {
+                        thRoomSelectorShowPending(false);
+                        return;
+                    }
+                    var opts = (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function')
+                        ? window.THTourCard.getRoomOptions(hotelRow, matchTour)
+                        : [];
+                    if (!Array.isArray(opts) || opts.length < 2) {
+                        thRoomSelectorShowPending(false);
+                        return;
+                    }
+                    roomOptions = opts;
+                    initRoomSelector();
+                })
+                .catch(function () {
+                    if (token === thRoomFetchToken) thRoomSelectorShowPending(false);
+                });
+        }
+
         function initRoomSelector() {
             var optionsRoot = document.getElementById('th-room-choice');
             if (!optionsRoot || roomOptions.length < 2) return;
+            thRoomSelectorShowPending(false);
+            var ph = document.getElementById('th-room-choice-placeholder');
+            if (ph) ph.remove();
+            var secRoom = document.getElementById('th-room-selector');
+            if (secRoom) secRoom.classList.remove('th-room-selector--pending');
+            var countElRoom = document.getElementById('th-room-selector-count');
+            if (countElRoom) {
+                countElRoom.textContent = '';
+                countElRoom.appendChild(document.createTextNode('Вариантов: ' + roomOptions.length));
+            }
+            optionsRoot.innerHTML = '';
             var selectedIndex = roomId
                 ? roomOptions.findIndex(function (option) { return String(option.roomId || '') === roomId; })
                 : -1;
@@ -2019,6 +2233,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                     flightInfo = '';
                     thTdFetchDetailFlights(true);
                     thTdFetchTourDetails(tourId);
+                    thTdFetchRoomDescriptions();
                 }
             }
 
@@ -2026,6 +2241,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 var price = Math.round(Number(option.price) || 0);
                 var card = document.createElement('label');
                 card.className = 'th-room-option' + (index === selectedIndex ? ' is-selected' : '');
+                card.setAttribute('data-room-opt-index', String(index));
                 var radio = document.createElement('input');
                 radio.type = 'radio';
                 radio.name = 'th-room-selected';
@@ -2041,6 +2257,13 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 var title = document.createElement('span');
                 title.className = 'th-room-option__title';
                 title.textContent = displayRoomOptionName(option.roomType);
+                var sub = document.createElement('span');
+                sub.className = 'th-room-option__sub hidden';
+                var ridSub = String(option.roomId || '').trim();
+                if (ridSub && thTdRoomDescByKey[ridSub]) {
+                    sub.textContent = thTdRoomDescByKey[ridSub];
+                    sub.classList.remove('hidden');
+                }
                 var priceEl = document.createElement('span');
                 priceEl.className = 'th-room-option__price';
                 priceEl.textContent = formatRub(price);
@@ -2069,6 +2292,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 state.appendChild(document.createTextNode('Выбран'));
 
                 content.appendChild(title);
+                content.appendChild(sub);
                 card.appendChild(radio);
                 card.appendChild(indicator);
                 card.appendChild(content);
@@ -2077,8 +2301,8 @@ if ($return_url !== '' && $return_url[0] === '/') {
                 priceBlock.appendChild(priceEl);
                 priceBlock.appendChild(priceMeta);
                 priceBlock.appendChild(deltaEl);
+                priceBlock.appendChild(state);
                 card.appendChild(priceBlock);
-                card.appendChild(state);
                 optionsRoot.appendChild(card);
 
                 radio.addEventListener('change', function () {
@@ -2089,6 +2313,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
                     applyRoomOption(index);
                 });
             });
+            thTdFetchRoomDescriptions();
             var note = document.getElementById('th-room-choice-note');
             if (note) {
                 var selectedOption = roomOptions[selectedIndex];
@@ -2100,6 +2325,7 @@ if ($return_url !== '' && $return_url[0] === '/') {
             }
         }
         initRoomSelector();
+        thTryHydrateRoomOptions();
         updateCtaPrice();
 
         if (tourId && tvApiBase) {

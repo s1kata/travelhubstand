@@ -143,6 +143,10 @@ TH_TV_OUTBOUND_RPM=25
 TH_TV_CONTINUE_MAX=0
 TH_WARM_LIVE_PAUSE_SEC=2.5
 TH_WARM_MAX_LIVE_CHUNKS=80
+# Прогрев live с full=1; опционально — приоритет очереди для countryId (CSV), по умолчанию 2,12 (Таиланд, Шри-Ланка).
+TH_WARM_PRIORITY_COUNTRY_IDS=2,12
+# Таймаут cURL для одного live-сегмента прогрева (тяжёлый full-пакет), сек.
+TH_WARM_CURL_TIMEOUT_SEC=180
 TH_HOME_COVER_DAYS=42
 TH_HOME_COVER_PRIORITY_DAYS=21
 

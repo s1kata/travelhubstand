@@ -68,9 +68,14 @@
         var self = this;
 
         qsa('[data-thw-goto]', this.root).forEach(function (btn) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function (e) {
                 var n = parseInt(btn.getAttribute('data-thw-goto'), 10);
                 if (!n || n < 1 || n > self.maxStep()) return;
+                /* Кнопка rail одновременно открывает попап через THSearchUI — не дублируем переход шага. */
+                if (e.target && e.target.closest && e.target.closest('[data-th-search-open]')) {
+                    try { self.go(n, true); } catch (eGo) {}
+                    return;
+                }
                 self.go(n);
             });
         });
@@ -220,6 +225,7 @@
         step = Math.max(1, Math.min(this.maxStep(), step));
         this.step = step;
         this.root.setAttribute('data-step', String(step));
+        silent = !!silent;
 
         qsa('.th-wizard__panel', this.root).forEach(function (panel) {
             var id = parseInt(panel.getAttribute('data-panel'), 10);

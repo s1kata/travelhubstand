@@ -167,22 +167,22 @@ if ($th_search_ui_raw === 'legacy') {
     <link rel="stylesheet" href="/frontend/search-legacy/css/tour-search-wizard.css?v=legacy1">
     <link rel="stylesheet" href="/frontend/search-legacy/css/th-coral-search.css?v=legacy3">
     <?php elseif ($th_search_ui === 'v2'): ?>
-    <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=16">
-    <link rel="stylesheet" href="/frontend/css/th-coral-search.css?v=29">
+    <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=17">
+    <link rel="stylesheet" href="/frontend/css/th-coral-search.css?v=30">
     <link rel="stylesheet" href="/frontend/css/th-search-v2.css?v=1">
     <?php elseif ($th_search_ui === 'tv'): ?>
-    <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=16">
-    <link rel="stylesheet" href="/frontend/css/th-coral-search.css?v=29">
+    <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=17">
+    <link rel="stylesheet" href="/frontend/css/th-coral-search.css?v=30">
     <link rel="stylesheet" href="/frontend/css/th-search-tv.css?v=7">
     <?php else: ?>
-    <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=16">
-    <link rel="stylesheet" href="/frontend/css/th-coral-search.css?v=29">
+    <link rel="stylesheet" href="/frontend/css/tour-search-wizard.css?v=17">
+    <link rel="stylesheet" href="/frontend/css/th-coral-search.css?v=30">
     <?php endif; ?>
     <link rel="stylesheet" href="/frontend/css/th-hard-funnel.css?v=8">
     <link rel="stylesheet" href="/frontend/css/mobile-adult.css?v=16">
     <link rel="stylesheet" href="/frontend/css/th-site-lead.css?v=11">
     <link rel="stylesheet" href="/frontend/css/yandex-mobile.css?v=11">
-    <link rel="stylesheet" href="/frontend/css/pages/home.css?v=29">
+    <link rel="stylesheet" href="/frontend/css/pages/home.css?v=30">
     <link rel="stylesheet" href="/frontend/css/th-sheet.css?v=7">
     <?php include __DIR__ . '/../backend/components/mobile_site_head.php'; ?>
     <link rel="stylesheet" href="/frontend/css/th-unified-ui.css?v=12">
@@ -193,19 +193,19 @@ if ($th_search_ui_raw === 'legacy') {
     <script>window.__TH_SEARCH_UI=<?php echo json_encode($th_search_ui, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;</script>
     <script src="/frontend/js/v2-theme.js?v=1" defer></script>
     <?php if ($th_search_ui === 'legacy'): ?>
-    <script src="/frontend/search-legacy/js/tour-search-wizard.js?v=legacy2" defer></script>
-    <script src="/frontend/search-legacy/js/th-coral-search.js?v=legacy1" defer></script>
+    <script src="/frontend/search-legacy/js/tour-search-wizard.js?v=legacy3" defer></script>
+    <script src="/frontend/search-legacy/js/th-coral-search.js?v=legacy2" defer></script>
     <?php elseif ($th_search_ui === 'v2'): ?>
-    <script src="/frontend/js/tour-search-wizard.js?v=20" defer></script>
-    <script src="/frontend/js/th-coral-search.js?v=14" defer></script>
+    <script src="/frontend/js/tour-search-wizard.js?v=22" defer></script>
+    <script src="/frontend/js/th-coral-search.js?v=16" defer></script>
     <script src="/frontend/js/th-search-v2.js?v=1" defer></script>
     <?php elseif ($th_search_ui === 'tv'): ?>
-    <script src="/frontend/js/tour-search-wizard.js?v=20" defer></script>
-    <script src="/frontend/js/th-coral-search.js?v=14" defer></script>
+    <script src="/frontend/js/tour-search-wizard.js?v=22" defer></script>
+    <script src="/frontend/js/th-coral-search.js?v=16" defer></script>
     <script src="/frontend/js/th-search-tv.js?v=3" defer></script>
     <?php else: ?>
-    <script src="/frontend/js/tour-search-wizard.js?v=20" defer></script>
-    <script src="/frontend/js/th-coral-search.js?v=14" defer></script>
+    <script src="/frontend/js/tour-search-wizard.js?v=22" defer></script>
+    <script src="/frontend/js/th-coral-search.js?v=16" defer></script>
     <?php endif; ?>
     <?php
     if (!defined('TH_LEAD_CAPTURE_JS')) {
@@ -287,19 +287,20 @@ if ($th_search_ui_raw === 'legacy') {
                 </p>
             </div>
 
+            <?php
+            if (!function_exists('th_departure_default_id')) {
+                require_once __DIR__ . '/../backend/config/departure_defaults.php';
+            }
+            $th_def_dep_name = htmlspecialchars(th_departure_default_name(), ENT_QUOTES, 'UTF-8');
+            $th_wizard_compact_panels = ($th_search_ui !== 'v2' && $th_search_ui !== 'tv' && $th_search_ui !== 'legacy');
+            ?>
             <!-- Поиск: wizard = поэтапно (default). ?search=tv — все поля сразу. Логика #tv-* без изменений. -->
             <div id="tour-search-section"
-                 class="tv-sc-shell th-coral-search th-coral-wizard th-wizard w-full<?php echo $th_search_ui === 'tv' ? ' th-search-tv' : ($th_search_ui === 'v2' ? ' th-search-v2' : ' th-search-wizard'); ?>"
+                 class="tv-sc-shell th-coral-search th-coral-wizard th-wizard w-full<?php echo $th_search_ui === 'tv' ? ' th-search-tv' : ($th_search_ui === 'v2' ? ' th-search-v2' : ' th-search-wizard'); ?><?php echo $th_wizard_compact_panels ? ' th-wizard--compact-panels' : ''; ?>"
                  data-th-wizard="home"
                  data-step="<?php echo $th_search_ui === 'tv' ? '5' : '1'; ?>"
                  data-start-step="<?php echo $th_search_ui === 'tv' ? '5' : '1'; ?>"
                  data-search-mode="tours">
-                <?php
-                if (!function_exists('th_departure_default_id')) {
-                    require_once __DIR__ . '/../backend/config/departure_defaults.php';
-                }
-                $th_def_dep_name = htmlspecialchars(th_departure_default_name(), ENT_QUOTES, 'UTF-8');
-                ?>
 
                 <div class="th-search-mode" role="tablist" aria-label="Тип поиска">
                     <button type="button" class="th-search-mode__btn is-active" data-th-search-mode="tours" role="tab" aria-selected="true">Туры</button>
@@ -340,12 +341,22 @@ if ($th_search_ui_raw === 'legacy') {
                 </div>
                 <?php endif; ?>
 
+                <?php if ($th_wizard_compact_panels): ?>
+                <div class="th-wizard__compact-head">
+                <?php endif; ?>
                 <div class="th-wizard__stepbar" aria-live="polite">
                     <div class="th-wizard__stepbar-track" aria-hidden="true">
                         <span class="th-wizard__stepbar-fill" data-thw-progress style="width:20%"></span>
                     </div>
                     <p class="th-wizard__stepbar-label" id="th-wizard-step-label">1 из 5 · Откуда</p>
                 </div>
+                <?php if ($th_wizard_compact_panels): ?>
+                    <button id="tv-search-btn" type="button" class="th-coral-search__search-btn button button-primary tv-sc-search-btn th-wizard__compact-find">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <span class="tv-sc-search-text">Найти</span>
+                    </button>
+                </div>
+                <?php endif; ?>
 
                 <nav class="th-wizard__progress sr-only" aria-label="Шаги поиска">
                     <button type="button" class="th-wizard__dot is-active" data-thw-goto="1" aria-current="step"><span class="th-wizard__dot-num">1</span></button>
@@ -355,6 +366,7 @@ if ($th_search_ui_raw === 'legacy') {
                     <button type="button" class="th-wizard__dot" data-thw-goto="5"><span class="th-wizard__dot-num">5</span></button>
                 </nav>
 
+                <?php if (!$th_wizard_compact_panels): ?>
                 <div class="th-wizard__panels">
                     <div class="th-wizard__panel is-active" data-panel="1">
                         <button type="button" class="th-coral-search__field th-coral-search__field--step" data-th-search-open="departure" aria-label="Откуда">
@@ -433,6 +445,7 @@ if ($th_search_ui_raw === 'legacy') {
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <div class="th-coral-wizard__filters-wrap">
                     <button type="button" class="th-coral-wizard__filters-btn" id="th-wizard-toggle-filters"
@@ -1143,12 +1156,19 @@ if ($th_search_ui_raw === 'legacy') {
                 if (opts.cacheScope) u.searchParams.set('cacheScope', String(opts.cacheScope));
                 if (opts.cacheOnly) u.searchParams.set('cacheOnly', '1');
                 if (opts.live || opts.forceLive || opts.backgroundRefresh) u.searchParams.set('live', '1');
-                if (opts.slim !== false) u.searchParams.set('slim', '1');
-                if (opts.full) u.searchParams.set('full', '1');
+                if (opts.full) {
+                    u.searchParams.set('full', '1');
+                } else if (opts.slim !== false) {
+                    u.searchParams.set('slim', '1');
+                }
                 if (!opts.cacheOnly) u.searchParams.set('_t', String(Date.now()));
             }
             if (type === 'results') {
-                if (opts.slim !== false) u.searchParams.set('slim', '1');
+                if (opts.full) {
+                    u.searchParams.set('full', '1');
+                } else if (opts.slim !== false) {
+                    u.searchParams.set('slim', '1');
+                }
                 if (opts.persist === false || opts.persist === 0 || opts.persist === '0') {
                     u.searchParams.set('persist', '0');
                 }
@@ -1178,8 +1198,14 @@ if ($th_search_ui_raw === 'legacy') {
             if (timeoutMs == null) {
                 if (type === 'search') timeoutMs = 65000;
                 else if (type === 'status') timeoutMs = 45000;
-                else if (type === 'results') timeoutMs = 60000;
-                else if (type === 'search-cached') timeoutMs = opts.cacheOnly ? 12000 : 65000;
+                else if (type === 'results') {
+                    timeoutMs = 60000;
+                    if (opts.full && timeoutMs < 90000) timeoutMs = 90000;
+                }
+                else if (type === 'search-cached') {
+                    timeoutMs = opts.cacheOnly ? 12000 : 65000;
+                    if (opts.full && timeoutMs < 90000) timeoutMs = 90000;
+                }
                 else if (type === 'tour-flights') timeoutMs = 45000;
                 else timeoutMs = 25000;
             }
@@ -3901,6 +3927,7 @@ if ($th_search_ui_raw === 'legacy') {
             opts = opts || {};
             var gen = opts.gen;
             var onPartial = typeof opts.onPartial === 'function' ? opts.onPartial : null;
+            var resultFetchOpts = opts.resultFetchOpts || { slim: true };
             var softMaxMs = Math.max(8000, Math.min(25000, opts.softMaxMs || 16000));
             var earlyProgress = Math.max(20, Math.min(80, opts.earlyProgress || 30));
             var earlyLimit = Math.max(40, Math.min(200, opts.earlyLimit || 80));
@@ -3967,7 +3994,7 @@ if ($th_search_ui_raw === 'legacy') {
                     var early = await tvFetch('results', {
                         searchId: String(sid),
                         limit: String(earlyLimit)
-                    }, { persist: false, slim: true });
+                    }, Object.assign({ persist: false }, resultFetchOpts));
                     if (isStale()) return { success: false, aborted: true, data: [] };
                     var earlyList = tvNormalizeHotelsList(early && early.data);
                     if (early && early.success && earlyList.length > lastPaintCount) {
@@ -3990,7 +4017,7 @@ if ($th_search_ui_raw === 'legacy') {
             var fin = await tvFetch('results', {
                 searchId: String(sid),
                 limit: String(finalLimit)
-            }, { slim: true });
+            }, resultFetchOpts);
             if (isStale()) return { success: false, aborted: true, data: [] };
             var finList = tvNormalizeHotelsList(fin && fin.data);
             if (fin && fin.success && finList.length) {
@@ -4091,6 +4118,7 @@ if ($th_search_ui_raw === 'legacy') {
             opts = opts || {};
             var shifts = [3, -3, 7, -7, 14, -14, 21, -21];
             var fetchOpts = opts.cacheOpts || { cacheScope: 'country_page', slim: true };
+            var liveResultOpts = opts.resultFetchOpts || { slim: true };
             for (var si = 0; si < shifts.length; si++) {
                 var shift = shifts[si];
                 var newFrom = tvYmdAddDays(dateFrom, shift);
@@ -4105,7 +4133,8 @@ if ($th_search_ui_raw === 'legacy') {
                     var rLive = await tvProgressiveLiveSearch(p, {
                         gen: opts.gen,
                         earlyProgress: 30,
-                        softMaxMs: 12000
+                        softMaxMs: 12000,
+                        resultFetchOpts: liveResultOpts
                     });
                     if (rLive && rLive.success && Array.isArray(rLive.data) && rLive.data.length > 0
                         && tvCountPlausibleHotels(rLive.data) > 0) {
@@ -4220,6 +4249,17 @@ if ($th_search_ui_raw === 'legacy') {
             if (charterDirectMode) cacheParams.onlyDirect = '1';
             var earlyDirectHotels = [];
             var usedCharterDateShift = false;
+            /* Туры: полный объект отелей/туров из прокси (full=1) — без tv_slim; перелёты по-прежнему догружаются tour-package. Отели: оставляем slim. */
+            var searchFullPayloadTours = !hotelModeSearch;
+            var searchCacheProbeOpts = searchFullPayloadTours
+                ? { cacheOnly: true, cacheScope: 'country_page', full: true }
+                : { cacheOnly: true, cacheScope: 'country_page', slim: true };
+            var searchSwrOneHopOpts = searchFullPayloadTours
+                ? { cacheScope: 'country_page', full: true }
+                : { cacheScope: 'country_page', slim: true };
+            var searchLiveResultsOpts = searchFullPayloadTours
+                ? { full: true }
+                : { slim: true };
 
             function tvMergeHotelsDirectFirst(directList, allList) {
                 var byId = {};
@@ -4309,7 +4349,7 @@ if ($th_search_ui_raw === 'legacy') {
                 console.log('%c[API → сайт] Параметры поиска отправляются в API', 'color: #5DA9A4; font-weight: bold', cacheParams);
 
                 /* 1) Параллельный cacheOnly: основной + alt + (для TH/VN/LK) прямые */
-                const cacheOpts = { cacheOnly: true, cacheScope: 'country_page', slim: true };
+                var cacheOpts = searchCacheProbeOpts;
                 var wantAltNights = !charterDirectMode && ((origNFrom === 6 && origNTo === 9) || origNFrom >= 10);
                 var altParams = tvBuildAltNightsParams(cacheParams, origNFrom, origNTo);
                 var cacheReqs = [tvFetch('search-cached', cacheParams, cacheOpts)];
@@ -4336,7 +4376,10 @@ if ($th_search_ui_raw === 'legacy') {
                 }
                 if ((!rCache.success || !Array.isArray(rCache.data) || rCache.data.length === 0 || tvCountPlausibleHotels(rCache.data) <= 0)
                     && onlyCharterOn && !softSearch) {
-                    var nearCharter = await tvTryNearestDirectSearch(cacheParams, dateFrom, dateTo, { cacheOpts: cacheOpts });
+                    var nearCharter = await tvTryNearestDirectSearch(cacheParams, dateFrom, dateTo, {
+                        cacheOpts: cacheOpts,
+                        resultFetchOpts: searchLiveResultsOpts
+                    });
                     if (nearCharter) {
                         rCache = nearCharter.result;
                         usedCharterDateShift = true;
@@ -4387,7 +4430,7 @@ if ($th_search_ui_raw === 'legacy') {
                 /* 2) Soft ±3/±6: один hop без live=1 (exact→cover→live) — cover часто закрывает сдвиг дат */
                 if (softSearch) {
                     if (!paintedFromSwr) {
-                        rCache = await tvFetch('search-cached', cacheParams, { cacheScope: 'country_page', slim: true });
+                        rCache = await tvFetch('search-cached', cacheParams, searchSwrOneHopOpts);
                         if (tvIsSearchStale()) return;
                         if (rCache.success && Array.isArray(rCache.data) && rCache.data.length > 0) {
                             paintedAny = true;
@@ -4397,7 +4440,7 @@ if ($th_search_ui_raw === 'legacy') {
                         }
                         // One-hop уже мог сходить в live — второй progressive не жжём
                     } else {
-                        rCache = await tvFetch('search-cached', cacheParams, { cacheScope: 'country_page', slim: true });
+                        rCache = await tvFetch('search-cached', cacheParams, searchSwrOneHopOpts);
                         if (tvIsSearchStale()) return;
                         if (rCache.success && Array.isArray(rCache.data) && rCache.data.length > 0) {
                             tvHomeSwrWrite(cacheParams, rCache.data);
@@ -4407,7 +4450,7 @@ if ($th_search_ui_raw === 'legacy') {
                     }
                 } else if (paintedFromSwr) {
                     /* SWR уже на экране — one-hop refresh без progressive */
-                    rCache = await tvFetch('search-cached', cacheParams, { cacheScope: 'country_page', slim: true });
+                    rCache = await tvFetch('search-cached', cacheParams, searchSwrOneHopOpts);
                     if (tvIsSearchStale()) return;
                     if (rCache.success && Array.isArray(rCache.data) && rCache.data.length > 0) {
                         tvHomeSwrWrite(cacheParams, rCache.data);
@@ -4425,6 +4468,7 @@ if ($th_search_ui_raw === 'legacy') {
                         gen: searchGen,
                         earlyProgress: 30,
                         softMaxMs: 16000,
+                        resultFetchOpts: searchLiveResultsOpts,
                         onPartial: function (list, meta) {
                             if (tvIsSearchStale()) return;
                             paintedAny = true;
@@ -4452,9 +4496,10 @@ if ($th_search_ui_raw === 'legacy') {
                     if ((!rCache.success || !Array.isArray(rCache.data) || rCache.data.length === 0 || tvCountPlausibleHotels(rCache.data) <= 0)
                         && onlyCharterOn && !usedCharterDateShift) {
                         var nearCharterLive = await tvTryNearestDirectSearch(cacheParams, dateFrom, dateTo, {
-                            cacheOpts: { cacheScope: 'country_page', slim: true },
+                            cacheOpts: searchCacheProbeOpts,
                             tryLive: true,
-                            gen: searchGen
+                            gen: searchGen,
+                            resultFetchOpts: searchLiveResultsOpts
                         });
                         if (nearCharterLive) {
                             rCache = nearCharterLive.result;
@@ -4469,6 +4514,7 @@ if ($th_search_ui_raw === 'legacy') {
                             gen: searchGen,
                             earlyProgress: 30,
                             softMaxMs: 16000,
+                            resultFetchOpts: searchLiveResultsOpts,
                             onPartial: function (list, meta) {
                                 if (tvIsSearchStale()) return;
                                 paintedAny = true;
@@ -5538,6 +5584,11 @@ if ($th_search_ui_raw === 'legacy') {
                         rating: String(h.rating || ''), category: String(h.category || ''),
                         adults: String(priceAdults), tour_id: tourId
                     };
+                    if (h.country && h.country.id != null) params.country_id = String(h.country.id);
+                    if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                        const _mc = parseInt(String(tour.meal.code), 10);
+                        if (_mc > 0) params.meal_code = String(_mc);
+                    }
                     if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                         params.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
                     }
@@ -5656,6 +5707,11 @@ if ($th_search_ui_raw === 'legacy') {
                     rating: String(h.rating || ''),
                     category: String(h.category || ''),
                 };
+                if (h.country && h.country.id != null) params.country_id = String(h.country.id);
+                if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                    const _mcL = parseInt(String(tour.meal.code), 10);
+                    if (_mcL > 0) params.meal_code = String(_mcL);
+                }
                 if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                     params.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
                 }

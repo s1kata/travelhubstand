@@ -166,6 +166,11 @@
       from_calendar: '1',
       adults: '2'
     };
+    if (hotel.country && hotel.country.id != null) params.country_id = String(hotel.country.id);
+    if (mealObj && mealObj.code != null) {
+      var _mcDc = parseInt(String(mealObj.code), 10);
+      if (_mcDc > 0) params.meal_code = String(_mcDc);
+    }
     var roomId = t.roomId != null ? t.roomId : (t.roomid != null ? t.roomid : t.room_id);
     if (roomId != null && String(roomId).trim() !== '') params.room_id = String(roomId).trim();
     if (window.THTourCard && typeof window.THTourCard.getRoomOptions === 'function') {

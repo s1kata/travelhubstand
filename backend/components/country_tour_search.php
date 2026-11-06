@@ -1262,6 +1262,11 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                     adults: String(priceAdults), tour_id: tourId,
                     image: cardImg || ''
                 };
+                if (h.country && h.country.id != null) params.country_id = String(h.country.id);
+                if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                    const _mcCt = parseInt(String(tour.meal.code), 10);
+                    if (_mcCt > 0) params.meal_code = String(_mcCt);
+                }
                 if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                     params.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
                 }
@@ -1360,6 +1365,11 @@ $_th_fpick_ver_ctv = is_file($_th_fpick_path_ctv) ? (string) filemtime($_th_fpic
                 rating: String(h.rating || ''),
                 category: String(h.category || ''),
             };
+            if (h.country && h.country.id != null) params.country_id = String(h.country.id);
+            if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                const _mcCt2 = parseInt(String(tour.meal.code), 10);
+                if (_mcCt2 > 0) params.meal_code = String(_mcCt2);
+            }
             if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                 params.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
             }

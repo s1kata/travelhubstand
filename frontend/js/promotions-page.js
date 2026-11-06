@@ -2733,6 +2733,11 @@
                 rating: String(h.rating || ''), category: String(h.category || ''), from_promo: '1',
                 room_category: roomCategory, flight_info: flightInfo, tour_id: tourId
             };
+            if (h.country && h.country.id != null) tourDetailParams.country_id = String(h.country.id);
+            if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                var _mcPm = parseInt(String(tour.meal.code), 10);
+                if (_mcPm > 0) tourDetailParams.meal_code = String(_mcPm);
+            }
             if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                 tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
             }
@@ -2865,6 +2870,11 @@
                 rating: String(h.rating || ''), category: String(h.category || ''), from_promo: '1',
                 room_category: roomCategory, flight_info: flightInfo, tour_id: tourId
             };
+            if (h.country && h.country.id != null) tourDetailParams.country_id = String(h.country.id);
+            if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                var _mcPm2 = parseInt(String(tour.meal.code), 10);
+                if (_mcPm2 > 0) tourDetailParams.meal_code = String(_mcPm2);
+            }
             if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                 tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
             }

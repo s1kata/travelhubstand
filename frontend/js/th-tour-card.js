@@ -388,7 +388,7 @@
     return null;
   }
 
-  var FLIGHT_STUB_TEXT = '\u0423\u0442\u043e\u0447\u043d\u0438\u043c \u0440\u0435\u0439\u0441 \u043f\u0440\u0438 \u0437\u0430\u044f\u0432\u043a\u0435';
+  var FLIGHT_STUB_TEXT = '\u041d\u0430\u043b\u0438\u0447\u0438\u0435 \u0430\u0432\u0438\u0430\u0431\u0438\u043b\u0435\u0442\u043e\u0432 \u0443\u0442\u043e\u0447\u043d\u0438\u0442\u0435 \u0443 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430';
   var FLIGHT_LOADING_TEXT = '\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043c \u043f\u0435\u0440\u0435\u043b\u0451\u0442\u2026';
   var FLIGHT_WAIT_TEXT = '\u0420\u0435\u0439\u0441 \u043f\u043e\u044f\u0432\u0438\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437 \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u0441\u0435\u043a\u0443\u043d\u0434';
 
@@ -403,11 +403,14 @@
     if (typeof global.thFlightMetaReady === 'function' && global.thFlightMetaReady(tourId, city)) {
       return FLIGHT_STUB_TEXT;
     }
-    if (typeof global.thFlightLoadIsFailed === 'function' && global.thFlightLoadIsFailed(tourId)) {
-      return FLIGHT_STUB_TEXT;
-    }
     if (typeof global.thFlightLoadIsPending === 'function' && global.thFlightLoadIsPending(tourId)) {
       return FLIGHT_LOADING_TEXT;
+    }
+    if (typeof global.thFlightLoadIsNoData === 'function' && global.thFlightLoadIsNoData(tourId)) {
+      return FLIGHT_STUB_TEXT;
+    }
+    if (typeof global.thFlightLoadIsFailed === 'function' && global.thFlightLoadIsFailed(tourId)) {
+      return FLIGHT_STUB_TEXT;
     }
     return FLIGHT_WAIT_TEXT;
   }
@@ -477,10 +480,18 @@
     }
     var chipHtml = '<div class="th-tour-card__flight-chip">' + inner + '</div>';
     var pickable = options.pickable !== false && !!tourId;
-    var failedFlight = tourId && typeof global.thFlightLoadIsFailed === 'function' && global.thFlightLoadIsFailed(tourId);
+    var noDataFlight =
+      tourId &&
+      typeof global.thFlightLoadIsNoData === 'function' &&
+      global.thFlightLoadIsNoData(tourId);
+    var failedFlight =
+      tourId &&
+      !noDataFlight &&
+      typeof global.thFlightLoadIsFailed === 'function' &&
+      global.thFlightLoadIsFailed(tourId);
     var flightLeadHint = failedFlight
       ? ('<span class="th-tour-card__flight-lead-hint" role="note">' +
-        '\u0420\u0435\u0439\u0441 \u043d\u0435 \u043f\u043e\u0434\u0433\u0440\u0443\u0437\u0438\u043b\u0441\u044f \u2014 \u043d\u0430\u0436\u043c\u0438\u0442\u0435 \u00ab\u0417\u0430\u044f\u0432\u043a\u0430\u00bb, \u043f\u043e\u0434\u0431\u0435\u0440\u0451\u043c \u043f\u0435\u0440\u0435\u043b\u0451\u0442</span>')
+        '\u041e\u0448\u0438\u0431\u043a\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 \u0430\u0432\u0438\u0430\u0440\u0435\u0439\u0441\u043e\u0432. \u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u00ab\u0417\u0430\u044f\u0432\u043a\u0430\u00bb \u0438\u043b\u0438 \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443.</span>')
       : '';
     if (!pickable) return chipHtml + flightLeadHint;
     return (

@@ -635,6 +635,12 @@
         qsa('[data-th-search-open]', this.root).forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
+                if (btn.hasAttribute('data-thw-goto') && window.THTourSearchWizard && typeof window.THTourSearchWizard.go === 'function') {
+                    var stepNum = parseInt(btn.getAttribute('data-thw-goto'), 10);
+                    if (stepNum) {
+                        try { window.THTourSearchWizard.go(stepNum, true); } catch (eWz) {}
+                    }
+                }
                 var target = btn.getAttribute('data-th-search-open');
                 if (target === 'country' || target === 'departure') {
                     self.openChoice(target);

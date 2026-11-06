@@ -3036,6 +3036,10 @@ function tourvisor_proxy_dispatch(): array
         if (!empty($_GET['hotelCategory'])) $sp['hotelCategory'] = (int)$_GET['hotelCategory'];
         if (!empty($_GET['hotelServices'])) $sp['hotelServices'] = $_GET['hotelServices'];
         if ($regionIdRaw !== '') $sp['regionIds'] = (string)$regionIdRaw;
+        $hotelIdsTours = trim((string) ($_GET['hotelIds'] ?? ''));
+        if ($hotelIdsTours !== '') {
+            $sp['hotelIds'] = array_values(array_filter(array_map('intval', explode(',', $hotelIdsTours))));
+        }
 
         if ($sp['countryId'] <= 0) {
             $r = ['success' => false, 'error' => 'countryId required', 'tours' => [], 'data' => []];
@@ -3070,6 +3074,11 @@ function tourvisor_proxy_dispatch(): array
         if (!empty($sp['hotelCategory'])) $searchParamsApi['hotelCategory'] = (int)$sp['hotelCategory'];
         if (!empty($sp['regionIds'])) {
             $searchParamsApi['regionIds'] = is_array($sp['regionIds']) ? $sp['regionIds'] : array_map('intval', array_filter(explode(',', (string)$sp['regionIds'])));
+        }
+        if (!empty($sp['hotelIds'])) {
+            $searchParamsApi['hotelIds'] = is_array($sp['hotelIds'])
+                ? array_values(array_filter(array_map('intval', $sp['hotelIds'])))
+                : array_values(array_filter(array_map('intval', explode(',', (string) $sp['hotelIds']))));
         }
         if (!empty($sp['hotelServices'])) {
             $hs = $sp['hotelServices'];

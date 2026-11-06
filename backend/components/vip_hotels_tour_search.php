@@ -1110,6 +1110,11 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
                     tour_id: t.id || '',
                     adults: String(paVip)
                 };
+                if (h.country && h.country.id != null) tourDetailParams.country_id = String(h.country.id);
+                if (t.meal && typeof t.meal === 'object' && t.meal.code != null) {
+                    var _mcVip = parseInt(String(t.meal.code), 10);
+                    if (_mcVip > 0) tourDetailParams.meal_code = String(_mcVip);
+                }
                 if (t.roomId != null || t.roomid != null || t.room_id != null) {
                     tourDetailParams.room_id = String(t.roomId != null ? t.roomId : (t.roomid != null ? t.roomid : t.room_id));
                 }
@@ -1153,6 +1158,11 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
                     adults: String(priceAdultsVip),
                     image: cardImg || ''
                 };
+                if (h.country && h.country.id != null) params.country_id = String(h.country.id);
+                if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                    const _mcVip2 = parseInt(String(tour.meal.code), 10);
+                    if (_mcVip2 > 0) params.meal_code = String(_mcVip2);
+                }
                 if (startYmd) params.date_from = startYmd;
                 if (retYmd) params.date_to = retYmd;
                 if (departureIdVip) params.departure_id = departureIdVip;
@@ -1211,6 +1221,11 @@ $_th_fp_vip_v = is_file($_th_fp_vip) ? (string) filemtime($_th_fp_vip) : '1';
                 rating: String(h.rating || ''),
                 category: String(h.category || ''),
             };
+            if (h.country && h.country.id != null) tourDetailParams.country_id = String(h.country.id);
+            if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                const _mcVip3 = parseInt(String(tour.meal.code), 10);
+                if (_mcVip3 > 0) tourDetailParams.meal_code = String(_mcVip3);
+            }
             if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                 tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
             }

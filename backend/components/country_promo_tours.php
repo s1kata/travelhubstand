@@ -521,6 +521,11 @@ $_th_fp_cp_v = is_file($_th_fp_cp) ? (string) filemtime($_th_fp_cp) : '1';
                     category: strClip(String(h.category || ''), 80),
                     room_category: roomCategory, tour_id: tourId, adults: String(adultsN)
                 };
+                if (h.country && h.country.id != null) tourDetailParams.country_id = String(h.country.id);
+                if (tour.meal && typeof tour.meal === 'object' && tour.meal.code != null) {
+                    var _mcCp = parseInt(String(tour.meal.code), 10);
+                    if (_mcCp > 0) tourDetailParams.meal_code = String(_mcCp);
+                }
                 if (tour.roomId != null || tour.roomid != null || tour.room_id != null) {
                     tourDetailParams.room_id = String(tour.roomId != null ? tour.roomId : (tour.roomid != null ? tour.roomid : tour.room_id));
                 }

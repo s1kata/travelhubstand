@@ -113,10 +113,13 @@
         var self = this;
 
         qsa('[data-thw-goto]', this.root).forEach(function (btn) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function (e) {
                 var n = parseInt(btn.getAttribute('data-thw-goto'), 10);
                 if (!n || n < self.minStep() || n > self.maxStep()) return;
-                /* silent: без автооткрытия sheet — только переход на шаг */
+                /* Только подсветка шага: попап открывает обработчик [data-th-search-open] в THSearchUI (иначе двойной вызов). */
+                if (e.target && e.target.closest && e.target.closest('[data-th-search-open]')) {
+                    return;
+                }
                 self.go(n, true);
             });
         });
@@ -217,6 +220,7 @@
             var dep = this.depSel && String(this.depSel.value || '').trim();
             if (!dep) {
                 this.shake(qs('[data-th-search-open="departure"]', this.root));
+                this.openStepModal(1);
                 return false;
             }
         }
@@ -224,18 +228,21 @@
             var c = this.countrySel && String(this.countrySel.value || '').trim();
             if (!c) {
                 this.shake(qs('[data-th-search-open="country"]', this.root));
+                this.openStepModal(2);
                 return false;
             }
         }
         if (this.step === 3) {
             if (!hasDateRange()) {
                 this.shake(qs('[data-th-search-open="dates"]', this.root));
+                this.openStepModal(3);
                 return false;
             }
         }
         if (this.step === 4) {
             if (!hasNightsRange()) {
                 this.shake(qs('[data-th-search-open="nights"]', this.root));
+                this.openStepModal(4);
                 return false;
             }
         }
